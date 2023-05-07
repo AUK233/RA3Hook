@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33414.496
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RA3Hook", "RA3Hook\RA3Hook.csproj", "{F07137B1-E54C-479D-A9FD-CF18FF0E0662}"
+	ProjectSection(ProjectDependencies) = postProject
+		{52E38B91-B8B1-415C-98FA-2DA8E8C9F58A} = {52E38B91-B8B1-415C-98FA-2DA8E8C9F58A}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DllCore", "DllCore\DllCore.vcxproj", "{52E38B91-B8B1-415C-98FA-2DA8E8C9F58A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F07137B1-E54C-479D-A9FD-CF18FF0E0662}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F07137B1-E54C-479D-A9FD-CF18FF0E0662}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F07137B1-E54C-479D-A9FD-CF18FF0E0662}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F07137B1-E54C-479D-A9FD-CF18FF0E0662}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52E38B91-B8B1-415C-98FA-2DA8E8C9F58A}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{52E38B91-B8B1-415C-98FA-2DA8E8C9F58A}.Debug|Any CPU.Build.0 = Debug|Win32
+		{52E38B91-B8B1-415C-98FA-2DA8E8C9F58A}.Release|Any CPU.ActiveCfg = Release|Win32
+		{52E38B91-B8B1-415C-98FA-2DA8E8C9F58A}.Release|Any CPU.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2C293463-BA0F-4FA5-BBAE-077DA349B619}
+	EndGlobalSection
+EndGlobal
