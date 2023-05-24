@@ -7,7 +7,7 @@
     <ProjectGuid>{F07137B1-E54C-479D-A9FD-CF18FF0E0662}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>RA3Hook</RootNamespace>
-    <AssemblyName>RA3Hook</AssemblyName>
+    <AssemblyName>RA3CFALauncher</AssemblyName>
     <LangVersion>preview</LangVersion>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -50,6 +50,10 @@
     <StartupObject>
     </StartupObject>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>ra3ep1.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup />
   <ItemGroup>
     <Reference Include="IndexRange, Version=1.0.2.0, Culture=neutral, PublicKeyToken=35e6a3c4212514c6, processorArchitecture=MSIL">
       <HintPath>..\packages\IndexRange.1.0.2\lib\net47\IndexRange.dll</HintPath>
@@ -129,6 +133,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="ra3ep1.ico" />
     <Resource Include="AI-Generated-Imagejpg.jpg" />
     <Content Include="EasyHook32.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

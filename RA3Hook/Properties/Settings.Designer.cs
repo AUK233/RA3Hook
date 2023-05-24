@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ExampleForAcu.Properties
+namespace RA3Hook.Properties
 {
 
 

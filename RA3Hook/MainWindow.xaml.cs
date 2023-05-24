@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -13,12 +14,55 @@ namespace RA3Hook
     public partial class MainWindow : Window
     {
         public string DllPath = Path.GetFullPath("DllCore.dll");
-        public byte[] CustomData = Encoding.Unicode.GetBytes("测试测试");
+        //public byte[] CustomData = Encoding.Unicode.GetBytes("Test test");
+        public byte[] CustomData = {0,0,0,0};
+
+        // ini
+        public string INIPath = INIfile.GetINIPath();
 
         public MainWindow()
         {
             InitializeComponent();
-            textBox.Text = Ra3.GetDefaultRa3Path() ?? string.Empty;
+            //
+            string gamePath = INIfile.ReadString("CFALauncher", "GamePath", "", INIPath);
+            if (gamePath == "")
+            {
+                textBox.Text = Ra3.GetDefaultRa3Path() ?? string.Empty;
+            }
+            else
+            {
+                textBox.Text = gamePath;
+            }
+            //
+            string modPath = INIfile.ReadString("CFALauncher", "modPath", "", INIPath);
+            if (modPath == "")
+            {
+                textBoxMF.Text = Ra3.GetModPath() ?? string.Empty;
+            }
+            else
+            {
+                textBoxMF.Text = modPath;
+            }
+            // here!!!!!!!!!!!
+            textBoxMN.Text = INIfile.ReadString("CFALauncher", "modName", "CFA_2.300", INIPath);
+            //
+            textBoxArg.Text = INIfile.ReadString("CFALauncher", "GameEXArg", "", INIPath);
+            //
+            if (INIfile.ReadINT("CFALauncher", "isWin", 0, INIPath) > 0)
+            {
+                CheckBoxWin.IsChecked = true;
+            }
+            //
+            if (INIfile.ReadINT("CFALauncher", "SetCPU", 0, INIPath) > 0)
+            {
+                CheckBoxCPU.IsChecked = true;
+            }
+            //
+            if (INIfile.ReadINT("CFALauncher", "NoBloom", 0, INIPath) > 0)
+            {
+                CheckBoxBloom.IsChecked = true;
+            }
+            //
             Task.Run(BackgroundInjectTask);
         }
 
@@ -26,22 +70,106 @@ namespace RA3Hook
         {
             try
             {
+                string extraArg = "-modConfig \"";
+                extraArg += textBoxMF.Text;
+                extraArg += "\\";
+                extraArg += textBoxMN.Text;
+                extraArg += ".skudef\"";
+                //
+                if (CheckBoxWin.IsChecked == true)
+                {
+                    extraArg += " -win";
+                }
+
+                if (textBoxArg.Text != "")
+                {
+                    extraArg += " ";
+                    extraArg += textBoxArg.Text;
+                }
+                //extraArg += " -xres 1840 -yres 1035 -xpos 40 -ypos 85";
                 Process.Start(new ProcessStartInfo
                 {
                     FileName = textBox.Text,
-                    Arguments = "-ui -win -xres 1840 -yres 1035 -xpos 40 -ypos 85",
+                    Arguments = extraArg,
                     UseShellExecute = false,
                 });
+                button.Content = "Running!";
             }
             catch (Exception exception)
             {
-                MessageBox.Show($"游戏启动失败：{exception}");
+                MessageBox.Show($"Start Game Failure: {exception}");
+            }
+        }
+
+        private void OnSaveSettingButtonClicked(object sender, RoutedEventArgs e)
+        {
+            SaveINISetting();
+            System.Media.SystemSounds.Asterisk.Play();
+        }
+
+        private void SaveINISetting()
+        {
+            INIfile.Write("CFALauncher", "GamePath", textBox.Text, INIPath);
+            INIfile.Write("CFALauncher", "modPath", textBoxMF.Text, INIPath);
+            INIfile.Write("CFALauncher", "modName", textBoxMN.Text, INIPath);
+            INIfile.Write("CFALauncher", "GameEXArg", textBoxArg.Text, INIPath);
+            //
+            if (CheckBoxWin.IsChecked == true)
+            {
+                INIfile.Write("CFALauncher", "isWin", "1", INIPath);
+            }
+            else
+            {
+                INIfile.Write("CFALauncher", "isWin", "0", INIPath);
+            }
+            //
+            if (CheckBoxCPU.IsChecked == true)
+            {
+                INIfile.Write("CFALauncher", "SetCPU", "1", INIPath);
+            }
+            else
+            {
+                INIfile.Write("CFALauncher", "SetCPU", "0", INIPath);
+            }
+            //
+            if (CheckBoxBloom.IsChecked == true)
+            {
+                INIfile.Write("CFALauncher", "NoBloom", "1", INIPath);
+            }
+            else
+            {
+                INIfile.Write("CFALauncher", "NoBloom", "0", INIPath);
+            }
+        }
+
+        private void OnCheckedCPUChanged(object sender, RoutedEventArgs e)
+        {
+            if (CheckBoxCPU.IsChecked == true)
+            {
+                CustomData[0] = 1;
+            }
+            else
+            {
+                CustomData[0] = 0;
+            }
+        }
+
+        private void OnCheckedBloomChanged(object sender, RoutedEventArgs e)
+        {
+            if (CheckBoxBloom.IsChecked == true)
+            {
+                CustomData[1] = 1;
+            }
+            else
+            {
+                CustomData[1] = 0;
             }
         }
 
         private void BackgroundInjectTask()
         {
-            while (true)
+            bool tude1 = false;
+            while (!tude1)
             {
                 try
                 {
@@ -57,20 +185,24 @@ namespace RA3Hook
                     }
                     if (!File.Exists(DllPath))
                     {
-                        MessageBox.Show($"Dll 不存在：{DllPath}");
+                        MessageBox.Show($"Missing Dll: {DllPath}");
                         continue;
                     }
-                    Ra3.InjectAndWaitForExit(process, DllPath, CustomData);
+                    
+                    tude1 = Ra3.InjectAndWaitForExit(process, DllPath, CustomData);
                 }
                 catch (Exception exception)
                 {
-                    MessageBox.Show($"注入失败：{exception}");
+                    MessageBox.Show($"Injection Failure: {exception}");
                 }
                 finally
                 {
                     Task.Delay(1000);
                 }
             }
+
+            // Close launcher window
+            System.Environment.Exit(0);
         }
     }
 }

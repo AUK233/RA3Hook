@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows;
 
 namespace RA3Hook
@@ -20,7 +21,7 @@ namespace RA3Hook
                 var ra3Folder = subkey.GetValue("Install Dir") as string;
                 if (!string.IsNullOrEmpty(ra3Folder))
                 {
-                    return Path.Combine(ra3Folder, "RA3.exe");
+                    return System.IO.Path.Combine(ra3Folder, "RA3.exe");
                 }
                 MessageBox.Show("游戏注册表项无效");
                 return null;
@@ -111,14 +112,23 @@ namespace RA3Hook
         /// <exception cref="Exception">
         ///   注入失败时抛出
         /// </exception>
-        public static void InjectAndWaitForExit(Process process, string dllPath, byte[] customData)
+        public static bool InjectAndWaitForExit(Process process, string dllPath, byte[] customData)
         {
             var result = RhInjectLibrary(process.Id, 0, 0, dllPath, null, customData, customData.Length);
             if (result < 0)
             {
-                throw new Exception("游戏注入失败：" + Marshal.PtrToStringUni(RtlGetLastErrorString()));
+                throw new Exception("Failed to inject the game: " + Marshal.PtrToStringUni(RtlGetLastErrorString()));
             }
-            process.WaitForExit();
+            //process.WaitForExit();
+            process.WaitForExit(5000);
+            return true;
+        }
+
+        public static string GetModPath()
+        {
+            DirectoryInfo info = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+            string filePath = info.Parent.FullName;
+            return filePath;
         }
 
         // P/Invoke
@@ -142,5 +152,39 @@ namespace RA3Hook
 
         [DllImport("User32.dll", CallingConvention = CallingConvention.Winapi, SetLastError = true)]
         private static extern int GetWindowThreadProcessId(IntPtr window, out int processId);
+    }
+
+    internal static class INIfile
+    {
+        public static string GetINIPath()
+        {
+            string filePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "1Setting.ini");
+            return filePath;
+        }
+
+        public static string ReadString(string section, string key, string def, string filePath)
+        {
+            StringBuilder str = new StringBuilder(1024);
+            GetPrivateProfileString(section, key, def, str, 1024, filePath);
+            return str.ToString();
+        }
+        public static uint ReadINT(string section, string key, int value, string filePath)
+        {
+            return GetPrivateProfileInt(section, key, value, filePath);
+        }
+
+        public static int Write(string section, string key, string value, string filePath)
+        {
+            return WritePrivateProfileString(section, key, value, filePath);
+        }
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+        private static extern uint GetPrivateProfileInt(string lpAppName, string lpKeyName, int nDefault, string lpFileName);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+        private static extern int GetPrivateProfileString(string lpAppName, string lpKeyName, string lpDefault, StringBuilder lpReturnedString, int nSize, string lpFileName);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+        private static extern int WritePrivateProfileString(string lpApplicationName, string lpKeyName, string lpString, string lpFileName);
     }
 }

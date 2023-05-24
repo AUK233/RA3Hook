@@ -2,129 +2,100 @@
 #include "pch.h"
 #include <format>
 #include <span>
+#include <string>
 
-uintptr_t hmodEXE;
+#include "commonAddr.h"
+#include "utiliy.h"
 
-void WriteHookToProcess(void* addr, void* data, size_t len) {
-	DWORD oldProtect;
-	VirtualProtect(addr, len, PAGE_EXECUTE_READWRITE, &oldProtect);
-	memcpy(addr, data, len);
-	VirtualProtect(addr, len, oldProtect, &oldProtect);
-}
+#include "funcMLaser.h"
+#include "funcOther.h"
+//#include "dllmain.h"
 
-void hookGameBlock(void* targetAddr, uintptr_t dataAddr) {
-	uint8_t hookFunction[] = {
-		0xE9, 0x00, 0x00, 0x00, 0x00
-	};
-	int offset = dataAddr - ((int)targetAddr + 5);
-	memcpy(&hookFunction[1], &offset, 4U);
-
-	WriteHookToProcess(targetAddr, hookFunction, sizeof(hookFunction));
-}
-
-// need 7 bytes!
-void hookGameBlock7(void* targetAddr, uintptr_t dataAddr) {
-	uint8_t hookFunction[] = {
-		0xB8, 0x00, 0x00, 0x00, 0x00, // mov eax, offset
-		0xFF, 0xE0                    // jmp eax
-	};
-	memcpy(&hookFunction[1], &dataAddr, sizeof(dataAddr));
-
-	WriteHookToProcess(targetAddr, hookFunction, sizeof(hookFunction));
-}
-
-void __fastcall test111(int ptr)
+void hookFunctionGroup()
 {
-	// Target Position
-	float opx = *(float*)(ptr + 0x3C);
-	float opy = *(float*)(ptr + 0x40);
-	float opz = *(float*)(ptr + 0x44);
-	// The difference between the target and its own position.
-	float spx = opx - *(float*)(ptr + 0x30);
-	float spy = opy - *(float*)(ptr + 0x34);
-	// Read EndOffset's z as radian.
-	int posOffsetPtr = *(int*)(*(int*)(ptr + 4) + 0x24);
-	if (posOffsetPtr)
-	{
-		float ofsRadian = *(float*)(posOffsetPtr + 8);
-		if (ofsRadian) {
-			float dx = cos(ofsRadian) * spx - sin(ofsRadian) * spy;
-			float dy = cos(ofsRadian) * spy + sin(ofsRadian) * spx;
-			spx = dx;
-			spy = dy;
-			opz -= ofsRadian;
-			opz += 0.01f;
-			*(float*)(ptr + 0x44) = opz;
-		}
+	// Invalid at runtime
+	/*
+	uintptr_t ofs4gPos = hmodEXE + 0x126;
+	DWORD Protect4GB;
+	VirtualProtect((void*)ofs4gPos, 1, PAGE_EXECUTE_READWRITE, &Protect4GB);
+	char value4GB = *(char*)ofs4gPos;
+	value4GB |= 0b00100000;
+	if (value4GB != 0x23) {
+		MessageBox(NULL, L"wwwwwwwww", L"WARNING", MB_OK);
 	}
+	*(char*)ofs4gPos = value4GB;
+	VirtualProtect((void*)ofs4gPos, 1, Protect4GB, &Protect4GB);
+	*/
 
-	float spz = opz - *(float*)(ptr + 0x38);
+	// ra3_1.12.game+2DDE95
+	// Synchronized rendering and logical frames?
+	unsigned char nop6[] = {
+		0x66, 0x0F, 0x1F, 0x44, 0x00, 0x00
+	};
+	WriteHookToProcess((void*)_F_SyncSet, &nop6, 6U);
 
-	float fr = (spz * spz) + (spy * spy) + (spx * spx);
-	float DeltaX;
-	float DeltaY;
-	float DeltaZ;
-	if (fr <= 0.0001f)
+	// Abandon changes to z-axis for now
+	/**/
+	unsigned char set32C8C6[] = {
+		0x0F, 0x57, 0xDB, // xorps xmm3, xmm3
+		0x66, 0x90        // nop 2
+	};
+	WriteHookToProcess((void*)ofs32C8C6, &set32C8C6, 5U);
+	// Allows for vertical sweep, and change sweep angle
+	hookGameBlock((void*)_F_SweepLaser01, (uintptr_t)SweepingLaserStateASM1);
+
+	// Allows for vertical sweep, and change sweep angle
+	hookGameBlock((void*)_F_BloomOpen, (uintptr_t)SetNoBloomASM);
+}
+
+bool GetFunctionAddress()
+{
+	hmodEXE = (uintptr_t)GetModuleHandleW(NULL);
+
+	if (checkRA3Address(hmodEXE + 0x85B6C4))
 	{
-		DeltaX = 1.0f;
-		DeltaY = 0.0f;
-		DeltaZ = 0.0f;
+		// Steam version
+		_F_BloomOpen = hmodEXE + 0x1FB9DB;
+		_Ret_BloomOpen = hmodEXE + 0x1FB9DB + 19;
+		_F_SyncSet = hmodEXE + 0x2DDE95;
+		_F_SweepLaser01 = hmodEXE + 0x3C3ED7;
+		ofs32C8C6 = hmodEXE + 0x32C8C6;
+	}
+	else if (checkRA3Address(hmodEXE + 0x86262C))
+	{
+		// Origin version
+		_F_BloomOpen = hmodEXE + 0x23A96B;
+		_Ret_BloomOpen = hmodEXE + 0x23A96B + 19;
+		_F_SyncSet = hmodEXE + 0x31C3D5;
+		_F_SweepLaser01 = hmodEXE + 0x402227;
+		ofs32C8C6 = hmodEXE + 0x36AE86;
 	}
 	else
 	{
-		float scale;
-		if (fr == 0.0f)
-		{
-			scale = 0.0f;
-		}
-		else
-		{
-			scale = 1.0f / sqrt(fr);
-		}
-		DeltaX = spx * scale;
-		DeltaY = spy * scale;
-		DeltaZ = spz * scale;
-	}
-	
-	float Radius = *(float*)(*(int*)(ptr + 4) + 0x2C);
-	float ofsx;
-	float ofsy;
-	float ofsz;
-	if (Radius < -0.1f) {
-		// vertical sweep, one way
-		*(char*)(ptr + 0xBC) = 0;
-		ofsx = DeltaX * Radius;
-		ofsy = DeltaY * Radius;
-		ofsz = 0.0f;
-	}
-	else {
-		//float ofsz = ((DeltaX * 0.0f) - (DeltaY * 0.0f)) * Radius;
-		// horizontal sweep, both directions
-		ofsx = DeltaY * Radius;
-		ofsy = -DeltaX * Radius;
-		ofsz = 0.0f;
+		MessageBox(NULL, L"This is not Red Alert 3!", L"Warning", MB_OK);
+		return false;
 	}
 
-	// sweep end position
-	*(float*)(ptr + 0x98) = opx - ofsx;
-	*(float*)(ptr + 0x9C) = opy - ofsy;  
-	*(float*)(ptr + 0xA0) = opz - ofsz;
-	// sweep start position
-	*(float*)(ptr + 0xA4) = opx + ofsx;
-	*(float*)(ptr + 0xA8) = opy + ofsy;
-	*(float*)(ptr + 0xAC) = opz + ofsz;
+	return true;
 }
 
-// void __fastcall ReadInt32(int ptr);
-__declspec(naked) void __fastcall ReadInt32(int ptr)
+void SetCPUAffinity()
 {
-	__asm {
-		mov ecx, esi
-		call test111
-		pop edi
-		pop esi
-		add esp, 0x18
-		ret 0x8
+	SYSTEM_INFO sysInfo;
+	GetSystemInfo(&sysInfo);
+	// This is the number of logical processors, not the number of physical cores
+	int threadsNum = sysInfo.dwNumberOfProcessors;
+	//std::wstring threads_mum = std::to_wstring(threadsNum);
+	//MessageBoxW(NULL, threads_mum.c_str(), L"core", MB_OK);
+	HANDLE gameProcess = GetCurrentProcess();
+	if (threadsNum >= 8) {
+		SetProcessAffinityMask(gameProcess, 0b01010101);
+	}
+	else if (threadsNum >= 6) {
+		SetProcessAffinityMask(gameProcess, 0b010101);
+	}
+	else if (threadsNum >= 4) {
+		SetProcessAffinityMask(gameProcess, 0b0101);
 	}
 }
 
@@ -141,24 +112,37 @@ extern "C" void __declspec(dllexport) __stdcall NativeInjectionEntryPoint(REMOTE
 	/*
 	auto inputPointer = reinterpret_cast<wchar_t const*>(input->UserData);
 	std::wstring_view inputString{ inputPointer, input->UserDataSize / sizeof(wchar_t) };
-	std::wstring message = std::format(L"启动器进程 ID：{}；注入消息：{}，是否结束进程？", input->HostPID, inputString);
+	//std::wstring message = std::format(L"Launcher Process ID: {} Inject Message: {} End Process?", input->HostPID, inputString);
+	std::wstring message = L"End Process?";
 	if (MessageBoxW(nullptr, message.c_str(), L"Dll1", MB_YESNO) == IDYES)
 	{
 		TerminateProcess(GetCurrentProcess(), 0);
+	}*/
+
+	memcpy(&inputSetting, input->UserData, 4);
+	
+	// 
+	Sleep(1000);
+	bool isRA3 = GetFunctionAddress();
+	if (isRA3) {
+		Sleep(1000);
+		hookFunctionGroup();
+
+		if (inputSetting.cpuLimit) {
+			SetCPUAffinity();
+		}
+
+		if (inputSetting.CheckBloom) {
+			noBloomSet = 1;
+		}
 	}
-	MessageBox(NULL, L"Test dll injection", L"Test", MB_OK);
-	*/
-	hmodEXE = (uintptr_t)GetModuleHandleW(NULL);
 
-	// ra3_1.12.game+2DDE95
-	unsigned char beeAccuracy[] = {
-		0x66, 0x0F, 0x1F, 0x44, 0x00, 0x00
-	};
-	WriteHookToProcess((void*)(hmodEXE + 0x2DDE95), &beeAccuracy, 6U);
+	/*
+	if (inputSetting.CheckBloom) {
+		MessageBox(NULL, L"Test dll injection", L"Test", MB_OK);
+	}*/
 
-	unsigned char nop3[] = { 0x90, 0x90, 0x90 };
-	hookGameBlock((void*)(hmodEXE + 0x3C3ED7), (uintptr_t)ReadInt32);
-	//WriteHookToProcess((void*)(hmodEXE + 0x3C3ED7 + 7), &nop3, 3U);
+	//MessageBox(NULL, L"Test dll injection", L"Test", MB_OK);
 
 	// need
 	//FlushInstructionCache(GetCurrentProcess(), nullptr, 0);

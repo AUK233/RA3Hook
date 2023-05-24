@@ -3,10 +3,6 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
-# dependencies
-HookLib/*
-EDFModLoader/plog/*
-
 # User-specific files
 *.rsuser
 *.suo
@@ -364,7 +360,3 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-
-# EDF ModLoader packages
-*.zip
-/EDF5ModPlugin/plog
