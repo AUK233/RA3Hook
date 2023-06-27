@@ -43,8 +43,10 @@ void hookFunctionGroup()
 	WriteHookToProcess((void*)ofs32C8C6, &set32C8C6, 5U);
 	// Allows for vertical sweep, and change sweep angle
 	hookGameBlock((void*)_F_SweepLaser01, (uintptr_t)SweepingLaserStateASM1);
+	// Set laser to activate only when not activated
+	hookGameBlock((void*)_F_ActivateLaser, (uintptr_t)ActivateLaserNuggetASM);
 
-	// Allows for vertical sweep, and change sweep angle
+	// Set no bloom
 	hookGameBlock((void*)_F_BloomOpen, (uintptr_t)SetNoBloomASM);
 }
 
@@ -60,6 +62,8 @@ bool GetFunctionAddress()
 		_F_SyncSet = hmodEXE + 0x2DDE95;
 		_F_SweepLaser01 = hmodEXE + 0x3C3ED7;
 		ofs32C8C6 = hmodEXE + 0x32C8C6;
+		_F_ActivateLaser = hmodEXE + 0x3CF668;
+		_Ret_ActivateLaser = hmodEXE + 0x3CF668 + 6;
 	}
 	else if (checkRA3Address(hmodEXE + 0x86262C))
 	{
@@ -137,10 +141,9 @@ extern "C" void __declspec(dllexport) __stdcall NativeInjectionEntryPoint(REMOTE
 		}
 	}
 
-	/*
-	if (inputSetting.CheckBloom) {
-		MessageBox(NULL, L"Test dll injection", L"Test", MB_OK);
-	}*/
+	if (inputSetting.setDebug) {
+		MessageBox(NULL, L"Injection OK!", L"Check", MB_OK);
+	}
 
 	//MessageBox(NULL, L"Test dll injection", L"Test", MB_OK);
 

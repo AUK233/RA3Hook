@@ -23,6 +23,7 @@
         <CheckBox x:Name="CheckBoxWin" Content="Windowed" Margin="205,206,0,0" Width="100" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="False"/>
         <CheckBox x:Name="CheckBoxCPU" Content="Set CPU" Checked="OnCheckedCPUChanged" Unchecked="OnCheckedCPUChanged" Margin="205,230,0,0" Width="84" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="False"/>
         <CheckBox x:Name="CheckBoxBloom" Content="No Bloom" Checked="OnCheckedBloomChanged" Unchecked="OnCheckedBloomChanged" Margin="205,253,0,0" Width="100" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="False"/>
+        <CheckBox x:Name="CheckBoxDebug" Content="Check Box" Checked="OnCheckedDebugChanged" Unchecked="OnCheckedDebugChanged" Margin="310,206,0,0" Width="100" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="False"/>
 
     </Grid>
 </Window>

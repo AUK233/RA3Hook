@@ -63,6 +63,11 @@ namespace RA3Hook
                 CheckBoxBloom.IsChecked = true;
             }
             //
+            if (INIfile.ReadINT("CFALauncher", "SetDebug", 0, INIPath) > 0)
+            {
+                CheckBoxDebug.IsChecked = true;
+            }
+            //
             Task.Run(BackgroundInjectTask);
         }
 
@@ -140,6 +145,15 @@ namespace RA3Hook
             {
                 INIfile.Write("CFALauncher", "NoBloom", "0", INIPath);
             }
+            //
+            if (CheckBoxDebug.IsChecked == true)
+            {
+                INIfile.Write("CFALauncher", "SetDebug", "1", INIPath);
+            }
+            else
+            {
+                INIfile.Write("CFALauncher", "SetDebug", "0", INIPath);
+            }
         }
 
         private void OnCheckedCPUChanged(object sender, RoutedEventArgs e)
@@ -163,6 +177,17 @@ namespace RA3Hook
             else
             {
                 CustomData[1] = 0;
+            }
+        }
+        private void OnCheckedDebugChanged(object sender, RoutedEventArgs e)
+        {
+            if (CheckBoxDebug.IsChecked == true)
+            {
+                CustomData[2] = 1;
+            }
+            else
+            {
+                CustomData[2] = 0;
             }
         }
 
