@@ -11,7 +11,7 @@ void WriteHookToProcess(void* addr, void* data, size_t len) {
 	VirtualProtect(addr, len, oldProtect, &oldProtect);
 }
 
-// Update game's original functions
+// Update game's original functions with 5 bytes
 void hookGameBlock(void* targetAddr, uintptr_t dataAddr) {
 	uint8_t hookFunction[] = {
 		0xE9, 0x00, 0x00, 0x00, 0x00
@@ -37,4 +37,15 @@ void hookGameBlock7(void* targetAddr, uintptr_t dataAddr) {
 bool checkRA3Address(std::uintptr_t address)
 {
 	return std::strncmp(reinterpret_cast<char const*>(address), "RedAlert", 8) == 0;
+}
+
+void hookGameCall(void* targetAddr, uintptr_t dataAddr)
+{
+	uint8_t hookFunction[] = {
+		0xE8, 0x00, 0x00, 0x00, 0x00
+	};
+	int offset = dataAddr - ((uintptr_t)targetAddr + 5);
+	memcpy(&hookFunction[1], &offset, 4U);
+
+	WriteHookToProcess(targetAddr, hookFunction, sizeof(hookFunction));
 }

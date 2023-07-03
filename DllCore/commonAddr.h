@@ -20,3 +20,13 @@ uintptr_t _F_BloomOpen = 0;
 uintptr_t _Ret_BloomOpen = 0;
 // temp
 uintptr_t ofs32C8C6 = 0;
+
+// loading file
+uintptr_t pPlayerTechStore[16] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+// load PlayerTechStoreTemplate
+uintptr_t _F_PlayerTechStoreL = 0;
+uintptr_t _Ret_PlayerTechStoreL = 0;
+// read PlayerTechStoreTemplate
+uintptr_t _F_PlayerTechStoreR1 = 0;
+uintptr_t _F_PlayerTechStoreR2 = 0;
+uintptr_t _F_PlayerTechStoreR3 = 0;

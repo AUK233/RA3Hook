@@ -1,6 +1,8 @@
 #include "pch.h"
 #include <format>
 
+#include "funcOther.h"
+
 extern int noBloomSet;
 extern uintptr_t _Ret_BloomOpen;
 

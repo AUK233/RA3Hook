@@ -25,5 +25,7 @@
         <CheckBox x:Name="CheckBoxBloom" Content="No Bloom" Checked="OnCheckedBloomChanged" Unchecked="OnCheckedBloomChanged" Margin="205,253,0,0" Width="100" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="False"/>
         <CheckBox x:Name="CheckBoxDebug" Content="Check Box" Checked="OnCheckedDebugChanged" Unchecked="OnCheckedDebugChanged" Margin="310,206,0,0" Width="100" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="False"/>
 
+        <Label x:Name="Version" Content="v2.302" Margin="676,259,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="64" Height="24"/>
+
     </Grid>
 </Window>

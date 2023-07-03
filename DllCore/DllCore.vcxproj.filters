@@ -36,6 +36,12 @@
     <ClInclude Include="funcOther.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="commonData.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="funcPlayer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -51,6 +57,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="funcOther.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="funcPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

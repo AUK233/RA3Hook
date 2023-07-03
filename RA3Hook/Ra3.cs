@@ -115,7 +115,7 @@ namespace RA3Hook
         public static bool InjectAndWaitForExit(Process process, string dllPath, byte[] customData)
         {
             var result = RhInjectLibrary(process.Id, 0, 0, dllPath, null, customData, customData.Length);
-            if (result < 0)
+            if (result != 0)
             {
                 throw new Exception("Failed to inject the game: " + Marshal.PtrToStringUni(RtlGetLastErrorString()));
             }
