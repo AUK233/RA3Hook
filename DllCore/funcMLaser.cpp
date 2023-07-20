@@ -6,19 +6,41 @@ int __fastcall SweepingLaserStateGetID(uintptr_t ptr)
 {
 	int laserID = *(int*)(*(int*)(ptr + 4) + 8);
 	
-	if (laserID > 999)
+	if (laserID > 499)
 	{
-		if (laserID > 1999) {
-			UINT32 moduleTag = *(UINT32*)(*(uintptr_t*)(ptr + 4) + 4);
-			switch (moduleTag)
-			{
-			case 1783858841U:
-			case 2674295398U:
-				// ModuleTag_SweepingLaserState1FormSource
-				// ModuleTag_SweepingLaserState2FormSource
-				return 2;
-			default:
-				return 1;
+		if (laserID > 999) {
+			int laserIndex;
+			if (laserID > 2999) {
+				/*
+				UINT32 moduleTag = *(UINT32*)(*(uintptr_t*)(ptr + 4) + 4);
+				switch (moduleTag)
+				{
+				case 1783858841U:
+				case 2674295398U:
+					// ModuleTag_SweepingLaserState1FormSource
+					// ModuleTag_SweepingLaserState2FormSource
+					return 2;
+				default:
+					return 1;
+				}*/
+				laserIndex = (laserID - 3000) / 20;
+				switch (laserIndex)
+				{
+				case 0:
+					return 2;
+				default:
+					return 1;
+				}
+			}
+			else {
+				laserIndex = (laserID - 1000) / 20;
+				switch (laserIndex)
+				{
+				case 0:
+					return 2;
+				default:
+					return 1;
+				}
 			}
 		}
 		else {
@@ -273,8 +295,10 @@ __declspec(naked) void __fastcall ActivateLaserNuggetASM(uintptr_t ptr)
 	__asm {
 			je retFunc
 			mov eax, [ebp + 0x10]
+			// check laser id
 			cmp dword ptr [eax+0x2C], 3000
 			jl Original
+			// check laser activation
 			cmp byte ptr [esi+0x94], 0
 			jne retFunc
 		Original:

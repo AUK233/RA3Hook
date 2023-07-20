@@ -21,7 +21,8 @@ namespace RA3Hook
                 var ra3Folder = subkey.GetValue("Install Dir") as string;
                 if (!string.IsNullOrEmpty(ra3Folder))
                 {
-                    return System.IO.Path.Combine(ra3Folder, "RA3.exe");
+                    //return System.IO.Path.Combine(ra3Folder, "RA3.exe");
+                    return ra3Folder;
                 }
                 MessageBox.Show("游戏注册表项无效");
                 return null;
@@ -31,6 +32,32 @@ namespace RA3Hook
                 MessageBox.Show($"游戏路径获取失败，请手动选择游戏路径：{e}");
                 return null;
             }
+        }
+
+        public static string GetRa3Language()
+        {
+            using var key1 = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32);
+            using var subkey1 = key1.OpenSubKey(@"SOFTWARE\Electronic Arts\Electronic Arts\Red Alert 3", false);
+            var ra3lang = subkey1.GetValue("Language") as string;
+            if (!string.IsNullOrEmpty(ra3lang))
+            {
+                return ra3lang;
+            }
+            return "english";
+        }
+        public static string GetDefaultBattleNetPath()
+        {
+            using var key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
+            RegistryKey software = key.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Ra3.BattleNet.Client.exe", false);
+            var Folder = software.GetValue("") as string;
+            if (!string.IsNullOrEmpty(Folder))
+            {
+                DirectoryInfo info = new DirectoryInfo(Folder);
+                string filePath = info.Parent.FullName;
+                filePath = System.IO.Path.Combine(filePath, "contents\\NativeDll.dll");
+                return filePath;
+            }
+            return null;
         }
 
         /// <summary>
@@ -117,6 +144,7 @@ namespace RA3Hook
             var result = RhInjectLibrary(process.Id, 0, 0, dllPath, null, customData, customData.Length);
             if (result != 0)
             {
+                process.Kill();
                 throw new Exception("Failed to inject the game: " + Marshal.PtrToStringUni(RtlGetLastErrorString()));
             }
             //process.WaitForExit();
@@ -156,12 +184,6 @@ namespace RA3Hook
 
     internal static class INIfile
     {
-        public static string GetINIPath()
-        {
-            string filePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "1Setting.ini");
-            return filePath;
-        }
-
         public static string ReadString(string section, string key, string def, string filePath)
         {
             StringBuilder str = new StringBuilder(1024);

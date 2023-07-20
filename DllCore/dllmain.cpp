@@ -6,6 +6,9 @@
 #include <vector>
 #include <tlhelp32.h>
 
+#include <shlwapi.h>
+#pragma comment( lib, "shlwapi.lib" )
+
 #include "commonData.h"
 #include "commonAddr.h"
 #include "utiliy.h"
@@ -60,6 +63,10 @@ void __fastcall hookFunctionGroup()
 	hookGameBlock((void*)_F_SweepLaser01, (uintptr_t)SweepingLaserStateASM1);
 	// Set laser to activate only when not activated
 	hookGameBlock((void*)_F_ActivateLaser, (uintptr_t)ActivateLaserNuggetASM);
+
+	// Let "ShowsAmmoPips" work
+	hookGameCall((void*)_F_ShowAmmo, (uintptr_t)ShowsAmmoPipsASM);
+	WriteHookToProcess((void*)(_F_ShowAmmo+5), &nop2, 2U);
 }
 
 bool __fastcall GetFunctionAddress()
@@ -81,6 +88,8 @@ bool __fastcall GetFunctionAddress()
 		ofs32C8C6 = hmodEXE + 0x32C8C6;
 		_F_ActivateLaser = hmodEXE + 0x3CF668;
 		_Ret_ActivateLaser = hmodEXE + 0x3CF668 + 6;
+
+		_F_ShowAmmo = hmodEXE + 0x128746;
 	}
 	else if (checkRA3Address(hmodEXE + 0x86262C))
 	{
@@ -185,8 +194,10 @@ extern "C" void __declspec(dllexport) __stdcall NativeInjectionEntryPoint(REMOTE
 	{
 		TerminateProcess(GetCurrentProcess(), 0);
 	}*/
-
-	memcpy(&inputSetting, input->UserData, 4);
+	UINT initType = *(int*)input->UserData;
+	if (!initType) {
+		memcpy(&inputSetting, input->UserData + 4, 4);
+	}
 
 	DWORD idThread = GetCurrentThreadId();
 	DWORD idProcess = GetCurrentProcessId();
@@ -209,6 +220,17 @@ extern "C" void __declspec(dllexport) __stdcall NativeInjectionEntryPoint(REMOTE
 		} while (Thread32Next(hSnapshot, &te));
 	}
 	CloseHandle(hSnapshot);
+
+	if (initType) {
+		WCHAR iniPath[MAX_PATH];
+		GetModuleFileNameW(GetModuleHandleW(L"DllCore.dll"), iniPath, _countof(iniPath));
+		PathRemoveFileSpecW(iniPath);
+		wcscat_s(iniPath, L"\\1Setting.ini");
+		// read configuration
+		inputSetting.CheckBloom = GetPrivateProfileIntW(L"CFALauncher", L"NoBloom", 0, iniPath);
+		inputSetting.cpuLimit = GetPrivateProfileIntW(L"CFALauncher", L"SetCPU", 0, iniPath);
+		inputSetting.setDebug = GetPrivateProfileIntW(L"CFALauncher", L"SetDebug", 0, iniPath);
+	}
 
 	//
 	bool isRA3 = GetFunctionAddress();

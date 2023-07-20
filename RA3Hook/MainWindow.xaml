@@ -5,10 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RA3Hook"
         mc:Ignorable="d"
-        Title="CFA Launcher" Height="320" Width="750">
+        Title="CFA Launcher" Height="390" Width="750">
     <Grid>
         <!--<Image x:Name="image" Margin="0,0,0,0" StretchDirection="DownOnly" Stretch="None" Source="/AI-Generated-Imagejpg.jpg"/>-->
-        <Button x:Name="button" Content="Start" Click="OnStartGameButtonClicked" HorizontalAlignment="Left" Margin="10,206,0,0" Width="190" FontSize="32" BorderThickness="4,4,4,4" VerticalAlignment="Top" Height="72"/>
+        <Button x:Name="button" Content="Start" Click="OnStartGameButtonClicked" HorizontalAlignment="Left" Margin="10,220,0,0" Width="190" FontSize="32" BorderThickness="4,4,4,4" VerticalAlignment="Top" Height="58"/>
+        <CheckBox x:Name="CheckBoxStart" Content="Direct Launch ┐" Margin="10,202,0,0" Width="128" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="False" RenderTransformOrigin="0.5,0.5"/>
+
         <Button x:Name="SaveButton" Content="save" Click="OnSaveSettingButtonClicked" HorizontalAlignment="Left" Height="24" Margin="315,164,0,0" VerticalAlignment="Top" Width="40" FontSize="12"/>
 
         <Label x:Name="Label1" Content="Game Path:" Margin="0,-3,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="86" Height="27"/>
@@ -20,12 +22,15 @@
         <Label x:Name="Label4" Content="Extra Start Parameters:" HorizontalAlignment="Left" VerticalAlignment="Top" Width="165" Height="27" Margin="350,132,0,0"/>
         <TextBox x:Name="textBoxArg" HorizontalAlignment="Left" Margin="360,156,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="360" Height="40" BorderBrush="Black" BorderThickness="2,2,2,2"/>
 
+        <CheckBox x:Name="CheckBattleNet" Content="Battle Net&#xD;&#xA;Active      :" Checked="OnCheckedBNChanged" Unchecked="OnCheckedBNChanged" Margin="10,283,0,0" Width="90" Height="41" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="False"/>
+        <TextBox x:Name="BNBox" HorizontalAlignment="Left" TextChanged="OnBattleNetPathChanged" Margin="105,282,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="615" Height="40" BorderBrush="Black" BorderThickness="2,2,2,2"/>
+
         <CheckBox x:Name="CheckBoxWin" Content="Windowed" Margin="205,206,0,0" Width="100" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="False"/>
         <CheckBox x:Name="CheckBoxCPU" Content="Set CPU" Checked="OnCheckedCPUChanged" Unchecked="OnCheckedCPUChanged" Margin="205,230,0,0" Width="84" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="False"/>
         <CheckBox x:Name="CheckBoxBloom" Content="No Bloom" Checked="OnCheckedBloomChanged" Unchecked="OnCheckedBloomChanged" Margin="205,253,0,0" Width="100" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="False"/>
         <CheckBox x:Name="CheckBoxDebug" Content="Check Box" Checked="OnCheckedDebugChanged" Unchecked="OnCheckedDebugChanged" Margin="310,206,0,0" Width="100" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="False"/>
 
-        <Label x:Name="Version" Content="v2.302" Margin="676,259,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="64" Height="24"/>
+        <Label x:Name="Version" Content="v2.302" Margin="676,327,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="64" Height="24"/>
 
     </Grid>
 </Window>

@@ -18,6 +18,7 @@ uintptr_t _F_ActivateLaser = 0;
 uintptr_t _Ret_ActivateLaser = 0;
 uintptr_t _F_BloomOpen = 0;
 uintptr_t _Ret_BloomOpen = 0;
+uintptr_t _F_ShowAmmo = 0;
 // temp
 uintptr_t ofs32C8C6 = 0;
 
