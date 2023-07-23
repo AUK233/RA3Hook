@@ -115,27 +115,3 @@ UINT32 __fastcall ReadPlayerTechStoreCPP(uintptr_t ptr)
 		return sideIndex;
 	}
 }
-
-// Let "ShowsAmmoPips" work
-__declspec(naked) void __fastcall ShowsAmmoPipsASM()
-{
-	// edx is not display
-	__asm {
-			push eax
-		// AutoReloadsClip is RETURN_TO_BASE
-			cmp dword ptr [eax + 0xB8], 2
-			je SetFlag
-		// ShowsAmmoPips is true
-			cmp dword ptr [eax + 0x134], 1
-			je SetFlag
-			mov eax, 1
-			test eax, eax
-			pop eax
-			ret
-		SetFlag:
-			xor eax, eax
-			test eax, eax
-			pop eax
-			ret
-	}
-}

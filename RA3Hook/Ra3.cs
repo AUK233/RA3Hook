@@ -139,16 +139,15 @@ namespace RA3Hook
         /// <exception cref="Exception">
         ///   注入失败时抛出
         /// </exception>
-        public static bool InjectAndWaitForExit(Process process, string dllPath, byte[] customData)
+        public static bool InjectAndWaitForExit(Process process, string dllPath, byte[] customData, int delayTime)
         {
             var result = RhInjectLibrary(process.Id, 0, 0, dllPath, null, customData, customData.Length);
             if (result != 0)
             {
-                process.Kill();
                 throw new Exception("Failed to inject the game: " + Marshal.PtrToStringUni(RtlGetLastErrorString()));
             }
             //process.WaitForExit();
-            process.WaitForExit(5000);
+            process.WaitForExit(delayTime);
             return true;
         }
 

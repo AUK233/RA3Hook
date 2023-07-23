@@ -19,6 +19,8 @@ uintptr_t _Ret_ActivateLaser = 0;
 uintptr_t _F_BloomOpen = 0;
 uintptr_t _Ret_BloomOpen = 0;
 uintptr_t _F_ShowAmmo = 0;
+uintptr_t _F_WeaponReloadActive = 0;
+uintptr_t _F_WeaponReloadTimeCount = 0;
 // temp
 uintptr_t ofs32C8C6 = 0;
 

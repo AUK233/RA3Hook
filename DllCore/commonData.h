@@ -1,5 +1,7 @@
 #pragma once
 
+unsigned char nop1 = 0x90;
+
 unsigned char nop2[] = {
 	0x66, 0x90
 };

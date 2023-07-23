@@ -14,6 +14,7 @@
 #include "utiliy.h"
 
 #include "funcPlayer.h"
+#include "funcWeapon.h"
 #include "funcMLaser.h"
 #include "funcOther.h"
 //#include "dllmain.h"
@@ -67,6 +68,11 @@ void __fastcall hookFunctionGroup()
 	// Let "ShowsAmmoPips" work
 	hookGameCall((void*)_F_ShowAmmo, (uintptr_t)ShowsAmmoPipsASM);
 	WriteHookToProcess((void*)(_F_ShowAmmo+5), &nop2, 2U);
+	//
+	hookGameCall((void*)_F_WeaponReloadActive, (uintptr_t)WeaponReloadActiveASM);
+	WriteHookToProcess((void*)(_F_WeaponReloadActive + 5), &nop1, 1U);
+	hookGameCall((void*)_F_WeaponReloadTimeCount, (uintptr_t)WeaponReloadTimeCountASM);
+	WriteHookToProcess((void*)(_F_WeaponReloadTimeCount + 5), &nop1, 1U);
 }
 
 bool __fastcall GetFunctionAddress()
@@ -90,6 +96,43 @@ bool __fastcall GetFunctionAddress()
 		_Ret_ActivateLaser = hmodEXE + 0x3CF668 + 6;
 
 		_F_ShowAmmo = hmodEXE + 0x128746;
+		_F_WeaponReloadActive = hmodEXE + 0x3BE05F;
+		_F_WeaponReloadTimeCount = hmodEXE + 0x2DC270;
+
+		/**/
+		int logicIntFrame = 30;
+		WriteHookToProcess((void*)(hmodEXE + 0x8AF9D0), &logicIntFrame, 4U);
+		float logicSpeed = 7.5f * 0.001f;
+		WriteHookToProcess((void*)(hmodEXE + 0x8DBC4C), &logicSpeed, 4U);
+		float intervalFps = 1000.0f / 60.0f;
+		WriteHookToProcess((void*)(hmodEXE + 0x8DBC1C), &intervalFps, 4U);
+		float logicFrame = 30.0f;
+		WriteHookToProcess((void*)(hmodEXE + 0x8DBC58), &logicFrame, 4U);
+		float logicFps = 1.0f / 30.0f;
+		WriteHookToProcess((void*)(hmodEXE + 0x8DBC94), &logicFps, 4U);
+		float renderFrame = 60.0f;
+		WriteHookToProcess((void*)(hmodEXE + 0x8DBC50), &renderFrame, 4U);
+		float renderFps = 1.0f / 15.0f;
+		WriteHookToProcess((void*)(hmodEXE + 0x8DBD34), &renderFps, 4U);
+		// mov eax, 2
+		unsigned char setEAXto2[] = {
+			0xB8, 0x02, 0x00, 0x00, 0x00
+		};
+		//
+		WriteHookToProcess((void*)(hmodEXE + 0x1FFAD0), &setEAXto2, 5U);
+		WriteHookToProcess((void*)(hmodEXE + 0x1FFAD0 + 7), &nop6, 6U);
+		//
+		WriteHookToProcess((void*)(hmodEXE + 0x20283D), &setEAXto2, 5U);
+		WriteHookToProcess((void*)(hmodEXE + 0x20283D + 7), &nop6, 6U);
+		//
+		WriteHookToProcess((void*)(hmodEXE + 0x216256), &setEAXto2, 5U);
+		WriteHookToProcess((void*)(hmodEXE + 0x216256 + 7), &nop6, 6U);
+		//
+		WriteHookToProcess((void*)(hmodEXE + 0x21B59B), &setEAXto2, 5U);
+		WriteHookToProcess((void*)(hmodEXE + 0x21B59B + 7), &nop6, 6U);
+		//
+		WriteHookToProcess((void*)(hmodEXE + 0x22935D), &setEAXto2, 5U);
+		WriteHookToProcess((void*)(hmodEXE + 0x22935D + 7), &nop6, 6U);
 	}
 	else if (checkRA3Address(hmodEXE + 0x86262C))
 	{
@@ -194,7 +237,14 @@ extern "C" void __declspec(dllexport) __stdcall NativeInjectionEntryPoint(REMOTE
 	{
 		TerminateProcess(GetCurrentProcess(), 0);
 	}*/
-	UINT initType = *(int*)input->UserData;
+	UINT initType = 0;
+	if ((uintptr_t)input->UserData < 0x10000 || input->UserDataSize < 4) {
+		initType = 1;
+	}
+	else {
+		initType = *(int*)input->UserData;
+	}
+
 	if (!initType) {
 		memcpy(&inputSetting, input->UserData + 4, 4);
 	}

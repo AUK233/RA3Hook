@@ -289,13 +289,13 @@ namespace RA3Hook
                         continue;
                     }
                     
-                    tude1 = Ra3.InjectAndWaitForExit(process, DllPath, CustomData);
+                    tude1 = Ra3.InjectAndWaitForExit(process, DllPath, CustomData, 5000);
                     if (tude1 && BattleNetPath != "")
                     {
                         if (File.Exists(BattleNetPath))
                         {
                             byte[] BNLog = Encoding.UTF8.GetBytes(LanucherPath+"\\logs");
-                            Ra3.InjectAndWaitForExit(process, BattleNetPath, BNLog);
+                            Ra3.InjectAndWaitForExit(process, BattleNetPath, BNLog, 100);
                         }
                         else
                         {
