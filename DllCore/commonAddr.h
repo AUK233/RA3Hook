@@ -5,12 +5,14 @@ struct inputSettingINFO
 	unsigned char cpuLimit = 0;
 	unsigned char CheckBloom = 0;
 	unsigned char setDebug = 0;
-	unsigned char align = 0;
+	unsigned char UPto60 = 0;
+	unsigned char align[4];
 } inputSetting;
 
 int noBloomSet = 0;
 
-uintptr_t hmodEXE = 0;
+uintptr_t hmodEXE = 0x00400000;
+int InitializationCore = 0;
 // 
 uintptr_t _F_SyncSet = 0;
 uintptr_t _F_SweepLaser01 = 0;

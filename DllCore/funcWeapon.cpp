@@ -30,11 +30,18 @@ __declspec(naked) void __fastcall ShowsAmmoPipsASM()
 __declspec(naked) void __fastcall WeaponReloadActiveASM()
 {
 	__asm {
+		push eax
 		mov edx, [ecx + 0x1C]
-		cmp edx, 0
+	// check reload type
+		mov eax, [ecx + 4]
+		mov eax, [eax + 4]
+		cmp dword ptr [eax+0xB8], 0
+		jne OldBlock // if it != auto
 	// current ammo == 0
+		cmp edx, 0
 		je OldBlock
 	// total ammo < current ammo
+		mov eax, [esp] // get eax from "push eax"
 		cmp eax, edx
 		jbe OldBlock
 		// store registers
@@ -51,10 +58,11 @@ __declspec(naked) void __fastcall WeaponReloadActiveASM()
 		mov [ecx + 0x1C], eax
 		// restore registers
 		mov edx, [esp + 4]
-		add esp, 8
+		add esp, 12 // don't forget "push eax"s 4-bytes
 		ret
 		//
 	OldBlock:
+		pop eax
 		mov [ecx + 0x1C], eax
 		ret
 	}

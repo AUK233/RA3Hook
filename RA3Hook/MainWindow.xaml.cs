@@ -19,7 +19,7 @@ namespace RA3Hook
         public string DllPath;
         //public byte[] CustomData = Encoding.Unicode.GetBytes("Test test");
         // The first 4-bytes is the type of read configuration
-        public byte[] CustomData = {0, 0, 0, 0, 0, 0, 0, 0};
+        public byte[] CustomData = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
         // ini
         public string INIPath;
@@ -265,6 +265,20 @@ namespace RA3Hook
                 CustomData[6] = 0;
             }
         }
+        private void OnChecked60FPSChanged(object sender, RoutedEventArgs e)
+        {
+            if (CheckU60FPS.IsChecked == true)
+            {
+                if (CheckBattleNet.IsChecked == false)
+                {
+                    CustomData[7] = 1;
+                }
+            }
+            else
+            {
+                CustomData[7] = 0;
+            }
+        }
 
         private void BackgroundInjectTask()
         {
@@ -286,9 +300,9 @@ namespace RA3Hook
                     if (!File.Exists(DllPath))
                     {
                         MessageBox.Show($"Missing Dll: {DllPath}");
-                        continue;
+                        //continue;
                     }
-                    
+
                     tude1 = Ra3.InjectAndWaitForExit(process, DllPath, CustomData, 5000);
                     if (tude1 && BattleNetPath != "")
                     {
@@ -306,7 +320,6 @@ namespace RA3Hook
                 catch (Exception exception)
                 {
                     MessageBox.Show($"Injection Failure: {exception}");
-                    button.Content = "Restart";
                 }
                 finally
                 {

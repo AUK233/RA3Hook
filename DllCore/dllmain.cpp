@@ -75,9 +75,68 @@ void __fastcall hookFunctionGroup()
 	WriteHookToProcess((void*)(_F_WeaponReloadTimeCount + 5), &nop1, 1U);
 }
 
+DWORD WINAPI setFrameTo60() {
+	// set delay
+	while (!InitializationCore) {
+		Sleep(500);
+	}
+	Sleep(10000);
+
+	int logicIntFrame = 30;
+	*(int*)(hmodEXE + 0x8AF9D0) = logicIntFrame;
+	//WriteHookToProcess((void*)(hmodEXE + 0x8AF9D0), &logicIntFrame, 4U);
+	float logicSpeed = 30.0f * 0.001f;
+	*(float*)(hmodEXE + 0x8DBC4C) = logicSpeed;
+	float intervalFps = 1000.0f / 60.0f;
+	*(float*)(hmodEXE + 0x8DBC1C) = intervalFps;
+	float logicFrame = 30.0f;
+	*(float*)(hmodEXE + 0x8DBC58) = logicFrame;
+	float logicFps = 1.0f / 30.0f;
+	*(float*)(hmodEXE + 0x8DBC94) = logicFps;
+	float renderFrame = 60.0f;
+	*(float*)(hmodEXE + 0x8DBC50) = renderFrame;
+	float renderFps = 1.0f / 60.0f;
+	*(float*)(hmodEXE + 0x8DBD34) = renderFps;
+	int renderIntFps = 1000 / 60;
+	*(int*)(hmodEXE + 0x8E176C) = renderIntFps;
+	int render500 = 500;
+	WriteHookToProcess((void*)(hmodEXE + 0x7B3C50 + 1), &renderIntFps, 4U);
+	// shr eax, 1
+	// mov dword ptr [CE176C], eax
+	// ret 4
+	unsigned char setRenderIntFps[] = {
+		0xD1, 0xE8,
+		0xA3, 0x6C, 0x17, 0xCE, 0x00,
+		0xC2, 0x04, 0x00
+	};
+	WriteHookToProcess((void*)(hmodEXE + 0x1B81A6), &setRenderIntFps, 10U);
+
+	// mov eax, 2
+	unsigned char setEAXto2[] = {
+		0xB8, 0x02, 0x00, 0x00, 0x00
+	};
+	//
+	WriteHookToProcess((void*)(hmodEXE + 0x1FFAD0), &setEAXto2, 5U);
+	WriteHookToProcess((void*)(hmodEXE + 0x1FFAD0 + 7), &nop6, 6U);
+	//
+	WriteHookToProcess((void*)(hmodEXE + 0x20283D), &setEAXto2, 5U);
+	WriteHookToProcess((void*)(hmodEXE + 0x20283D + 7), &nop6, 6U);
+	//
+	WriteHookToProcess((void*)(hmodEXE + 0x216256), &setEAXto2, 5U);
+	WriteHookToProcess((void*)(hmodEXE + 0x216256 + 7), &nop6, 6U);
+	//
+	WriteHookToProcess((void*)(hmodEXE + 0x21B59B), &setEAXto2, 5U);
+	WriteHookToProcess((void*)(hmodEXE + 0x21B59B + 7), &nop6, 6U);
+	//
+	WriteHookToProcess((void*)(hmodEXE + 0x22935D), &setEAXto2, 5U);
+	WriteHookToProcess((void*)(hmodEXE + 0x22935D + 7), &nop6, 6U);
+
+	return 0;
+}
+
 bool __fastcall GetFunctionAddress()
 {
-	hmodEXE = (uintptr_t)GetModuleHandleW(NULL);
+	//hmodEXE = (uintptr_t)GetModuleHandleW(NULL);
 
 	if (checkRA3Address(hmodEXE + 0x85B6C4))
 	{
@@ -94,45 +153,14 @@ bool __fastcall GetFunctionAddress()
 		ofs32C8C6 = hmodEXE + 0x32C8C6;
 		_F_ActivateLaser = hmodEXE + 0x3CF668;
 		_Ret_ActivateLaser = hmodEXE + 0x3CF668 + 6;
-
 		_F_ShowAmmo = hmodEXE + 0x128746;
 		_F_WeaponReloadActive = hmodEXE + 0x3BE05F;
 		_F_WeaponReloadTimeCount = hmodEXE + 0x2DC270;
 
-		/**/
-		int logicIntFrame = 30;
-		WriteHookToProcess((void*)(hmodEXE + 0x8AF9D0), &logicIntFrame, 4U);
-		float logicSpeed = 7.5f * 0.001f;
-		WriteHookToProcess((void*)(hmodEXE + 0x8DBC4C), &logicSpeed, 4U);
-		float intervalFps = 1000.0f / 60.0f;
-		WriteHookToProcess((void*)(hmodEXE + 0x8DBC1C), &intervalFps, 4U);
-		float logicFrame = 30.0f;
-		WriteHookToProcess((void*)(hmodEXE + 0x8DBC58), &logicFrame, 4U);
-		float logicFps = 1.0f / 30.0f;
-		WriteHookToProcess((void*)(hmodEXE + 0x8DBC94), &logicFps, 4U);
-		float renderFrame = 60.0f;
-		WriteHookToProcess((void*)(hmodEXE + 0x8DBC50), &renderFrame, 4U);
-		float renderFps = 1.0f / 15.0f;
-		WriteHookToProcess((void*)(hmodEXE + 0x8DBD34), &renderFps, 4U);
-		// mov eax, 2
-		unsigned char setEAXto2[] = {
-			0xB8, 0x02, 0x00, 0x00, 0x00
-		};
-		//
-		WriteHookToProcess((void*)(hmodEXE + 0x1FFAD0), &setEAXto2, 5U);
-		WriteHookToProcess((void*)(hmodEXE + 0x1FFAD0 + 7), &nop6, 6U);
-		//
-		WriteHookToProcess((void*)(hmodEXE + 0x20283D), &setEAXto2, 5U);
-		WriteHookToProcess((void*)(hmodEXE + 0x20283D + 7), &nop6, 6U);
-		//
-		WriteHookToProcess((void*)(hmodEXE + 0x216256), &setEAXto2, 5U);
-		WriteHookToProcess((void*)(hmodEXE + 0x216256 + 7), &nop6, 6U);
-		//
-		WriteHookToProcess((void*)(hmodEXE + 0x21B59B), &setEAXto2, 5U);
-		WriteHookToProcess((void*)(hmodEXE + 0x21B59B + 7), &nop6, 6U);
-		//
-		WriteHookToProcess((void*)(hmodEXE + 0x22935D), &setEAXto2, 5U);
-		WriteHookToProcess((void*)(hmodEXE + 0x22935D + 7), &nop6, 6U);
+		// up fps to 60
+		if (inputSetting.UPto60) {
+			CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)setFrameTo60, NULL, NULL, NULL);
+		}
 	}
 	else if (checkRA3Address(hmodEXE + 0x86262C))
 	{
@@ -149,6 +177,9 @@ bool __fastcall GetFunctionAddress()
 		ofs32C8C6 = hmodEXE + 0x36AE86;
 		_F_ActivateLaser = hmodEXE + 0x40D988;
 		_Ret_ActivateLaser = hmodEXE + 0x40D988 + 6;
+		_F_ShowAmmo = hmodEXE + 0x169D96;
+		_F_WeaponReloadActive = hmodEXE + 0x3FC3AF;
+		_F_WeaponReloadTimeCount = hmodEXE + 0x31A7E0;
 	}
 	else
 	{
@@ -307,7 +338,7 @@ extern "C" void __declspec(dllexport) __stdcall NativeInjectionEntryPoint(REMOTE
 	hEXEGroup.clear();
 	hEXEGroup.shrink_to_fit();
 
-	//MessageBox(NULL, L"Test dll injection", L"Test", MB_OK);
+	InitializationCore = 1;
 
 	// need
 	//FlushInstructionCache(GetCurrentProcess(), nullptr, 0);

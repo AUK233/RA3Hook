@@ -29,6 +29,7 @@
         <CheckBox x:Name="CheckBoxCPU" Content="Set CPU" Checked="OnCheckedCPUChanged" Unchecked="OnCheckedCPUChanged" Margin="205,230,0,0" Width="84" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="False"/>
         <CheckBox x:Name="CheckBoxBloom" Content="No Bloom" Checked="OnCheckedBloomChanged" Unchecked="OnCheckedBloomChanged" Margin="205,253,0,0" Width="100" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="False"/>
         <CheckBox x:Name="CheckBoxDebug" Content="Check Box" Checked="OnCheckedDebugChanged" Unchecked="OnCheckedDebugChanged" Margin="310,206,0,0" Width="100" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="False"/>
+        <CheckBox x:Name="CheckU60FPS" Content="60 FPS" Checked="OnChecked60FPSChanged" Unchecked="OnChecked60FPSChanged" Margin="310,230,0,0" Width="100" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="False"/>
 
         <Label x:Name="Version" Content="v2.302" Margin="676,327,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="64" Height="24"/>
 
