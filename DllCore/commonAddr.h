@@ -23,6 +23,8 @@ uintptr_t _Ret_BloomOpen = 0;
 uintptr_t _F_ShowAmmo = 0;
 uintptr_t _F_WeaponReloadActive = 0;
 uintptr_t _F_WeaponReloadTimeCount = 0;
+// this is <Modifier Type="BOUNTY_PERCENTAGE" Value="50%"/>
+uintptr_t _F_AttributeModifierT18Buff = 0;
 // temp
 uintptr_t ofs32C8C6 = 0;
 

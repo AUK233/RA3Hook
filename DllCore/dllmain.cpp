@@ -68,11 +68,15 @@ void __fastcall hookFunctionGroup()
 	// Let "ShowsAmmoPips" work
 	hookGameCall((void*)_F_ShowAmmo, (uintptr_t)ShowsAmmoPipsASM);
 	WriteHookToProcess((void*)(_F_ShowAmmo+5), &nop2, 2U);
-	//
+	// Set up reloading ammunition
 	hookGameCall((void*)_F_WeaponReloadActive, (uintptr_t)WeaponReloadActiveASM);
 	WriteHookToProcess((void*)(_F_WeaponReloadActive + 5), &nop1, 1U);
 	hookGameCall((void*)_F_WeaponReloadTimeCount, (uintptr_t)WeaponReloadTimeCountASM);
 	WriteHookToProcess((void*)(_F_WeaponReloadTimeCount + 5), &nop1, 1U);
+
+	// <Modifier Type="BOUNTY_PERCENTAGE" Value="50%"/>
+	hookGameCall((void*)_F_AttributeModifierT18Buff, (uintptr_t)AttributeModifierNo18BuffASM);
+	WriteHookToProcess((void*)(_F_AttributeModifierT18Buff + 5), &nop1, 1U);
 }
 
 DWORD WINAPI setFrameTo60() {
@@ -156,6 +160,7 @@ bool __fastcall GetFunctionAddress()
 		_F_ShowAmmo = hmodEXE + 0x128746;
 		_F_WeaponReloadActive = hmodEXE + 0x3BE05F;
 		_F_WeaponReloadTimeCount = hmodEXE + 0x2DC270;
+		_F_AttributeModifierT18Buff = hmodEXE + 0xDAABD;
 
 		// up fps to 60
 		if (inputSetting.UPto60) {
@@ -180,6 +185,7 @@ bool __fastcall GetFunctionAddress()
 		_F_ShowAmmo = hmodEXE + 0x169D96;
 		_F_WeaponReloadActive = hmodEXE + 0x3FC3AF;
 		_F_WeaponReloadTimeCount = hmodEXE + 0x31A7E0;
+		_F_AttributeModifierT18Buff = hmodEXE + 0x11C4DD;
 	}
 	else
 	{

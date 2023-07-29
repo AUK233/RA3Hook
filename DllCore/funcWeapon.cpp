@@ -86,7 +86,22 @@ __declspec(naked) void __fastcall WeaponReloadTimeCountASM()
 		mov [ecx + 0x1C], eax
 		pop eax
 		//
+		returnOld :
+		ret
+	}
+}
+
+__declspec(naked) void __fastcall AttributeModifierNo18BuffASM()
+{
+	__asm {
+	// check it is 1.0f
+		cmp dword ptr [esp + 0x18 + 4], 0x3F800000
+		je returnOld
+		addss xmm0, [esp + 0x18 + 4]
+		ret
+	// they need +4 because of esp has decreased by 4
 	returnOld :
+		mulss xmm0, [esp + 0x18 + 4]
 		ret
 	}
 }
