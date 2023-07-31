@@ -93,7 +93,10 @@ int __fastcall GetFindFile(std::wstring mainPath, std::wstring subPath)
 
 		if (fileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 		{
-			GetFindFile(mainPath, filepath.c_str());
+			// exclude "assets"
+			if (std::wcscmp(fileData.cFileName, L"assets")) {
+				GetFindFile(mainPath, filepath.c_str());
+			}
 		}
 		else {
 			if (checkTime.dwHighDateTime && checkTime.dwLowDateTime) {

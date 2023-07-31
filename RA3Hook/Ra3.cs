@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Windows;
 
@@ -157,7 +158,14 @@ namespace RA3Hook
             string filePath = info.Parent.FullName;
             return filePath;
         }
+        public static int PowerfulRA3Launch(string FileName, string Arguments, string BattleNetPath)
+        {
+            return PowerfulGameLaunch(FileName, Arguments, BattleNetPath);
+        }
 
+        [DllImport("LauncherDLL.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
+        private static extern int PowerfulGameLaunch(string FileName, string Arguments, string BattleNetPath);
+        
         // P/Invoke
         [DllImport("EasyHook32.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode)]
         private static extern IntPtr RtlGetLastErrorString();

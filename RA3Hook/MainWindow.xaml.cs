@@ -25,6 +25,8 @@ namespace RA3Hook
         public string INIPath;
         //
         public string BattleNetPath = "";
+        //
+        public bool backgroundInject = true;
 
         public MainWindow()
         {
@@ -93,38 +95,90 @@ namespace RA3Hook
         {
             try
             {
-                string extraArg = "-modConfig \"";
-                extraArg += textBoxMF.Text;
-                extraArg += "\\";
-                extraArg += textBoxMN.Text;
-                extraArg += ".skudef\"";
-                //
-                if (CheckBoxWin.IsChecked == true)
-                {
-                    extraArg += " -win";
-                }
-
-                if (textBoxArg.Text != "")
-                {
-                    extraArg += " ";
-                    extraArg += textBoxArg.Text;
-                }
-                //extraArg += " -xres 1840 -yres 1035 -xpos 40 -ypos 85";
-                string gameEXE;
-                string runArg = "-config \"";
+                int runType = 0;
                 if (CheckBoxStart.IsChecked == true)
                 {
-                    runArg += System.IO.Path.Combine(textBox.Text, $"RA3_{Ra3.GetRa3Language()}_1.12.skudef");
-                    runArg += "\" ";
-                    gameEXE = System.IO.Path.Combine(textBox.Text, "Data\\ra3_1.12.game");
-                    runArg += extraArg;
+                    runType = 1;
+                }
+                LanuchGame(runType);
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show($"Start Game Failure: {exception}");
+            }
+        }
+        
+        private void OnPowerStartGameButtonClicked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                LanuchGame(2);
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show($"Start Game Failure: {exception}");
+            }
+        }
+
+        private void LanuchGame(int runType)
+        {
+            string extraArg = "-modConfig \"";
+            extraArg += textBoxMF.Text;
+            extraArg += "\\";
+            extraArg += textBoxMN.Text;
+            extraArg += ".skudef\"";
+            //
+            if (CheckBoxWin.IsChecked == true)
+            {
+                extraArg += " -win";
+            }
+
+            if (textBoxArg.Text != "")
+            {
+                extraArg += " ";
+                extraArg += textBoxArg.Text;
+            }
+            //extraArg += " -xres 1840 -yres 1035 -xpos 40 -ypos 85";
+            string gameEXE;
+            string runArg = "-config \"";
+            if (runType > 0)
+            {
+                runArg += System.IO.Path.Combine(textBox.Text, $"RA3_{Ra3.GetRa3Language()}_1.12.skudef");
+                runArg += "\" ";
+                gameEXE = System.IO.Path.Combine(textBox.Text, "Data\\ra3_1.12.game");
+                runArg += extraArg;
+            }
+            else
+            {
+                gameEXE = System.IO.Path.Combine(textBox.Text, "RA3.exe");
+                runArg = extraArg;
+            }
+            //
+            if (runType == 2)
+            {
+                // turn off background injection
+                backgroundInject = false;
+                // initialization parameters
+                string BNPath = "";
+                if (CheckBattleNet.IsChecked == true)
+                {
+                    BNPath = BNBox.Text;
+                }
+                string configurePath = System.IO.Path.Combine(LanucherPath, "mapping\\config.ini");
+                SaveDllConfigure(configurePath);
+                // run!
+                int returnValue = Ra3.PowerfulRA3Launch(gameEXE, runArg, BNPath);
+                if(returnValue == 0)
+                {
+                    System.Environment.Exit(0);
                 }
                 else
                 {
-                    gameEXE = System.IO.Path.Combine(textBox.Text, "RA3.exe");
-                    runArg = extraArg;
+                    backgroundInject = true;
                 }
-                //
+            }
+            else
+            {
                 Process.Start(new ProcessStartInfo
                 {
                     FileName = gameEXE,
@@ -132,10 +186,6 @@ namespace RA3Hook
                     UseShellExecute = false,
                 });
                 button.Content = "Running!";
-            }
-            catch (Exception exception)
-            {
-                MessageBox.Show($"Start Game Failure: {exception}");
             }
         }
 
@@ -196,6 +246,44 @@ namespace RA3Hook
             else
             {
                 INIfile.Write("CFALauncher", "SetDebug", "0", INIPath);
+            }
+        }
+        private void SaveDllConfigure(string path)
+        {
+            if (CheckBoxCPU.IsChecked == true)
+            {
+                INIfile.Write("CFASetting", "SetCPU", "1", path);
+            }
+            else
+            {
+                INIfile.Write("CFASetting", "SetCPU", "0", path);
+            }
+            //
+            if (CheckBoxBloom.IsChecked == true)
+            {
+                INIfile.Write("CFASetting", "NoBloom", "1", path);
+            }
+            else
+            {
+                INIfile.Write("CFASetting", "NoBloom", "0", path);
+            }
+            //
+            if (CheckBoxDebug.IsChecked == true)
+            {
+                INIfile.Write("CFASetting", "SetDebug", "1", path);
+            }
+            else
+            {
+                INIfile.Write("CFASetting", "SetDebug", "0", path);
+            }
+            //
+            if (CheckU60FPS.IsChecked == true && CheckBattleNet.IsChecked == false)
+            {
+                INIfile.Write("CFASetting", "DualFPS", "1", path);
+            }
+            else
+            {
+                INIfile.Write("CFASetting", "DualFPS", "0", path);
             }
         }
 
@@ -287,33 +375,36 @@ namespace RA3Hook
             {
                 try
                 {
-                    var window = Ra3.FindRa3Window();
-                    if (window == IntPtr.Zero)
+                    if(backgroundInject)
                     {
-                        continue;
-                    }
-                    var process = Ra3.FindRa3Process(window);
-                    if (process == null)
-                    {
-                        continue;
-                    }
-                    if (!File.Exists(DllPath))
-                    {
-                        MessageBox.Show($"Missing Dll: {DllPath}");
-                        //continue;
-                    }
-
-                    tude1 = Ra3.InjectAndWaitForExit(process, DllPath, CustomData, 5000);
-                    if (tude1 && BattleNetPath != "")
-                    {
-                        if (File.Exists(BattleNetPath))
+                        var window = Ra3.FindRa3Window();
+                        if (window == IntPtr.Zero)
                         {
-                            byte[] BNLog = Encoding.UTF8.GetBytes(LanucherPath+"\\logs");
-                            Ra3.InjectAndWaitForExit(process, BattleNetPath, BNLog, 100);
+                            continue;
                         }
-                        else
+                        var process = Ra3.FindRa3Process(window);
+                        if (process == null)
                         {
-                            MessageBox.Show("Invalid BattleNet Path!");
+                            continue;
+                        }
+                        if (!File.Exists(DllPath))
+                        {
+                            MessageBox.Show($"Missing Dll: {DllPath}");
+                            //continue;
+                        }
+
+                        tude1 = Ra3.InjectAndWaitForExit(process, DllPath, CustomData, 5000);
+                        if (tude1 && BattleNetPath != "")
+                        {
+                            if (File.Exists(BattleNetPath))
+                            {
+                                byte[] BNLog = Encoding.UTF8.GetBytes(LanucherPath + "\\logs");
+                                Ra3.InjectAndWaitForExit(process, BattleNetPath, BNLog, 100);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Invalid BattleNet Path!");
+                            }
                         }
                     }
                 }
@@ -323,7 +414,8 @@ namespace RA3Hook
                 }
                 finally
                 {
-                    Task.Delay(1000);
+                    //Task.Delay(1000);
+                    Thread.Sleep(200);
                 }
             }
 

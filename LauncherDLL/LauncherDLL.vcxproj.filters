@@ -21,28 +21,10 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="utiliy.h">
+    <ClInclude Include="dllmain.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="commonAddr.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="funcMLaser.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="funcOther.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="commonData.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="funcPlayer.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="funcWeapon.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="commonMain.h">
+    <ClInclude Include="easyhook.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -51,24 +33,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="utiliy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="funcMLaser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="funcOther.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="funcPlayer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="funcWeapon.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="commonMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

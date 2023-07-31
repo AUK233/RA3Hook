@@ -1,74 +1,77 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="main code">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
-      <Filter>Header Files</Filter>
+      <Filter>main code</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
-      <Filter>Header Files</Filter>
+      <Filter>main code</Filter>
     </ClInclude>
-    <ClInclude Include="utiliy.h">
+    <ClInclude Include="proxy.h">
+      <Filter>main code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DllCore\commonAddr.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="commonAddr.h">
+    <ClInclude Include="..\DllCore\commonData.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="funcMLaser.h">
+    <ClInclude Include="..\DllCore\commonMain.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="funcOther.h">
+    <ClInclude Include="..\DllCore\funcMLaser.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="commonData.h">
+    <ClInclude Include="..\DllCore\funcOther.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="funcPlayer.h">
+    <ClInclude Include="..\DllCore\funcPlayer.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="funcWeapon.h">
+    <ClInclude Include="..\DllCore\funcWeapon.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="commonMain.h">
+    <ClInclude Include="..\DllCore\utiliy.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>main code</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
+      <Filter>main code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DllCore\commonMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="utiliy.cpp">
+    <ClCompile Include="..\DllCore\funcMLaser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="funcMLaser.cpp">
+    <ClCompile Include="..\DllCore\funcOther.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="funcOther.cpp">
+    <ClCompile Include="..\DllCore\funcPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="funcPlayer.cpp">
+    <ClCompile Include="..\DllCore\funcWeapon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="funcWeapon.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="commonMain.cpp">
+    <ClCompile Include="..\DllCore\utiliy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
