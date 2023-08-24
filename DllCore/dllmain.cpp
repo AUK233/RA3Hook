@@ -10,17 +10,11 @@
 #pragma comment( lib, "shlwapi.lib" )
 
 #include "commonMain.h"
+#include "commonStruct.h"
 
-extern struct inputSettingINFO
-{
-	unsigned char cpuLimit = 0;
-	unsigned char CheckBloom = 0;
-	unsigned char setDebug = 0;
-	unsigned char UPto60 = 0;
-	unsigned char align[4];
-} inputSetting;
-
+extern inputSettingINFO inputSetting;
 extern int InitializationCore;
+extern std::wstring CampaignINIDefault;
 
 /*
 uintptr_t _F_GameEngine = 0;
@@ -80,6 +74,7 @@ extern "C" void __declspec(dllexport) __stdcall NativeInjectionEntryPoint(REMOTE
 	{
 		TerminateProcess(GetCurrentProcess(), 0);
 	}*/
+	ZeroMemory(&inputSetting, sizeof(inputSettingINFO));
 	UINT initType = 0;
 	if ((uintptr_t)input->UserData < 0x10000 || input->UserDataSize < 4) {
 		initType = 1;
@@ -124,6 +119,13 @@ extern "C" void __declspec(dllexport) __stdcall NativeInjectionEntryPoint(REMOTE
 		inputSetting.cpuLimit = GetPrivateProfileIntW(L"CFALauncher", L"SetCPU", 0, iniPath);
 		inputSetting.setDebug = GetPrivateProfileIntW(L"CFALauncher", L"SetDebug", 0, iniPath);
 	}
+
+	// Campaign Flag INI Path
+	WCHAR CFiniPath[MAX_PATH];
+	GetModuleFileNameW(GetModuleHandleW(L"DllCore.dll"), CFiniPath, _countof(CFiniPath));
+	PathRemoveFileSpecW(CFiniPath);
+	wcscat_s(CFiniPath, L"\\mapping\\CFACampaignFlag.ini");
+	CampaignINIDefault = CFiniPath;
 
 	//
 	//

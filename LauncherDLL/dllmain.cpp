@@ -111,6 +111,9 @@ extern "C" int PowerfulGameLaunch(LPCWSTR FileName, LPCWSTR Arguments, LPCWSTR B
 		NULL,
 		NULL,
 		&si, &pi);
+	//
+	CloseHandle(pi.hProcess);
+	CloseHandle(pi.hThread);
 	
 	// active BattleNet
 	std::wstring BNPath = BattleNetPath;
@@ -142,14 +145,9 @@ extern "C" int PowerfulGameLaunch(LPCWSTR FileName, LPCWSTR Arguments, LPCWSTR B
 		NTSTATUS nt = RhInjectLibrary(pi.dwProcessId, 0, 0, (WCHAR*)BattleNetPath, NULL, (PVOID)BNlog.c_str(), (BNlog.size() + 1));
 		if (nt != 0) {
 			MessageBoxW(NULL, L"BattleNet failed to load, please launch RA3 again.", L"error", MB_OK);
-			CloseHandle(pi.hProcess);
-			CloseHandle(pi.hThread);
 			return 1;
 		}
 	}
-	//
-	CloseHandle(pi.hProcess);
-	CloseHandle(pi.hThread);
 
 	Sleep(500);
 	return 0;

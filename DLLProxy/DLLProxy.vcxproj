@@ -94,6 +94,7 @@
     <ClInclude Include="..\DllCore\funcOther.h" />
     <ClInclude Include="..\DllCore\funcPlayer.h" />
     <ClInclude Include="..\DllCore\funcWeapon.h" />
+    <ClInclude Include="..\DllCore\LuaEngine.h" />
     <ClInclude Include="..\DllCore\utiliy.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
@@ -105,6 +106,7 @@
     <ClCompile Include="..\DllCore\funcOther.cpp" />
     <ClCompile Include="..\DllCore\funcPlayer.cpp" />
     <ClCompile Include="..\DllCore\funcWeapon.cpp" />
+    <ClCompile Include="..\DllCore\LuaEngine.cpp" />
     <ClCompile Include="..\DllCore\utiliy.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">

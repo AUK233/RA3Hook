@@ -99,13 +99,6 @@ int __fastcall GetFindFile(std::wstring mainPath, std::wstring subPath)
 			}
 		}
 		else {
-			if (checkTime.dwHighDateTime && checkTime.dwLowDateTime) {
-				// fileData.ftLastWriteTime < checkTime
-				if ((CompareFileTime(&fileData.ftLastWriteTime, &checkTime)* checkTimeType) < 0) {
-					continue;
-				}
-			}
-
 			if (v_excludeFile.size() > 0) {
 				std::wstring fileName = fileData.cFileName;
 				size_t lastindex = fileName.find_last_of(L".");
@@ -130,6 +123,13 @@ int __fastcall GetFindFile(std::wstring mainPath, std::wstring subPath)
 					if (!CheckIncludeFile(extension)) {
 						continue;
 					}
+				}
+			}
+
+			if (checkTime.dwHighDateTime && checkTime.dwLowDateTime) {
+				// fileData.ftLastWriteTime < checkTime
+				if ((CompareFileTime(&fileData.ftLastWriteTime, &checkTime) * checkTimeType) < 0) {
+					continue;
 				}
 			}
 
@@ -346,7 +346,7 @@ int wmain(int argc, wchar_t* argv[])
 		}
 
 		OutBIGFile(std::wstring(argv[2]), std::wstring(argv[3]));
-		system("pause");
+		//system("pause");
 	}
 
 	// p1 is type

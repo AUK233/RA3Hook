@@ -2,6 +2,11 @@
 #include "commonData.h"
 #include "commonAddr.h"
 #include "utiliy.h"
+#include <string>
+
+//#include "commonEnum.hpp"
+
+#include "LuaEngine.h"
 
 #include "funcPlayer.h"
 #include "funcWeapon.h"
@@ -29,6 +34,8 @@ void __fastcall hookFunctionGroup()
 	// ra3_1.12.game+2DDE95
 	// Synchronized rendering and logical frames?
 	WriteHookToProcess((void*)_F_SyncSet, &nop6, 6U);
+	//
+	//RA3::LuaEngine::HookLuaEngine();
 
 	// Abandon changes to z-axis for now
 	/**/
@@ -55,6 +62,9 @@ void __fastcall hookFunctionGroup()
 	hookGameCall((void*)_F_AttributeModifierT18Buff, (uintptr_t)AttributeModifierNo18BuffASM);
 	WriteHookToProcess((void*)(_F_AttributeModifierT18Buff + 5), &nop1, 1U);
 }
+
+// 
+float buildSpeed = 1.0f / 15.0f;
 
 DWORD WINAPI setFrameTo60() {
 	// set delay
@@ -96,16 +106,21 @@ DWORD WINAPI setFrameTo60() {
 	unsigned char setEAXto2[] = {
 		0xB8, 0x02, 0x00, 0x00, 0x00
 	};
-	//
+	// coordinates when unit moves
 	WriteHookToProcess((void*)(hmodEXE + 0x1FFAD0), &setEAXto2, 5U);
 	WriteHookToProcess((void*)(hmodEXE + 0x1FFAD0 + 7), &nop6, 6U);
+
+	// main logic
+	WriteHookToProcess((void*)(hmodEXE + 0x216256), &setEAXto2, 5U);
+	WriteHookToProcess((void*)(hmodEXE + 0x216256 + 7), &nop6, 6U);
+	// build speed factor
+	uintptr_t pbuildSpeed = (uintptr_t)&buildSpeed;
+	WriteHookToProcess((void*)(hmodEXE + 0x2D3D63 + 2), &pbuildSpeed, 4U);
+
 	//
 	WriteHookToProcess((void*)(hmodEXE + 0x20283D), &setEAXto2, 5U);
 	WriteHookToProcess((void*)(hmodEXE + 0x20283D + 7), &nop6, 6U);
-	//
-	WriteHookToProcess((void*)(hmodEXE + 0x216256), &setEAXto2, 5U);
-	WriteHookToProcess((void*)(hmodEXE + 0x216256 + 7), &nop6, 6U);
-	//
+	// 
 	WriteHookToProcess((void*)(hmodEXE + 0x21B59B), &setEAXto2, 5U);
 	WriteHookToProcess((void*)(hmodEXE + 0x21B59B + 7), &nop6, 6U);
 	//
@@ -138,7 +153,21 @@ bool __fastcall GetFunctionAddress()
 		_F_WeaponReloadActive = hmodEXE + 0x3BE05F;
 		_F_WeaponReloadTimeCount = hmodEXE + 0x2DC270;
 		_F_AttributeModifierT18Buff = hmodEXE + 0xDAABD;
+		/*
+		initializeEnumStringType();
+		uintptr_t pCFlag = (uintptr_t)&g_CampaignFlag;
+		WriteHookToProcess((void*)(hmodEXE + 0x2D8A + 1), &pCFlag, 4U);
+		//WriteHookToProcess((void*)(hmodEXE + 0x22C6 + 1), &pCFlag, 4U);
+		pCFlag += sizeof(g_CampaignFlag);
+		WriteHookToProcess((void*)(hmodEXE + 0x2D85 + 1), &pCFlag, 4U);
+		WriteHookToProcess((void*)(hmodEXE + 0x2D97 + 1), &pCFlag, 4U);
+		char numCFlag = 2;
+		WriteHookToProcess((void*)(hmodEXE + 0x174A2C + 2), &numCFlag, 1U);
+		//WriteHookToProcess((void*)(hmodEXE + 0x22C4 + 1), &numCFlag, 1U);
+		*/
 
+		//
+		RA3::LuaEngine::InitializeLuaEngineSteam(hmodEXE);
 		// up fps to 60
 		if (inputSetting.UPto60) {
 			CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)setFrameTo60, NULL, NULL, NULL);
@@ -204,12 +233,8 @@ void mainInjectionExecution()
 			SetCPUAffinity();
 		}
 
-		if (inputSetting.CheckBloom) {
-			noBloomSet = 1;
-		}
-
 		if (inputSetting.setDebug) {
-			MessageBox(NULL, L"Injection OK!\n   v2.303", L"Check", MB_OK);
+			MessageBox(NULL, L"Injection OK!\n   v2.304", L"Check", MB_OK);
 		}
 	}
 }

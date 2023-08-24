@@ -2,8 +2,9 @@
 #include <format>
 
 #include "funcOther.h"
+#include "commonStruct.h"
 
-extern int noBloomSet;
+extern inputSettingINFO inputSetting;
 extern uintptr_t _Ret_BloomOpen;
 
 __declspec(naked) void __fastcall SetNoBloomASM()
@@ -11,7 +12,7 @@ __declspec(naked) void __fastcall SetNoBloomASM()
 	__asm {
 			test eax, eax
 			je ofs5FB9E8
-			cmp noBloomSet, 0
+			cmp inputSetting.CheckBloom, 0
 			jne ofs5FB9EC
 			cmp dword ptr[eax + 0x2EC], 1
 			jle ofs5FB9EC

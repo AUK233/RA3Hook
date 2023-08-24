@@ -24,6 +24,8 @@ int __fastcall SweepingLaserStateGetID(uintptr_t ptr)
 			int laserIndex = (laserID - 1000) / 20;
 			switch (laserIndex)
 			{
+			case 0:
+				return 3;
 			case 100:
 				return 2;
 			default:
@@ -78,6 +80,74 @@ void __fastcall SweepingLaserStateCPP1(uintptr_t ptr, int cfg)
 	//atan2(y, x);
 	switch (cfg)
 	{
+	case 3: {
+		// Target Position
+		float opx = *(float*)(ptr + 0x3C);
+		float opy = *(float*)(ptr + 0x40);
+		float opz = *(float*)(ptr + 0x44);
+		// The difference between the target and its own position.
+		float spx = opx - *(float*)(ptr + 0x30);
+		float spy = opy - *(float*)(ptr + 0x34);
+		// Read EndOffset's z as radian.
+		uintptr_t posOffsetPtr = *(uintptr_t*)(*(uintptr_t*)(ptr + 4) + 0x24);
+		if (posOffsetPtr)
+		{
+			float ofsRadian = *(float*)(posOffsetPtr + 8);
+			if (ofsRadian) {
+				// rotate coordinates
+				float dx = cos(ofsRadian) * spx - sin(ofsRadian) * spy;
+				float dy = cos(ofsRadian) * spy + sin(ofsRadian) * spx;
+				spx = dx;
+				spy = dy;
+			}
+		}
+
+		float spz = opz - *(float*)(ptr + 0x38);
+
+		float fr = (spz * spz) + (spy * spy) + (spx * spx);
+		float DeltaX;
+		float DeltaY;
+		float DeltaZ;
+		if (fr <= 0.0001f)
+		{
+			DeltaX = 1.0f;
+			DeltaY = 0.0f;
+			DeltaZ = 0.0f;
+		}
+		else
+		{
+			float scale;
+			if (fr == 0.0f)
+			{
+				scale = 0.0f;
+			}
+			else
+			{
+				scale = 1.0f / sqrt(fr);
+			}
+			DeltaX = spx * scale;
+			DeltaY = spy * scale;
+			DeltaZ = spz * scale;
+		}
+
+		float Radius = *(float*)(*(uintptr_t*)(ptr + 4) + 0x2C);
+		float ofsx = DeltaX * Radius;
+		float ofsy = DeltaY * Radius;
+		float ofsz = 0.0f;
+		*(char*)(ptr + 0xBC) = 0;
+
+		// sweep start position
+		*(float*)(ptr + 0xA4) = opx - ofsx;
+		*(float*)(ptr + 0xA8) = opy - ofsy;
+		*(float*)(ptr + 0xAC) = opz - ofsz;
+		// sweep end 
+		ofsx *= 0.1f;
+		ofsy *= 0.1f;
+		*(float*)(ptr + 0x98) = opx + ofsx;
+		*(float*)(ptr + 0x9C) = opy + ofsy;
+		*(float*)(ptr + 0xA0) = opz + ofsz;
+		break;
+	}
 	case 2: {
 		//ep1 + 3A7F86
 		*(char*)(ptr + 0xBC) = 0;

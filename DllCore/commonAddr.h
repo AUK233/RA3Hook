@@ -1,16 +1,7 @@
 #pragma once
+#include "commonStruct.h"
 
-struct inputSettingINFO
-{
-	unsigned char cpuLimit = 0;
-	unsigned char CheckBloom = 0;
-	unsigned char setDebug = 0;
-	unsigned char UPto60 = 0;
-	unsigned char align[4];
-} inputSetting;
-
-int noBloomSet = 0;
-
+inputSettingINFO inputSetting;
 uintptr_t hmodEXE = 0x00400000;
 int InitializationCore = 0;
 // 

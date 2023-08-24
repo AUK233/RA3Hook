@@ -101,7 +101,7 @@ __declspec(naked) void __fastcall AttributeModifierNo18BuffASM()
 		ret
 	// they need +4 because of esp has decreased by 4
 	returnOld :
-		mulss xmm0, [esp + 0x18 + 4]
+		//mulss xmm0, [esp + 0x18 + 4]
 		ret
 	}
 }

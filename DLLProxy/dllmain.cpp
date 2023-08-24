@@ -7,16 +7,11 @@
 #pragma comment(lib, "shlwapi.lib")
 
 #include "..\DllCore\commonMain.h"
+#include "../DllCore/commonStruct.h"
 
-extern struct inputSettingINFO {
-	unsigned char cpuLimit = 0;
-	unsigned char CheckBloom = 0;
-	unsigned char setDebug = 0;
-	unsigned char UPto60 = 0;
-	unsigned char align[4];
-} inputSetting;
-
+extern inputSettingINFO inputSetting;
 extern int InitializationCore;
+extern std::wstring CampaignINIDefault;
 
 BOOL WINAPI DllMain(HINSTANCE hinstModule, DWORD dwReason, LPVOID lpvReserved)
 {
@@ -43,6 +38,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstModule, DWORD dwReason, LPVOID lpvReserved)
 		// proxy dll end
 
 		// initialization
+		ZeroMemory(&inputSetting, sizeof(inputSettingINFO));
 		WCHAR iniPath[MAX_PATH];
 		GetModuleFileNameW(NULL, iniPath, _countof(iniPath));
 		PathRemoveFileSpecW(iniPath);
@@ -52,6 +48,13 @@ BOOL WINAPI DllMain(HINSTANCE hinstModule, DWORD dwReason, LPVOID lpvReserved)
 		inputSetting.cpuLimit = GetPrivateProfileIntW(L"CFASetting", L"SetCPU", 0, iniPath);
 		inputSetting.setDebug = GetPrivateProfileIntW(L"CFASetting", L"SetDebug", 0, iniPath);
 		inputSetting.UPto60 = GetPrivateProfileIntW(L"CFASetting", L"DualFPS", 0, iniPath);
+
+		// Campaign Flag INI Path
+		WCHAR CFiniPath[MAX_PATH];
+		GetModuleFileNameW(NULL, CFiniPath, _countof(CFiniPath));
+		PathRemoveFileSpecW(CFiniPath);
+		wcscat_s(CFiniPath, L"\\CFACampaignFlag.ini");
+		CampaignINIDefault = CFiniPath;
 
 		mainInjectionExecution();
 		InitializationCore = 1;
