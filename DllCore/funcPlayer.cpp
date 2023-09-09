@@ -4,6 +4,8 @@
 #include "funcPlayer.h"
 
 extern uintptr_t pPlayerTechStore[];
+extern UINT32 playerNameHashToIndex[9][2];
+extern UINT32 playerTechStoreToIndex[9][2];
 
 uintptr_t __fastcall LoadPlayerTechStoreCPP(uintptr_t ptr, uintptr_t pptr)
 {
@@ -11,6 +13,7 @@ uintptr_t __fastcall LoadPlayerTechStoreCPP(uintptr_t ptr, uintptr_t pptr)
 	UINT32 TemplateID = *(UINT32*)(pTemplate + 4);
 
 	UINT32 sideIndex;
+	/*
 	switch (TemplateID)
 	{
 	case 3267362061U:
@@ -57,7 +60,23 @@ uintptr_t __fastcall LoadPlayerTechStoreCPP(uintptr_t ptr, uintptr_t pptr)
 		}
 		break;
 	}
+	*/
+
+	for (int i = 0; i < 9; i++) {
+		if (playerTechStoreToIndex[i][0] == TemplateID) {
+			sideIndex = playerTechStoreToIndex[i][1];
+			goto _WritePointer_;
+		}
+	}
+
+	sideIndex = *(UINT32*)(ptr + 4);
+	if (sideIndex > 3)
+	{
+		return pptr;
+	}
+
 	// Write Pointer
+	_WritePointer_:
 	pPlayerTechStore[sideIndex] = pptr;
 	return pptr;
 }
@@ -80,6 +99,16 @@ UINT32 __fastcall ReadPlayerTechStoreCPP(uintptr_t ptr)
 {
 	UINT32 sideID = *(UINT32*)(ptr + 8);
 
+	for (int i = 0; i < 9; i++) {
+		if (playerNameHashToIndex[i][0] == sideID) {
+			return playerNameHashToIndex[i][1];
+		}
+	}
+
+	uintptr_t pSide = *(uintptr_t*)ptr;
+	UINT32 sideIndex = *(UINT32*)(pSide + 0x30);
+	return sideIndex;
+	/*
 	switch (sideID)
 	{
 	case 2293878703U:
@@ -114,4 +143,5 @@ UINT32 __fastcall ReadPlayerTechStoreCPP(uintptr_t ptr)
 		UINT32 sideIndex = *(UINT32*)(pSide + 0x30);
 		return sideIndex;
 	}
+	*/
 }

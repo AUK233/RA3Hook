@@ -19,7 +19,7 @@ namespace RA3Hook
         public string DllPath;
         //public byte[] CustomData = Encoding.Unicode.GetBytes("Test test");
         // The first 4-bytes is the type of read configuration
-        public byte[] CustomData = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        public byte[] CustomData = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
         // ini
         public string INIPath;
@@ -86,6 +86,11 @@ namespace RA3Hook
             if (INIfile.ReadINT("CFALauncher", "SetDebug", 0, INIPath) > 0)
             {
                 CheckBoxDebug.IsChecked = true;
+            }
+            //
+            if (INIfile.ReadINT("CFALauncher", "ForceLocal", 0, INIPath) > 0)
+            {
+                CheckBoxLocal.IsChecked = true;
             }
             //
             Task.Run(BackgroundInjectTask);
@@ -247,6 +252,15 @@ namespace RA3Hook
             {
                 INIfile.Write("CFALauncher", "SetDebug", "0", INIPath);
             }
+            //
+            if (CheckBoxLocal.IsChecked == true)
+            {
+                INIfile.Write("CFALauncher", "ForceLocal", "1", INIPath);
+            }
+            else
+            {
+                INIfile.Write("CFALauncher", "ForceLocal", "0", INIPath);
+            }
         }
         private void SaveDllConfigure(string path)
         {
@@ -284,6 +298,15 @@ namespace RA3Hook
             else
             {
                 INIfile.Write("CFASetting", "DualFPS", "0", path);
+            }
+            //
+            if (CheckBoxLocal.IsChecked == true)
+            {
+                INIfile.Write("CFASetting", "ForceLocal", "1", path);
+            }
+            else
+            {
+                INIfile.Write("CFASetting", "ForceLocal", "0", path);
             }
         }
 
@@ -367,6 +390,17 @@ namespace RA3Hook
                 CustomData[7] = 0;
             }
         }
+        private void OnCheckedLocalSaveChanged(object sender, RoutedEventArgs e)
+        {
+            if (CheckBoxLocal.IsChecked == true)
+            {
+                CustomData[8] = 1;
+            }
+            else
+            {
+                CustomData[8] = 0;
+            }
+        }
 
         private void BackgroundInjectTask()
         {
@@ -415,7 +449,7 @@ namespace RA3Hook
                 finally
                 {
                     //Task.Delay(1000);
-                    Thread.Sleep(200);
+                    Thread.Sleep(50);
                 }
             }
 

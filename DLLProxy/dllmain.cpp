@@ -48,6 +48,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstModule, DWORD dwReason, LPVOID lpvReserved)
 		inputSetting.cpuLimit = GetPrivateProfileIntW(L"CFASetting", L"SetCPU", 0, iniPath);
 		inputSetting.setDebug = GetPrivateProfileIntW(L"CFASetting", L"SetDebug", 0, iniPath);
 		inputSetting.UPto60 = GetPrivateProfileIntW(L"CFASetting", L"DualFPS", 0, iniPath);
+		inputSetting.LocalFlag = GetPrivateProfileIntW(L"CFASetting", L"ForceLocal", 0, iniPath);
 
 		// Campaign Flag INI Path
 		WCHAR CFiniPath[MAX_PATH];

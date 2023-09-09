@@ -1,10 +1,14 @@
 #include "pch.h"
 #include <string>
 #include <codecvt>
+#include <filesystem>
 #pragma warning(disable:4996);
 
 #include "utiliy.h"
+#include "commonStruct.h"
 #include "LuaEngine.h"
+
+extern inputSettingINFO inputSetting;
 
 struct CFACampaignINI {
 	std::wstring wstr;
@@ -16,6 +20,7 @@ namespace RA3::LuaEngine {
 
 	uintptr_t _F_luaScriptEngine = 0;
 	uintptr_t _F_loadConfigINIPath = 0;
+	uintptr_t _Ret_loadConfigINIPath = 0;
 	//
 	uintptr_t _F_pushLuaExecuteFunction = 0;
 	uintptr_t _F_pushLuaGetFunction = 0;
@@ -64,7 +69,8 @@ namespace RA3::LuaEngine {
 		_p_Lua_pushnumber = hmodEXE + 0xA910;
 		_p_Lua_pushstring = hmodEXE + 0xA980;
 		_F_luaScriptEngine = hmodEXE + 0x8DD17C;
-		_F_loadConfigINIPath = hmodEXE + 0x2CBC1B;
+		_F_loadConfigINIPath = hmodEXE + 0x2CBB44;
+		_Ret_loadConfigINIPath = hmodEXE + 0x2CBB44 + 6;
 
 		_F_pushLuaExecuteFunction = hmodEXE + 0x6F70;
 		_F_pushLuaGetFunction = hmodEXE + 0xACA0;
@@ -78,32 +84,48 @@ namespace RA3::LuaEngine {
 
 	void __fastcall InitializeLuaEngineOrigin(uintptr_t hmodEXE)
 	{
-		_p_Lua_tostring = hmodEXE + 0;
-		_p_Lua_pushnil = hmodEXE + 0;
-		_p_Lua_pushnumber = hmodEXE + 0;
-		_p_Lua_pushstring = hmodEXE + 0;
+		_p_Lua_tostring = hmodEXE + 0xA7B0;
+		_p_Lua_pushnil = hmodEXE + 0xA8D0;
+		_p_Lua_pushnumber = hmodEXE + 0xA930;
+		_p_Lua_pushstring = hmodEXE + 0xA9A0;
 		_F_luaScriptEngine = hmodEXE + 0x8E231C;
-		_F_loadConfigINIPath = hmodEXE + 0;
+		_F_loadConfigINIPath = hmodEXE + 0x30A084;
+		_Ret_loadConfigINIPath = hmodEXE + 0x30A084 + 6;
 
-		_F_pushLuaExecuteFunction = hmodEXE + 0;
-		_F_pushLuaGetFunction = hmodEXE + 0;
-		_F_readLuaScript = hmodEXE + 0;
-		_Ret_readLuaScript = hmodEXE + 0 + 5;
+		_F_pushLuaExecuteFunction = hmodEXE + 0x6F90;
+		_F_pushLuaGetFunction = hmodEXE + 0xACC0;
+		_F_readLuaScript = hmodEXE + 0x1F22D9;
+		_Ret_readLuaScript = hmodEXE + 0x1F22D9 + 5;
 
-		_p_ExecuteAction = hmodEXE + 0;
-		_F_readObjectScript = hmodEXE + 0;
-		_Ret_readObjectScript = hmodEXE + 0 + 5;
+		_p_ExecuteAction = hmodEXE + 0x1C4370;
+		_F_readObjectScript = hmodEXE + 0x1C430E;
+		_Ret_readObjectScript = hmodEXE + 0x1C430E + 5;
 	}
 
 	void __fastcall HookLuaEngine() {
-		hookGameBlock((void*)_F_loadConfigINIPath, (uintptr_t)HookGetProfileDataINI);
+		if (inputSetting.LocalFlag) {
+			if (!CampaignINIDefault.empty()) {
+				CampaignINIPath.wstr = CampaignINIDefault;
+				CampaignINIPath.init = 1;
+			}
+			else {
+				if (inputSetting.setDebug) {
+					MessageBoxW(NULL, L"Invalid campaign flag save path!", L"warning", MB_OK);
+				}
+				CampaignINIPath.init = 0;
+			}
+		}
+		else {
+			hookGameBlock((void*)_F_loadConfigINIPath, (uintptr_t)HookGetProfileDataINI);
+		}
+
 		hookGameBlock((void*)_F_readLuaScript, (uintptr_t)HookLuaScriptEngineASM);
 		hookGameBlock((void*)_F_readObjectScript, (uintptr_t)HookObjectScriptEngineASM);
 	}
 
 
 	void __fastcall GetCFACampaignFlagINIPath(LPCWSTR in) {
-		/*
+		/**/
 		std::wstring fileName = in;
 		size_t lastindex = fileName.find_last_of(L"\\");
 		if (lastindex != std::wstring::npos)
@@ -111,18 +133,21 @@ namespace RA3::LuaEngine {
 			std::wstring extension = fileName.substr(lastindex + 1, 3);
 			if (extension == L"Pro") {
 				fileName.erase(lastindex + 1, std::wstring::npos);
-				fileName += L"CFACampaignFlag.ini";
-
-				//MessageBoxW(NULL, fileName.c_str(), L"test", MB_OK);
-				CampaignINIPath.wstr = fileName;
-				CampaignINIPath.init = 1;
-				return;
 			}
-		}*/
+		}
+
+		std::wstring checkFile = fileName + L"ProfileData.ini";
+		if (std::filesystem::exists(checkFile)) {
+			fileName += L"CFACampaignFlag.ini";
+			//MessageBoxW(NULL, fileName.c_str(), L"test", MB_OK);
+			CampaignINIPath.wstr = fileName;
+			CampaignINIPath.init = 1;
+			return;
+		}
 
 		if (!CampaignINIDefault.empty()) {
-			//CampaignINIPath.wstr = CampaignINIDefault;
-			CampaignINIPath.wstr = L"Z:\\TEMP\\test.ini";
+			//CampaignINIPath.wstr = L"Z:\\TEMP\\test.ini";
+			CampaignINIPath.wstr = CampaignINIDefault;
 			CampaignINIPath.init = 1;
 		}
 		else {
@@ -133,16 +158,14 @@ namespace RA3::LuaEngine {
 
 	__declspec(naked) void __fastcall HookGetProfileDataINI() {
 		__asm {
-			sub esp, 0xCBC
-			mov ecx, esp
+			mov ecx, [esp + 0x40]
+			test ecx, ecx
+			je ofsReturn
 			call GetCFACampaignFlagINIPath
-			add esp, 0xCBC
-			pop edi
-			pop esi
-			pop ebp
-			pop ebx
-			add esp, 0x34
-			ret
+		ofsReturn:
+			mov ecx, [ebp + 0x7C]
+			lea esi, [ebp + 0x74]
+			jmp _Ret_loadConfigINIPath
 		}
 	}
 

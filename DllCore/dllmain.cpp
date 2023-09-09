@@ -84,7 +84,7 @@ extern "C" void __declspec(dllexport) __stdcall NativeInjectionEntryPoint(REMOTE
 	}
 
 	if (!initType) {
-		memcpy(&inputSetting, input->UserData + 4, 4);
+		memcpy(&inputSetting, input->UserData + 4, sizeof(inputSettingINFO));
 	}
 
 	DWORD idThread = GetCurrentThreadId();
@@ -118,6 +118,7 @@ extern "C" void __declspec(dllexport) __stdcall NativeInjectionEntryPoint(REMOTE
 		inputSetting.CheckBloom = GetPrivateProfileIntW(L"CFALauncher", L"NoBloom", 0, iniPath);
 		inputSetting.cpuLimit = GetPrivateProfileIntW(L"CFALauncher", L"SetCPU", 0, iniPath);
 		inputSetting.setDebug = GetPrivateProfileIntW(L"CFALauncher", L"SetDebug", 0, iniPath);
+		inputSetting.LocalFlag = GetPrivateProfileIntW(L"CFALauncher", L"ForceLocal", 0, iniPath);
 	}
 
 	// Campaign Flag INI Path

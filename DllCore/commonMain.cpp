@@ -17,6 +17,8 @@
 void __fastcall hookFunctionGroup()
 {
 
+	//
+	RA3::LuaEngine::HookLuaEngine();
 	// Load PlayerTechStoreTemplate
 	hookGameBlock((void*)_F_PlayerTechStoreL, (uintptr_t)LoadPlayerTechStoreASM);
 	// Read PlayerTechStoreTemplate
@@ -34,8 +36,6 @@ void __fastcall hookFunctionGroup()
 	// ra3_1.12.game+2DDE95
 	// Synchronized rendering and logical frames?
 	WriteHookToProcess((void*)_F_SyncSet, &nop6, 6U);
-	//
-	//RA3::LuaEngine::HookLuaEngine();
 
 	// Abandon changes to z-axis for now
 	/**/
@@ -61,6 +61,13 @@ void __fastcall hookFunctionGroup()
 	// <Modifier Type="BOUNTY_PERCENTAGE" Value="50%"/>
 	hookGameCall((void*)_F_AttributeModifierT18Buff, (uintptr_t)AttributeModifierNo18BuffASM);
 	WriteHookToProcess((void*)(_F_AttributeModifierT18Buff + 5), &nop1, 1U);
+
+	// Fix weapon scatter radius
+	//hookGameBlock((void*)_F_WeaponScatterRadius, (uintptr_t)WeaponScatterRadiusASM);
+	//WriteHookToProcess((void*)(_F_WeaponScatterRadius + 5), &nop3, 3U);
+	hookGameCall((void*)_F_WeaponScatterRadius1, (uintptr_t)WeaponScatterRadiusFixASM1);
+	hookGameCall((void*)_F_WeaponScatterRadius2, (uintptr_t)WeaponScatterRadiusFixASM2);
+	WriteHookToProcess((void*)(_F_WeaponScatterRadius2 + 5), &nop1, 1U);
 }
 
 // 
@@ -153,6 +160,14 @@ bool __fastcall GetFunctionAddress()
 		_F_WeaponReloadActive = hmodEXE + 0x3BE05F;
 		_F_WeaponReloadTimeCount = hmodEXE + 0x2DC270;
 		_F_AttributeModifierT18Buff = hmodEXE + 0xDAABD;
+
+		// now it is useless
+		//_F_WeaponScatterRadius = hmodEXE + 0x3140CB;
+		//_Ret_WeaponScatterRadius = hmodEXE + 0x3140F0;
+		//_F_CallRandomRadius = hmodEXE + 0x200B10;
+		_F_WeaponScatterRadius1 = hmodEXE + 0x35AA6B;
+		_F_WeaponScatterRadius2 = hmodEXE + 0x35AA8A;
+
 		/*
 		initializeEnumStringType();
 		uintptr_t pCFlag = (uintptr_t)&g_CampaignFlag;
@@ -192,6 +207,11 @@ bool __fastcall GetFunctionAddress()
 		_F_WeaponReloadActive = hmodEXE + 0x3FC3AF;
 		_F_WeaponReloadTimeCount = hmodEXE + 0x31A7E0;
 		_F_AttributeModifierT18Buff = hmodEXE + 0x11C4DD;
+		_F_WeaponScatterRadius1 = hmodEXE + 0x3990AB;
+		_F_WeaponScatterRadius2 = hmodEXE + 0x3990CA;
+
+		//
+		RA3::LuaEngine::InitializeLuaEngineOrigin(hmodEXE);
 	}
 	else
 	{
@@ -234,7 +254,7 @@ void mainInjectionExecution()
 		}
 
 		if (inputSetting.setDebug) {
-			MessageBox(NULL, L"Injection OK!\n   v2.304", L"Check", MB_OK);
+			MessageBox(NULL, L"Injection OK!\n   v2.305", L"Check", MB_OK);
 		}
 	}
 }

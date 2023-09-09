@@ -6,5 +6,6 @@ typedef struct inputSettingINFOtype
 	unsigned char CheckBloom;
 	unsigned char setDebug;
 	unsigned char UPto60;
-	unsigned char align[4];
+	unsigned char LocalFlag;
+	unsigned char align[3];
 } inputSettingINFO;

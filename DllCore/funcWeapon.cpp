@@ -105,3 +105,105 @@ __declspec(naked) void __fastcall AttributeModifierNo18BuffASM()
 		ret
 	}
 }
+
+float baseWarheadTargetPositionX = 1.0f;
+float baseWarheadTargetPositionY = 1.0f;
+
+__declspec(naked) void __fastcall WeaponScatterRadiusFixASM1()
+{
+	__asm {
+		mov eax, [esp + 0x2C + 4] // Because EIP comes into the stack
+		mov baseWarheadTargetPositionX, eax
+		mov eax, [esp + 0x2C + 8]
+		mov baseWarheadTargetPositionY, eax
+		lea eax, [ebp + 8]
+		mov ebp, [eax]
+		ret
+	}
+}
+
+__declspec(naked) void __fastcall WeaponScatterRadiusFixASM2()
+{
+	__asm {
+		mov eax, baseWarheadTargetPositionX
+		mov [esp + 0x2C + 4], eax
+		mov ecx, baseWarheadTargetPositionY
+		mov [esp + 0x2C + 8], ecx
+		mov eax, [esi + 0x18]
+		mov ecx, [esi + 0x1C]
+		ret
+	}
+}
+
+void __fastcall WeaponScatterRadiusCPP(float* pRadian, float* pPos)
+{
+	float radian = pRadian[1];
+	float sqrtF2 = sqrt(pRadian[2]);
+	pPos[0] += cos(radian) * pRadian[0] * sqrtF2;
+	pPos[1] += sin(radian) * pRadian[0] * sqrtF2;
+}
+
+extern uintptr_t _Ret_WeaponScatterRadius;
+extern uintptr_t _F_CallRandomRadius;
+
+__declspec(naked) void __fastcall WeaponScatterRadiusASM()
+{
+	/*
+	__asm {
+		fstp dword ptr[esp]
+		call _F_CallRandomRadius
+		fstp dword ptr[esp + 8]
+		//
+		fld1
+		fstp dword ptr[esp + 4]
+		fldz
+		fstp dword ptr[esp]
+		call _F_CallRandomRadius
+		fstp dword ptr[esp + 12]
+		//
+		//mov eax, [esp + 0x58]
+		mov eax, [esp + 0x1C]
+		mov [esp + 4], eax
+		lea ecx, [esp + 4]
+		mov edx, esi
+		call WeaponScatterRadiusCPP
+		//
+		add esp, 0x10
+		jmp _Ret_WeaponScatterRadius
+	}*/
+	// UR+326e94
+	/**/
+	__asm {
+		fstp dword ptr[esp]
+		call _F_CallRandomRadius
+		add esp, 0x10
+		fstp dword ptr[esp + 0x48]
+		//
+		sub esp, 8
+		fld1
+		fstp dword ptr[esp + 4]
+		fldz
+		fstp dword ptr[esp]
+		call _F_CallRandomRadius
+		fstp dword ptr[esp]
+		fld dword ptr[esp]
+		fsqrt
+		fstp dword ptr[esp + 4]
+		//
+		fld dword ptr[esp + 0xC + 8]
+		fmul dword ptr[esp + 4]
+		fld dword ptr[esp + 0x48 + 8]
+		fld st(0)
+		fcos
+		fmul st(0), st(2)
+		fxch
+		fsin
+		fmulp st(2), st(0)
+		fadd dword ptr[esi]
+		fstp dword ptr[esi]
+		fadd dword ptr[esi + 4]
+		fstp dword ptr[esi + 4]
+		add esp, 8
+		jmp _Ret_WeaponScatterRadius
+	}
+}
