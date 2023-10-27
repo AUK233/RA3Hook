@@ -95,7 +95,7 @@ __declspec(naked) void __fastcall LoadPlayerTechStoreASM()
 	}
 }
 
-UINT32 __fastcall ReadPlayerTechStoreCPP(uintptr_t ptr)
+UINT32 __fastcall ReadPlayerFactionTypeCPP(uintptr_t ptr)
 {
 	UINT32 sideID = *(UINT32*)(ptr + 8);
 
@@ -144,4 +144,55 @@ UINT32 __fastcall ReadPlayerTechStoreCPP(uintptr_t ptr)
 		return sideIndex;
 	}
 	*/
+}
+
+extern uintptr_t pPlayerFactionIcon[];
+extern uintptr_t _Ret_ReadPlayerFactionIcon;
+
+__declspec(naked) void __fastcall ReadPlayerFactionIconASM()
+{
+	__asm {
+		cmp edi, 3
+		ja ofsFaction12
+		mov ecx, [ebp + 0x28]
+		lea edx, [ecx + 8]
+		mov eax, [edx + edi*4]
+		jmp _Ret_ReadPlayerFactionIcon
+	ofsFaction12:
+		cmp edi, 12
+		ja ofs697353
+		lea ecx, pPlayerFactionIcon-4
+		mov eax, [ecx + edi*4]
+	ofs697353:
+		jmp _Ret_ReadPlayerFactionIcon
+	}
+}
+
+uintptr_t __fastcall LoadNewPlayerFactionIconCPP(void* ptr)
+{
+	memcpy(&pPlayerFactionIcon[3], ptr, 36U);
+	return pPlayerFactionIcon[0];
+}
+
+__declspec(naked) void __fastcall GetUnitOverlayIconSettingsASM()
+{
+	__asm {
+		// get ptr
+		mov edx, [eax]
+		// UnitOverlayIconSettings1
+		cmp [edx+4], 1934915161U
+		jne ofs11C629
+		mov pPlayerFactionIcon, eax
+		mov edx, [eax+0x34]
+		mov eax, [edx+4]
+		mov ecx, [eax+8]
+		call LoadNewPlayerFactionIconCPP
+		// HealUnitIconImageSequence
+		mov edx, [eax + 0x30]
+		// RepairVehicleIconImageSequence
+		mov [eax + 0x34], edx
+	ofs11C629:
+		xor eax, eax
+		ret 4
+	}
 }

@@ -16,7 +16,7 @@
 
 void __fastcall hookFunctionGroup()
 {
-
+	//hookGameBlock((void*)(hmodEXE + 0x2E5EC3), (uintptr_t)shdiahdiwaw);
 	//
 	RA3::LuaEngine::HookLuaEngine();
 	// Load PlayerTechStoreTemplate
@@ -28,7 +28,13 @@ void __fastcall hookFunctionGroup()
 	char numPlayerTechStore = 12;
 	WriteHookToProcess((void*)_F_PlayerTechStoreR2, &numPlayerTechStore, 1U);
 	// Recount
-	hookGameCall((void*)_F_PlayerTechStoreR1, (uintptr_t)ReadPlayerTechStoreCPP);
+	hookGameCall((void*)_F_PlayerTechStoreR1, (uintptr_t)ReadPlayerFactionTypeCPP);
+
+	// +2251C7
+	hookGameCall((void*)_F_ReadPlayerFactionType, (uintptr_t)ReadPlayerFactionTypeCPP);
+	//
+	hookGameBlock((void*)_F_ReadPlayerFactionIcon, (uintptr_t)ReadPlayerFactionIconASM);
+	hookGameBlock((void*)_F_GetUnitOverlayIconSettings, (uintptr_t)GetUnitOverlayIconSettingsASM);
 
 	// Set no bloom
 	hookGameBlock((void*)_F_BloomOpen, (uintptr_t)SetNoBloomASM);
@@ -46,6 +52,8 @@ void __fastcall hookFunctionGroup()
 	WriteHookToProcess((void*)ofs32C8C6, &set32C8C6, 5U);
 	// Allows for vertical sweep, and change sweep angle
 	hookGameBlock((void*)_F_SweepLaser01, (uintptr_t)SweepingLaserStateASM1);
+	//
+	hookGameBlock((void*)_F_SweepLaserActivate, (uintptr_t)SweepingLaserActivateASM);
 	// Set laser to activate only when not activated
 	hookGameBlock((void*)_F_ActivateLaser, (uintptr_t)ActivateLaserNuggetASM);
 
@@ -68,6 +76,11 @@ void __fastcall hookFunctionGroup()
 	hookGameCall((void*)_F_WeaponScatterRadius1, (uintptr_t)WeaponScatterRadiusFixASM1);
 	hookGameCall((void*)_F_WeaponScatterRadius2, (uintptr_t)WeaponScatterRadiusFixASM2);
 	WriteHookToProcess((void*)(_F_WeaponScatterRadius2 + 5), &nop1, 1U);
+
+	//
+	hookGameCall((void*)_F_KillTibCrystalWhenEmpty1, (uintptr_t)KillTibCrystalWhenEmptyASM1);
+	WriteHookToProcess((void*)(_F_KillTibCrystalWhenEmpty1 + 5), &nop1, 1U);
+	hookGameCall((void*)_F_KillTibCrystalWhenEmpty2, (uintptr_t)KillTibCrystalWhenEmptyASM2);
 }
 
 // 
@@ -151,8 +164,14 @@ bool __fastcall GetFunctionAddress()
 		_F_PlayerTechStoreR1 = hmodEXE + 0x69ABA6 - 10;
 		_F_PlayerTechStoreR2 = hmodEXE + 0x69ABA6 - 3;
 		_F_PlayerTechStoreR3 = hmodEXE + 0x69ABA6 + 3;
+		_F_ReadPlayerFactionType = hmodEXE + 0x2251C7;
+		_F_ReadPlayerFactionIcon = hmodEXE + 0x69732E;
+		_Ret_ReadPlayerFactionIcon = hmodEXE + 0x697353;
+		_F_GetUnitOverlayIconSettings = hmodEXE + 0x11C609;
 		_F_SyncSet = hmodEXE + 0x2DDE95;
 		_F_SweepLaser01 = hmodEXE + 0x3C3ED7;
+		_F_SweepLaserActivate = hmodEXE + 0x2E3759;
+		_Ret_SweepLaserActivate = hmodEXE + 0x2E3759 + 0xC;
 		ofs32C8C6 = hmodEXE + 0x32C8C6;
 		_F_ActivateLaser = hmodEXE + 0x3CF668;
 		_Ret_ActivateLaser = hmodEXE + 0x3CF668 + 6;
@@ -160,13 +179,16 @@ bool __fastcall GetFunctionAddress()
 		_F_WeaponReloadActive = hmodEXE + 0x3BE05F;
 		_F_WeaponReloadTimeCount = hmodEXE + 0x2DC270;
 		_F_AttributeModifierT18Buff = hmodEXE + 0xDAABD;
-
 		// now it is useless
 		//_F_WeaponScatterRadius = hmodEXE + 0x3140CB;
 		//_Ret_WeaponScatterRadius = hmodEXE + 0x3140F0;
-		//_F_CallRandomRadius = hmodEXE + 0x200B10;
+		_F_CallRandomRadius = hmodEXE + 0x200B10;
 		_F_WeaponScatterRadius1 = hmodEXE + 0x35AA6B;
 		_F_WeaponScatterRadius2 = hmodEXE + 0x35AA8A;
+
+		_F_KillTibCrystalWhenEmpty1 = hmodEXE + 0x422717;
+		_F_KillTibCrystalWhenEmpty2 = hmodEXE + 0x42278D;
+		_F_CallKillGameObject = hmodEXE + 0x39EA50;
 
 		/*
 		initializeEnumStringType();
@@ -199,7 +221,14 @@ bool __fastcall GetFunctionAddress()
 		_F_PlayerTechStoreR2 = hmodEXE + 0x62F666 - 3;
 		_F_PlayerTechStoreR3 = hmodEXE + 0x62F666 + 3;
 		_F_SyncSet = hmodEXE + 0x31C3D5;
+		_F_ReadPlayerFactionType = hmodEXE + 0x2640F7;
+		_F_ReadPlayerFactionIcon = hmodEXE + 0x62BDAE;
+		_Ret_ReadPlayerFactionIcon = hmodEXE + 0x62BDD3;
+		_F_GetUnitOverlayIconSettings = hmodEXE + 0x15DDF9;
 		_F_SweepLaser01 = hmodEXE + 0x402227;
+		_F_SweepLaserActivate = hmodEXE + 0x321BC9;
+		_Ret_SweepLaserActivate = hmodEXE + 0x321BC9 + 0xC;
+		_F_CallRandomRadius = hmodEXE + 0x23F990;
 		ofs32C8C6 = hmodEXE + 0x36AE86;
 		_F_ActivateLaser = hmodEXE + 0x40D988;
 		_Ret_ActivateLaser = hmodEXE + 0x40D988 + 6;
@@ -209,6 +238,9 @@ bool __fastcall GetFunctionAddress()
 		_F_AttributeModifierT18Buff = hmodEXE + 0x11C4DD;
 		_F_WeaponScatterRadius1 = hmodEXE + 0x3990AB;
 		_F_WeaponScatterRadius2 = hmodEXE + 0x3990CA;
+		_F_KillTibCrystalWhenEmpty1 = hmodEXE + 0x4608A7;
+		_F_KillTibCrystalWhenEmpty2 = hmodEXE + 0x46091D;
+		_F_CallKillGameObject = hmodEXE + 0x3DCDF0;
 
 		//
 		RA3::LuaEngine::InitializeLuaEngineOrigin(hmodEXE);
@@ -254,7 +286,34 @@ void mainInjectionExecution()
 		}
 
 		if (inputSetting.setDebug) {
-			MessageBox(NULL, L"Injection OK!\n   v2.305", L"Check", MB_OK);
+			MessageBox(NULL, L"Injection OK!\n   v2.306", L"Check", MB_OK);
 		}
+	}
+}
+
+void mainInjectionSetting(LPCWSTR iniPath)
+{
+	if (GetPrivateProfileIntW(L"PlayerTemplates", L"Customization", 0, iniPath)) {
+		playerNameHashToIndex[0][0] = GetPrivateProfileIntW(L"PlayerTemplates", L"Faction4", playerNameHashToIndex[0][0], iniPath);
+		playerNameHashToIndex[1][0] = GetPrivateProfileIntW(L"PlayerTemplates", L"Faction5", playerNameHashToIndex[1][0], iniPath);
+		playerNameHashToIndex[2][0] = GetPrivateProfileIntW(L"PlayerTemplates", L"Faction6", playerNameHashToIndex[2][0], iniPath);
+		playerNameHashToIndex[3][0] = GetPrivateProfileIntW(L"PlayerTemplates", L"Faction7", playerNameHashToIndex[3][0], iniPath);
+		playerNameHashToIndex[4][0] = GetPrivateProfileIntW(L"PlayerTemplates", L"Faction8", playerNameHashToIndex[4][0], iniPath);
+		playerNameHashToIndex[5][0] = GetPrivateProfileIntW(L"PlayerTemplates", L"Faction9", playerNameHashToIndex[5][0], iniPath);
+		playerNameHashToIndex[6][0] = GetPrivateProfileIntW(L"PlayerTemplates", L"Faction10", playerNameHashToIndex[6][0], iniPath);
+		playerNameHashToIndex[7][0] = GetPrivateProfileIntW(L"PlayerTemplates", L"Faction11", playerNameHashToIndex[7][0], iniPath);
+		playerNameHashToIndex[8][0] = GetPrivateProfileIntW(L"PlayerTemplates", L"Faction12", playerNameHashToIndex[8][0], iniPath);
+	}
+
+	if (GetPrivateProfileIntW(L"PlayerTechStoreTemplates", L"Customization", 0, iniPath)) {
+		playerTechStoreToIndex[0][0] = GetPrivateProfileIntW(L"PlayerTechStoreTemplates", L"Faction4", playerTechStoreToIndex[0][0], iniPath);
+		playerTechStoreToIndex[1][0] = GetPrivateProfileIntW(L"PlayerTechStoreTemplates", L"Faction5", playerTechStoreToIndex[1][0], iniPath);
+		playerTechStoreToIndex[2][0] = GetPrivateProfileIntW(L"PlayerTechStoreTemplates", L"Faction6", playerTechStoreToIndex[2][0], iniPath);
+		playerTechStoreToIndex[3][0] = GetPrivateProfileIntW(L"PlayerTechStoreTemplates", L"Faction7", playerTechStoreToIndex[3][0], iniPath);
+		playerTechStoreToIndex[4][0] = GetPrivateProfileIntW(L"PlayerTechStoreTemplates", L"Faction8", playerTechStoreToIndex[4][0], iniPath);
+		playerTechStoreToIndex[5][0] = GetPrivateProfileIntW(L"PlayerTechStoreTemplates", L"Faction9", playerTechStoreToIndex[5][0], iniPath);
+		playerTechStoreToIndex[6][0] = GetPrivateProfileIntW(L"PlayerTechStoreTemplates", L"Faction10", playerTechStoreToIndex[6][0], iniPath);
+		playerTechStoreToIndex[7][0] = GetPrivateProfileIntW(L"PlayerTechStoreTemplates", L"Faction11", playerTechStoreToIndex[7][0], iniPath);
+		playerTechStoreToIndex[8][0] = GetPrivateProfileIntW(L"PlayerTechStoreTemplates", L"Faction12", playerTechStoreToIndex[8][0], iniPath);
 	}
 }

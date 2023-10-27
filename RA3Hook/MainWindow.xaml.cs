@@ -146,21 +146,13 @@ namespace RA3Hook
             //extraArg += " -xres 1840 -yres 1035 -xpos 40 -ypos 85";
             string gameEXE;
             string runArg = "-config \"";
+            //
             if (runType > 0)
             {
                 runArg += System.IO.Path.Combine(textBox.Text, $"RA3_{Ra3.GetRa3Language()}_1.12.skudef");
                 runArg += "\" ";
                 gameEXE = System.IO.Path.Combine(textBox.Text, "Data\\ra3_1.12.game");
                 runArg += extraArg;
-            }
-            else
-            {
-                gameEXE = System.IO.Path.Combine(textBox.Text, "RA3.exe");
-                runArg = extraArg;
-            }
-            //
-            if (runType == 2)
-            {
                 // turn off background injection
                 backgroundInject = false;
                 // initialization parameters
@@ -169,10 +161,22 @@ namespace RA3Hook
                 {
                     BNPath = BNBox.Text;
                 }
-                string configurePath = System.IO.Path.Combine(LanucherPath, "mapping\\config.ini");
-                SaveDllConfigure(configurePath);
-                // run!
-                int returnValue = Ra3.PowerfulRA3Launch(gameEXE, runArg, BNPath);
+                int returnValue;
+                if (runType == 2)
+                {
+                    string configurePath = System.IO.Path.Combine(LanucherPath, "mapping\\config.ini");
+                    SaveDllConfigure(configurePath);
+                    // run!
+                    returnValue = Ra3.PowerfulRA3Launch(gameEXE, runArg, BNPath);
+                }
+                else
+                {
+                    button.Content = "Running!";
+                    //System.Media.SystemSounds.Beep.Play();
+                    byte[] BNLog = Encoding.UTF8.GetBytes(LanucherPath + "\\logs");
+                    returnValue = Ra3.LanuchAndInject(gameEXE, runArg, DllPath, CustomData, BNPath, BNLog);
+                }
+                //
                 if(returnValue == 0)
                 {
                     System.Environment.Exit(0);
@@ -180,10 +184,13 @@ namespace RA3Hook
                 else
                 {
                     backgroundInject = true;
+                    button.Content = "Restart";
                 }
             }
             else
             {
+                gameEXE = System.IO.Path.Combine(textBox.Text, "RA3.exe");
+                runArg = extraArg;
                 Process.Start(new ProcessStartInfo
                 {
                     FileName = gameEXE,

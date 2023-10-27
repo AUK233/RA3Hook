@@ -1,5 +1,7 @@
 #include "pch.h"
 #include <format>
+
+#include "utiliy.h"
 #include "funcMLaser.h"
 
 int __fastcall SweepingLaserStateGetID(uintptr_t ptr)
@@ -25,62 +27,64 @@ int __fastcall SweepingLaserStateGetID(uintptr_t ptr)
 			switch (laserIndex)
 			{
 			case 0:
-				return 3;
+				return SweepLaserT_toTarget0dot1;
+			case 1:
+				return SweepLaserT_baseRotation;
 			case 100:
-				return 2;
+				return SweepLaserT_formSourceToTarget;
 			default:
-				return 1;
+				return SweepLaserT_Enhanced;
 			}
 		}
 		else {
-			return 1;
+			return SweepLaserT_Enhanced;
 		}
 	}
 	else {
-		return 0;
+		return SweepLaserT_Original;
 	}
-
-	// no, that's not what uprising looks like
-	/*
-	UINT32 moduleTag = *(UINT32*)(*(uintptr_t*)(ptr + 4) + 4);
-	switch (moduleTag)
-	{
-	case 1529473134U:
-	case 3164596609U: {
-		// JapanFortressShipAirborneSeigeCannonWeapon_SweepingWeapon
-		// JapanFortressShipAirborneSeigeCannonWeapon_SweepingWeapon_Veteran
-
-		// sweep end position
-		*(float*)(ptr + 0x98) = opx;
-		*(float*)(ptr + 0x9C) = opy;
-		*(float*)(ptr + 0xA0) = opz;
-		// sweep start position
-		*(float*)(ptr + 0xA4) = opx + ofsx + ofsx;
-		*(float*)(ptr + 0xA8) = opy + ofsy + ofsy;
-		*(float*)(ptr + 0xAC) = opz;
-		break;
-	}
-	default: {
-		// sweep end position
-		*(float*)(ptr + 0x98) = opx - ofsx;
-		*(float*)(ptr + 0x9C) = opy - ofsy;
-		*(float*)(ptr + 0xA0) = opz - ofsz;
-		// sweep start position
-		*(float*)(ptr + 0xA4) = opx + ofsx;
-		*(float*)(ptr + 0xA8) = opy + ofsy;
-		*(float*)(ptr + 0xAC) = opz + ofsz;
-		break;
-	}
-	}
-	*/
 }
 
 void __fastcall SweepingLaserStateCPP1(uintptr_t ptr, int cfg)
 {
+	// ptr+0xB0 is laser time (int)
 	//atan2(y, x);
 	switch (cfg)
 	{
-	case 3: {
+	case SweepLaserT_baseRotation: {
+		*(char*)(ptr + 0xBC) = 2;
+		*(int*)(ptr + 0xA0) = 0;
+		// sweep start position
+		*(float*)(ptr + 0xA4) = *(float*)(ptr + 0x3C);
+		*(float*)(ptr + 0xA8) = *(float*)(ptr + 0x40);
+		*(float*)(ptr + 0xAC) = *(float*)(ptr + 0x44);
+
+		// sweep rotation angle
+		float Radius = *(float*)(*(uintptr_t*)(ptr + 4) + 0x2C);
+		float Orientation;
+		if (Radius < -0.1f) {
+			Orientation = getRadomFloatValue(0.0f, 6.28f);
+			Radius *= -1.0f;
+		} else {
+			Orientation = *(float*)(*(uintptr_t*)(ptr + 8) + 0x44);
+			if (rand() % 2) {
+				Radius *= -1.0f;
+			}
+		}
+		// Read EndOffset's z as angle.
+		uintptr_t posOffsetPtr = *(uintptr_t*)(*(uintptr_t*)(ptr + 4) + 0x24);
+		if (posOffsetPtr)
+		{
+			Orientation += *(float*)(posOffsetPtr + 8);
+		}
+
+		float ofsx = cos(Orientation) * Radius;
+		float ofsy = sin(Orientation) * Radius;
+		*(float*)(ptr + 0x98) = ofsx;
+		*(float*)(ptr + 0x9C) = ofsy;
+		break;
+	}
+	case SweepLaserT_toTarget0dot1: {
 		// Target Position
 		float opx = *(float*)(ptr + 0x3C);
 		float opy = *(float*)(ptr + 0x40);
@@ -148,7 +152,7 @@ void __fastcall SweepingLaserStateCPP1(uintptr_t ptr, int cfg)
 		*(float*)(ptr + 0xA0) = opz + ofsz;
 		break;
 	}
-	case 2: {
+	case SweepLaserT_formSourceToTarget: {
 		//ep1 + 3A7F86
 		*(char*)(ptr + 0xBC) = 0;
 		// Self Position
@@ -180,7 +184,7 @@ void __fastcall SweepingLaserStateCPP1(uintptr_t ptr, int cfg)
 		*(float*)(ptr + 0xAC) = sfz;
 		break;
 	}
-	case 1: {
+	case SweepLaserT_Enhanced: {
 		// Target Position
 		float opx = *(float*)(ptr + 0x3C);
 		float opy = *(float*)(ptr + 0x40);
@@ -367,5 +371,41 @@ __declspec(naked) void __fastcall ActivateLaserNuggetASM(uintptr_t ptr)
 			pop ebx
 			add esp, 0x10
 			ret 0x10
+	}
+}
+
+void __fastcall SweepingLaserActivateCPP(uintptr_t ptr, SweepingLaserPos* inPtr, float inXMM3)
+{
+	// 006E3743
+	float sweepAngle = inXMM3 * 6.28f;
+	float cosAngle = cos(sweepAngle);
+	float sinAngle = sin(sweepAngle);
+	
+	float sfx = *(float*)(ptr + 0xA4);
+	float sfy = *(float*)(ptr + 0xA8);
+	float ofsx = *(float*)(ptr + 0x98);
+	float ofsy = *(float*)(ptr + 0x9C);
+
+	inPtr->x = sfx + (cosAngle * ofsx) - (sinAngle * ofsy);
+	inPtr->y = sfy + (cosAngle * ofsy) + (sinAngle * ofsx);
+	inPtr->z = *(float*)(ptr + 0xAC);
+}
+
+extern uintptr_t _Ret_SweepLaserActivate;
+
+__declspec(naked) void __fastcall SweepingLaserActivateASM(uintptr_t ptr)
+{
+	__asm {
+		cmp byte ptr[ecx + 0xBC], 2
+		je NewFuncBlock
+		subss xmm3, [esp]
+		jmp _Ret_SweepLaserActivate
+	NewFuncBlock:
+		mov eax, [esp]
+		mov edx, [esp+8]
+		push eax
+		call SweepingLaserActivateCPP
+		pop ecx
+		ret 4
 	}
 }

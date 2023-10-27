@@ -4,6 +4,7 @@
 #include <span>
 #include <string>
 #include <vector>
+#include <filesystem>
 #include <tlhelp32.h>
 
 #include <shlwapi.h>
@@ -130,6 +131,14 @@ extern "C" void __declspec(dllexport) __stdcall NativeInjectionEntryPoint(REMOTE
 
 	//
 	//
+	//
+	WCHAR SettingPath[MAX_PATH];
+	GetModuleFileNameW(GetModuleHandleW(L"DllCore.dll"), SettingPath, _countof(SettingPath));
+	PathRemoveFileSpecW(SettingPath);
+	wcscat_s(SettingPath, L"\\2Setting.ini");
+	if (std::filesystem::exists(SettingPath)) {
+		mainInjectionSetting(SettingPath);
+	}
 	//
 	mainInjectionExecution();
 	//

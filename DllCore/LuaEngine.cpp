@@ -9,6 +9,7 @@
 #include "LuaEngine.h"
 
 extern inputSettingINFO inputSetting;
+extern uintptr_t _F_CallKillGameObject;
 
 struct CFACampaignINI {
 	std::wstring wstr;
@@ -68,6 +69,7 @@ namespace RA3::LuaEngine {
 		_p_Lua_pushnil = hmodEXE + 0xA8B0;
 		_p_Lua_pushnumber = hmodEXE + 0xA910;
 		_p_Lua_pushstring = hmodEXE + 0xA980;
+
 		_F_luaScriptEngine = hmodEXE + 0x8DD17C;
 		_F_loadConfigINIPath = hmodEXE + 0x2CBB44;
 		_Ret_loadConfigINIPath = hmodEXE + 0x2CBB44 + 6;
@@ -82,12 +84,12 @@ namespace RA3::LuaEngine {
 		_Ret_readObjectScript = hmodEXE + 0x182BEE + 5;
 	}
 
-	void __fastcall InitializeLuaEngineOrigin(uintptr_t hmodEXE)
-	{
+	void __fastcall InitializeLuaEngineOrigin(uintptr_t hmodEXE) {
 		_p_Lua_tostring = hmodEXE + 0xA7B0;
 		_p_Lua_pushnil = hmodEXE + 0xA8D0;
 		_p_Lua_pushnumber = hmodEXE + 0xA930;
 		_p_Lua_pushstring = hmodEXE + 0xA9A0;
+
 		_F_luaScriptEngine = hmodEXE + 0x8E231C;
 		_F_loadConfigINIPath = hmodEXE + 0x30A084;
 		_Ret_loadConfigINIPath = hmodEXE + 0x30A084 + 6;
@@ -201,7 +203,30 @@ namespace RA3::LuaEngine {
 		return out;
 	}
 
-	__declspec(naked) uintptr_t __fastcall GetCurrentGameObjectASM()
+	__declspec(naked) uintptr_t __fastcall GetCurrentGameObjectPtrASM()
+	{
+		__asm {
+			mov ecx, _F_luaScriptEngine
+			mov eax, [ecx]
+			xor ecx, ecx
+			cmp eax, ecx
+			je ofsReturn
+			mov eax, [eax + 0x128]
+			cmp eax, ecx
+			je ofsReturn
+			mov eax, [eax + 0xC]
+			/*
+			cmp eax, ecx
+			je ofsReturn
+			mov eax, [eax + 0x138]
+			*/
+		ofsReturn:
+			ret
+		}
+	}
+
+	char luaStr_CurrentObjectSuicided[] = "CurDrawableCurrentObjectSuicided";
+	__declspec(naked) int CurDrawableCurrentObjectSuicided(void* pLua)
 	{
 		__asm {
 			mov ecx, _F_luaScriptEngine
@@ -215,24 +240,15 @@ namespace RA3::LuaEngine {
 			mov eax, [eax + 0xC]
 			cmp eax, ecx
 			je ofsReturn
-			mov eax, [eax + 0x138]
+			push 0
+			push 8 // SUICIDED
+			push 6
+			mov ecx, eax
+			call _F_CallKillGameObject
 		ofsReturn:
+			mov eax, 1
 			ret
 		}
-	}
-
-	char luaStr_GetCurrentID[] = "GetCurrentID";
-	int GetCurrentGameObjectId(void* pLua)
-	{
-		uintptr_t getID = GetCurrentGameObjectASM();
-		if (getID) {
-			Lua_pushnumber(pLua, getID);
-			return 1;
-		}
-
-		Lua_pushnil(pLua);
-		Lua_pushstring(pLua, "Invalid address");
-		return 2;
 	}
 
 	__declspec(naked) void __fastcall HookLuaScriptEngineASM() {
@@ -300,16 +316,16 @@ namespace RA3::LuaEngine {
 			push eax
 			push edx
 			call _F_pushLuaGetFunction
-			// GetCurrentID
+			// CurDrawableCurrentObjectSuicided
 			/*
 			mov ecx, [esi + 0x28]
-			lea eax, GetCurrentGameObjectId
+			lea eax, CurDrawableCurrentObjectSuicided
 			push 0
 			push eax
 			push ecx
 			call _F_pushLuaExecuteFunction
 			mov edx, [esi + 0x28]
-			lea eax, luaStr_GetCurrentID
+			lea eax, luaStr_CurrentObjectSuicided
 			push eax
 			push edx
 			call _F_pushLuaGetFunction

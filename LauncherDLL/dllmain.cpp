@@ -34,6 +34,59 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 	return TRUE;
 }
 
+extern "C" int DirectGameLaunch(LPCWSTR FileName, LPCWSTR Arguments,
+	LPCWSTR DllPath, PVOID dllData, ULONG dataSize,
+	LPCWSTR BattleNetPath, PVOID BNlog, ULONG logSize)
+{
+	if (std::filesystem::exists(FileName)) {
+		std::wstring appRun = FileName;
+		appRun += L" ";
+		appRun += Arguments;
+
+		STARTUPINFO si;
+		PROCESS_INFORMATION pi;
+		ZeroMemory(&si, sizeof(si));
+		si.cb = sizeof(si);
+		ZeroMemory(&pi, sizeof(pi));
+
+		Sleep(400);
+		CreateProcessW(NULL, (LPWSTR)appRun.c_str(),
+			NULL,
+			NULL,
+			FALSE,
+			0,
+			NULL,
+			NULL,
+			&si, &pi);
+		//
+		CloseHandle(pi.hProcess);
+		CloseHandle(pi.hThread);
+
+		//
+		NTSTATUS nt = RhInjectLibrary(pi.dwProcessId, 0, 0, (WCHAR*)DllPath, NULL, dllData, dataSize);
+		if (nt != 0) {
+			MessageBoxW(NULL, L"Startup failed, please launch RA3 again.", L"error", MB_OK);
+			return 1;
+		}
+
+		if (std::wstring(BattleNetPath) != L"") {
+			Sleep(3000);
+			nt = RhInjectLibrary(pi.dwProcessId, 0, 0, (WCHAR*)BattleNetPath, NULL, BNlog, logSize);
+			if (nt != 0) {
+				MessageBoxW(NULL, L"BattleNet failed to load, please launch RA3 again.", L"error", MB_OK);
+				return 1;
+			}
+		}
+
+		Sleep(500);
+		return 0;
+	}
+	else {
+		MessageBoxW(NULL, L"Have you installed Command and Conquer Red Alert 3?", L"Warning!", MB_OK);
+		return 1;
+	}
+}
+
 extern "C" int PowerfulGameLaunch(LPCWSTR FileName, LPCWSTR Arguments, LPCWSTR BattleNetPath)
 {
 	std::wstring appRun;

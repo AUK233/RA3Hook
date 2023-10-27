@@ -125,10 +125,17 @@ __declspec(naked) void __fastcall WeaponScatterRadiusFixASM1()
 __declspec(naked) void __fastcall WeaponScatterRadiusFixASM2()
 {
 	__asm {
+		mov eax, [esp + 0x14]
+		mov ecx, [eax + 4]
+		mov eax, [ecx + 0xAC]
+		shr eax, 3
+		test al, 1 // check Flags="LENGTH_SCATTER"
+		jne ofs35AA8A
 		mov eax, baseWarheadTargetPositionX
 		mov [esp + 0x2C + 4], eax
 		mov ecx, baseWarheadTargetPositionY
 		mov [esp + 0x2C + 8], ecx
+	ofs35AA8A:
 		mov eax, [esi + 0x18]
 		mov ecx, [esi + 0x1C]
 		ret

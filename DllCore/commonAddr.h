@@ -7,6 +7,8 @@ int InitializationCore = 0;
 // 
 uintptr_t _F_SyncSet = 0;
 uintptr_t _F_SweepLaser01 = 0;
+uintptr_t _F_SweepLaserActivate = 0;
+uintptr_t _Ret_SweepLaserActivate = 0;
 uintptr_t _F_ActivateLaser = 0;
 uintptr_t _Ret_ActivateLaser = 0;
 uintptr_t _F_BloomOpen = 0;
@@ -23,6 +25,10 @@ uintptr_t _F_CallRandomRadius = 0;
 // Fix weapon scatter radius
 uintptr_t _F_WeaponScatterRadius1 = 0;
 uintptr_t _F_WeaponScatterRadius2 = 0;
+// thiscall KillGameObject(void* GameObject, int unk1, UINT deathType, int unk2)
+uintptr_t _F_CallKillGameObject = 0;
+uintptr_t _F_KillTibCrystalWhenEmpty1 = 0;
+uintptr_t _F_KillTibCrystalWhenEmpty2 = 0;
 // temp
 uintptr_t ofs32C8C6 = 0;
 
@@ -57,3 +63,9 @@ uintptr_t _Ret_PlayerTechStoreL = 0;
 uintptr_t _F_PlayerTechStoreR1 = 0;
 uintptr_t _F_PlayerTechStoreR2 = 0;
 uintptr_t _F_PlayerTechStoreR3 = 0;
+// read player faction icon
+uintptr_t pPlayerFactionIcon[12] = { 0,0,0,0,0,0,0,0,0,0,0,0 };
+uintptr_t _F_ReadPlayerFactionType = 0;
+uintptr_t _F_ReadPlayerFactionIcon = 0;
+uintptr_t _Ret_ReadPlayerFactionIcon = 0;
+uintptr_t _F_GetUnitOverlayIconSettings = 0;
