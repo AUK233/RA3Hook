@@ -6,7 +6,7 @@
 
 int __fastcall SweepingLaserStateGetID(uintptr_t ptr)
 {
-	int laserID = *(int*)(*(int*)(ptr + 4) + 8);
+	int laserID = *(int*)(*(uintptr_t*)(ptr + 4) + 8);
 	
 	if (laserID > 499)
 	{
@@ -32,6 +32,8 @@ int __fastcall SweepingLaserStateGetID(uintptr_t ptr)
 				return SweepLaserT_baseRotation;
 			case 100:
 				return SweepLaserT_formSourceToTarget;
+			case 101:
+				return SweepLaserT_formSourceToDistance;
 			default:
 				return SweepLaserT_Enhanced;
 			}
@@ -160,9 +162,9 @@ void __fastcall SweepingLaserStateCPP1(uintptr_t ptr, int cfg)
 		float sfy = *(float*)(ptr + 0x34);
 		float sfz = *(float*)(ptr + 0x38);
 		// Target Position
-		float opx = *(float*)(ptr + 0x3C);
-		float opy = *(float*)(ptr + 0x40);
-		float opz = *(float*)(ptr + 0x44);
+		//float opx = *(float*)(ptr + 0x3C);
+		//float opy = *(float*)(ptr + 0x40);
+		//float opz = *(float*)(ptr + 0x44);
 		//
 		float Orientation = *(float*)(*(uintptr_t*)(ptr + 8) + 0x44);
 		float Radius = *(float*)(*(uintptr_t*)(ptr + 4) + 0x2C);
@@ -181,6 +183,46 @@ void __fastcall SweepingLaserStateCPP1(uintptr_t ptr, int cfg)
 		// sweep start position
 		*(float*)(ptr + 0xA4) = sfx;
 		*(float*)(ptr + 0xA8) = sfy;
+		*(float*)(ptr + 0xAC) = sfz;
+		break;
+	}
+	case SweepLaserT_formSourceToDistance: {
+		*(char*)(ptr + 0xBC) = 0;
+		// Self Position
+		float sfx = *(float*)(ptr + 0x30);
+		float sfy = *(float*)(ptr + 0x34);
+		float sfz = *(float*)(ptr + 0x38);
+		// Target Position
+		float opx = *(float*)(ptr + 0x3C);
+		float opy = *(float*)(ptr + 0x40);
+		float opz = *(float*)(ptr + 0x44);
+		// Read EndOffset's z as minimum distance.
+		float minDistance = 0.0f;
+		uintptr_t posOffsetPtr = *(uintptr_t*)(*(uintptr_t*)(ptr + 4) + 0x24);
+		if (posOffsetPtr) {
+			minDistance = *(float*)(posOffsetPtr + 8);
+		}
+		// Read target distance
+		float Length = *(float*)(*(uintptr_t*)(ptr + 4) + 0x2C);
+		// The difference between the target and its own position.
+		float spx = opx - sfx;
+		float spy = opy - sfy;
+		float ofsL = (sqrtf((spx * spx) + (spy * spy))) - Length;
+		if (ofsL > 0.0f) {
+			minDistance += ofsL;
+			Length += ofsL;
+		}
+		//
+		float Orientation = atan2f(spy, spx);
+		float cosAngle = cos(Orientation);
+		float sinAngle = sin(Orientation);
+		// sweep end position
+		*(float*)(ptr + 0x98) = sfx + (cosAngle * Length);
+		*(float*)(ptr + 0x9C) = sfy + (sinAngle * Length);
+		*(float*)(ptr + 0xA0) = opz;
+		// sweep start position
+		*(float*)(ptr + 0xA4) = sfx + (cosAngle * minDistance);
+		*(float*)(ptr + 0xA8) = sfy + (sinAngle * minDistance);
 		*(float*)(ptr + 0xAC) = sfz;
 		break;
 	}

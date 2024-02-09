@@ -6,6 +6,7 @@ enum SweepingLaserType {
 	SweepLaserT_toTarget0dot1,
 	SweepLaserT_baseRotation,
 	SweepLaserT_formSourceToTarget,
+	SweepLaserT_formSourceToDistance,
 };
 
 int __fastcall SweepingLaserStateGetID(uintptr_t ptr);

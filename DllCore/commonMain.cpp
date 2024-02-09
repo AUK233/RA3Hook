@@ -43,6 +43,21 @@ void __fastcall hookFunctionGroup()
 	// Synchronized rendering and logical frames?
 	WriteHookToProcess((void*)_F_SyncSet, &nop6, 6U);
 
+	// Fix when AttachUpdate's Flags has FIND_BEST_PARENT
+	unsigned char set37AB71[] = {
+		0x83, 0xC4, 0x0C,       // add esp, 0xC
+		0x5D, 0x5E, 0x5F, 0x5B, // pop
+		0xC3,                   // ret
+		0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC
+	};
+	WriteHookToProcess((void*)(_F_AttachUpdateFlagFix01), &set37AB71, 16U);
+	unsigned char set37AB5E = 0xC;
+	WriteHookToProcess((void*)(_F_AttachUpdateFlagFix01 - 0x11), &set37AB5E, 1U);
+	// C*C = 0x90
+	int set37AB64 = 0x90;
+	WriteHookToProcess((void*)(_F_AttachUpdateFlagFix01 - 0xB), &set37AB64, 4U);
+
+	// LASER!
 	// Abandon changes to z-axis for now
 	/**/
 	unsigned char set32C8C6[] = {
@@ -56,6 +71,16 @@ void __fastcall hookFunctionGroup()
 	hookGameBlock((void*)_F_SweepLaserActivate, (uintptr_t)SweepingLaserActivateASM);
 	// Set laser to activate only when not activated
 	hookGameBlock((void*)_F_ActivateLaser, (uintptr_t)ActivateLaserNuggetASM);
+	// Fix no laser for attacking a target when DamageDealtAtSelfPosition is true
+	unsigned char set34BD77[] = {
+		0x83, 0x7E, 0x54, 0x00, // cmp dword ptr [esi+0x54], 0
+		0x5F,                   // pop edi
+		0x74, 0x25,             // je
+		0x85, 0xED,             // test ebp, ebp
+		0x75, 0x16,             // jne
+		0x85                    // pad
+	};
+	WriteHookToProcess((void*)_F_ActivateLaserCheck54h, &set34BD77, 12U);
 
 	// Let "ShowsAmmoPips" work
 	hookGameCall((void*)_F_ShowAmmo, (uintptr_t)ShowsAmmoPipsASM);
@@ -138,14 +163,14 @@ DWORD WINAPI setFrameTo60() {
 	WriteHookToProcess((void*)(hmodEXE + 0x2D3D63 + 2), &pbuildSpeed, 4U);
 
 	//
-	WriteHookToProcess((void*)(hmodEXE + 0x20283D), &setEAXto2, 5U);
-	WriteHookToProcess((void*)(hmodEXE + 0x20283D + 7), &nop6, 6U);
+	//WriteHookToProcess((void*)(hmodEXE + 0x20283D), &setEAXto2, 5U);
+	//WriteHookToProcess((void*)(hmodEXE + 0x20283D + 7), &nop6, 6U);
 	// 
-	WriteHookToProcess((void*)(hmodEXE + 0x21B59B), &setEAXto2, 5U);
-	WriteHookToProcess((void*)(hmodEXE + 0x21B59B + 7), &nop6, 6U);
+	//WriteHookToProcess((void*)(hmodEXE + 0x21B59B), &setEAXto2, 5U);
+	//WriteHookToProcess((void*)(hmodEXE + 0x21B59B + 7), &nop6, 6U);
 	//
-	WriteHookToProcess((void*)(hmodEXE + 0x22935D), &setEAXto2, 5U);
-	WriteHookToProcess((void*)(hmodEXE + 0x22935D + 7), &nop6, 6U);
+	//WriteHookToProcess((void*)(hmodEXE + 0x22935D), &setEAXto2, 5U);
+	//WriteHookToProcess((void*)(hmodEXE + 0x22935D + 7), &nop6, 6U);
 
 	return 0;
 }
@@ -169,12 +194,14 @@ bool __fastcall GetFunctionAddress()
 		_Ret_ReadPlayerFactionIcon = hmodEXE + 0x697353;
 		_F_GetUnitOverlayIconSettings = hmodEXE + 0x11C609;
 		_F_SyncSet = hmodEXE + 0x2DDE95;
+		_F_AttachUpdateFlagFix01 = hmodEXE + 0x37AB71;
 		_F_SweepLaser01 = hmodEXE + 0x3C3ED7;
 		_F_SweepLaserActivate = hmodEXE + 0x2E3759;
 		_Ret_SweepLaserActivate = hmodEXE + 0x2E3759 + 0xC;
 		ofs32C8C6 = hmodEXE + 0x32C8C6;
 		_F_ActivateLaser = hmodEXE + 0x3CF668;
 		_Ret_ActivateLaser = hmodEXE + 0x3CF668 + 6;
+		_F_ActivateLaserCheck54h = hmodEXE + 0x34BD77;
 		_F_ShowAmmo = hmodEXE + 0x128746;
 		_F_WeaponReloadActive = hmodEXE + 0x3BE05F;
 		_F_WeaponReloadTimeCount = hmodEXE + 0x2DC270;
@@ -207,7 +234,10 @@ bool __fastcall GetFunctionAddress()
 		RA3::LuaEngine::InitializeLuaEngineSteam(hmodEXE);
 		// up fps to 60
 		if (inputSetting.UPto60) {
-			CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)setFrameTo60, NULL, NULL, NULL);
+			HANDLE tempHND = CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)setFrameTo60, NULL, NULL, NULL);
+			if (tempHND) {
+				CloseHandle(tempHND);
+			}
 		}
 	}
 	else if (checkRA3Address(hmodEXE + 0x86262C))
@@ -221,6 +251,7 @@ bool __fastcall GetFunctionAddress()
 		_F_PlayerTechStoreR2 = hmodEXE + 0x62F666 - 3;
 		_F_PlayerTechStoreR3 = hmodEXE + 0x62F666 + 3;
 		_F_SyncSet = hmodEXE + 0x31C3D5;
+		_F_AttachUpdateFlagFix01 = hmodEXE + 0x3B8FD1;
 		_F_ReadPlayerFactionType = hmodEXE + 0x2640F7;
 		_F_ReadPlayerFactionIcon = hmodEXE + 0x62BDAE;
 		_Ret_ReadPlayerFactionIcon = hmodEXE + 0x62BDD3;
@@ -232,6 +263,7 @@ bool __fastcall GetFunctionAddress()
 		ofs32C8C6 = hmodEXE + 0x36AE86;
 		_F_ActivateLaser = hmodEXE + 0x40D988;
 		_Ret_ActivateLaser = hmodEXE + 0x40D988 + 6;
+		_F_ActivateLaserCheck54h = hmodEXE + 0x38A397;
 		_F_ShowAmmo = hmodEXE + 0x169D96;
 		_F_WeaponReloadActive = hmodEXE + 0x3FC3AF;
 		_F_WeaponReloadTimeCount = hmodEXE + 0x31A7E0;
@@ -263,7 +295,10 @@ void SetCPUAffinity()
 	//std::wstring threads_mum = std::to_wstring(threadsNum);
 	//MessageBoxW(NULL, threads_mum.c_str(), L"core", MB_OK);
 	HANDLE gameProcess = GetCurrentProcess();
-	if (threadsNum >= 8) {
+	if (threadsNum >= 12) {
+		SetProcessAffinityMask(gameProcess, 0b010101010101);
+	}
+	else if (threadsNum >= 8) {
 		SetProcessAffinityMask(gameProcess, 0b01010101);
 	}
 	else if (threadsNum >= 6) {
@@ -286,7 +321,7 @@ void mainInjectionExecution()
 		}
 
 		if (inputSetting.setDebug) {
-			MessageBox(NULL, L"Injection OK!\n   v2.306", L"Check", MB_OK);
+			MessageBox(NULL, L"Injection OK!\n   v2.4", L"Check", MB_OK);
 		}
 	}
 }

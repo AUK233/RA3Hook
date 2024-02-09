@@ -6,11 +6,13 @@ uintptr_t hmodEXE = 0x00400000;
 int InitializationCore = 0;
 // 
 uintptr_t _F_SyncSet = 0;
+uintptr_t _F_AttachUpdateFlagFix01 = 0;
 uintptr_t _F_SweepLaser01 = 0;
 uintptr_t _F_SweepLaserActivate = 0;
 uintptr_t _Ret_SweepLaserActivate = 0;
 uintptr_t _F_ActivateLaser = 0;
 uintptr_t _Ret_ActivateLaser = 0;
+uintptr_t _F_ActivateLaserCheck54h = 0;
 uintptr_t _F_BloomOpen = 0;
 uintptr_t _Ret_BloomOpen = 0;
 uintptr_t _F_ShowAmmo = 0;
@@ -69,3 +71,4 @@ uintptr_t _F_ReadPlayerFactionType = 0;
 uintptr_t _F_ReadPlayerFactionIcon = 0;
 uintptr_t _Ret_ReadPlayerFactionIcon = 0;
 uintptr_t _F_GetUnitOverlayIconSettings = 0;
+

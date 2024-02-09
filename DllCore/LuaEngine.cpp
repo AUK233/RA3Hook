@@ -44,7 +44,7 @@ namespace RA3::LuaEngine {
 	}
 
 	uintptr_t _p_Lua_pushnil = 0;
-	void __cdecl Lua_pushnil(void* pLua) {
+	__declspec(naked) void __cdecl Lua_pushnil(void* pLua) {
 		__asm {
 			jmp _p_Lua_pushnil
 		}

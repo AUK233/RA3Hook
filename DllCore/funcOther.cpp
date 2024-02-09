@@ -69,3 +69,59 @@ __declspec(naked) void __fastcall KillTibCrystalWhenEmptyASM2()
 		ret
 	}
 }
+
+/*
+uintptr_t ofs982FE0 = 0x982FE0;
+
+__declspec(naked) void __fastcall sub_982FE0(void* ecx, void* edx, void* a2, void* a3) {
+    __asm {
+        jmp ofs982FE0
+    }
+}
+
+uintptr_t ofs416720 = 0x416720;
+
+__declspec(naked) uintptr_t* __cdecl sub_4169E0(size_t a1) {
+    __asm {
+        jmp ofs416720
+    }
+}*/
+
+struct FXParticleSystemTemplate
+{
+	BYTE pad1[0x74];
+	void* shader;
+	int shaderTypeForComparison;
+};
+static_assert(offsetof(FXParticleSystemTemplate, shader) == 0x74);
+static_assert(offsetof(FXParticleSystemTemplate, shaderTypeForComparison) == 0x78);
+
+
+struct ValueNode
+{
+	ValueNode* nextNode;
+	ValueNode* previousNode;
+	void* item;
+};
+
+struct FXParticleSystemManager {
+	BYTE pad1[0x38];
+	ValueNode node
+};
+static_assert(offsetof(FXParticleSystemManager, node) == 0x38);
+
+void __fastcall sub_006CAA60(FXParticleSystemManager* ecx, void* /* edx */, uintptr_t particleSystemRef) {
+	uintptr_t ofs2CAA61 = *(uintptr_t*)particleSystemRef;
+	uintptr_t ofs2CAA65 = *(uintptr_t*)ofs2CAA61;
+	uintptr_t ofs2CAA67 = *(uintptr_t*)ofs2CAA65;
+	// ebp, ecx
+	ValueNode* nextNode = ecx->node.nextNode;
+	// esi
+	ValueNode** nextNodeAddr = &ecx->node.nextNode;
+	FXParticleSystemTemplate* particleSystem = (FXParticleSystemTemplate*)(ofs2CAA67 + 8);
+	if (particleSystem->shader != 0) {
+		if ((uintptr_t)nextNode != (uintptr_t)nextNodeAddr) {
+			// 006CAA8E
+		}
+	}
+}
