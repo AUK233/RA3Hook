@@ -217,6 +217,27 @@ void __fastcall OutBIGFile(std::wstring inPath, std::wstring outPath)
 		std::vector< BYTE > pathBytes;
 		std::vector< BYTE > dataBytes;
 		std::vector< fileInfoStore > v_fileInfo;
+
+		v_fileInfo.reserve(fileCount);
+		if (fileCount > 1000) {
+			// 10MB
+			pathBytes.reserve(10 * 1024 * 1024);
+			// 1500MB
+			dataBytes.reserve(1500 * 1024 * 1024);
+		}
+		else if (fileCount > 100) {
+			// 1MB
+			pathBytes.reserve(1 * 1024 * 1024);
+			// 500MB
+			dataBytes.reserve(500 * 1024 * 1024);
+		}
+		else {
+			// 512KB
+			pathBytes.reserve(512 * 1024);
+			// 100MB
+			dataBytes.reserve(100 * 1024 * 1024);
+		}
+
 		for (size_t i = 0; i < fileCount; i++) {
 			v_fileInfo.push_back(WriteDataToBuffer(mainPath, v_filePath[i], &pathBytes, &dataBytes));
 

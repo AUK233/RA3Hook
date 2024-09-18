@@ -31,6 +31,9 @@ uintptr_t _F_WeaponScatterRadius2 = 0;
 uintptr_t _F_CallKillGameObject = 0;
 uintptr_t _F_KillTibCrystalWhenEmpty1 = 0;
 uintptr_t _F_KillTibCrystalWhenEmpty2 = 0;
+uintptr_t _F_BehaviorUpdate_TiberiumCrystal = 0;
+uintptr_t _Ret_BehaviorUpdate_TiberiumCrystal = 0;
+uintptr_t _F_AddBuildListCount = 0;
 // temp
 uintptr_t ofs32C8C6 = 0;
 

@@ -43,6 +43,24 @@ void __fastcall hookFunctionGroup()
 	// Synchronized rendering and logical frames?
 	WriteHookToProcess((void*)_F_SyncSet, &nop6, 6U);
 
+	// ra3_1.12.game+324085
+	// Up shift build count to 33!
+	/*
+	unsigned char ofs324085[] = {
+		0x6B, 0xFA, 0x20,            // imul edi, edx, 32
+		0x47,                        // inc edi
+		0x0F, 0x1F, 0x44, 0x00, 0x00 // nop
+	};*/
+	unsigned char ofs324085[]= {
+		0x8B, 0xCB, // mov ecx, ebx
+		0xE8, 0x00, 0x00, 0x00, 0x00, // call
+		0x8B, 0xF8	// mov edi, eax
+	};
+	int ofs324085_3 = (uintptr_t)BuildList_GetNewBuildCountASM - (_F_AddBuildListCount + 7);
+	memcpy(&ofs324085[3], &ofs324085_3, 4U);
+	WriteHookToProcess((void*)_F_AddBuildListCount, &ofs324085, 9U);
+	//hookGameCall((void*)(_F_AddBuildListCount + 2), (uintptr_t)BuildList_GetNewBuildCount);
+
 	// Fix when AttachUpdate's Flags has FIND_BEST_PARENT
 	unsigned char set37AB71[] = {
 		0x83, 0xC4, 0x0C,       // add esp, 0xC
@@ -102,10 +120,13 @@ void __fastcall hookFunctionGroup()
 	hookGameCall((void*)_F_WeaponScatterRadius2, (uintptr_t)WeaponScatterRadiusFixASM2);
 	WriteHookToProcess((void*)(_F_WeaponScatterRadius2 + 5), &nop1, 1U);
 
-	//
+	// Use the new method
+	hookGameBlock((void*)_F_BehaviorUpdate_TiberiumCrystal, (uintptr_t)BehaviorUpdate_TiberiumCrystal);
+	/*
 	hookGameCall((void*)_F_KillTibCrystalWhenEmpty1, (uintptr_t)KillTibCrystalWhenEmptyASM1);
 	WriteHookToProcess((void*)(_F_KillTibCrystalWhenEmpty1 + 5), &nop1, 1U);
 	hookGameCall((void*)_F_KillTibCrystalWhenEmpty2, (uintptr_t)KillTibCrystalWhenEmptyASM2);
+	*/
 }
 
 // 
@@ -216,6 +237,10 @@ bool __fastcall GetFunctionAddress()
 		_F_KillTibCrystalWhenEmpty1 = hmodEXE + 0x422717;
 		_F_KillTibCrystalWhenEmpty2 = hmodEXE + 0x42278D;
 		_F_CallKillGameObject = hmodEXE + 0x39EA50;
+		_F_BehaviorUpdate_TiberiumCrystal = hmodEXE + 0x305A26;
+		_Ret_BehaviorUpdate_TiberiumCrystal = hmodEXE + 0x305A26 + 5;
+
+		_F_AddBuildListCount = hmodEXE + 0x324085;
 
 		/*
 		initializeEnumStringType();
@@ -250,16 +275,15 @@ bool __fastcall GetFunctionAddress()
 		_F_PlayerTechStoreR1 = hmodEXE + 0x62F666 - 10;
 		_F_PlayerTechStoreR2 = hmodEXE + 0x62F666 - 3;
 		_F_PlayerTechStoreR3 = hmodEXE + 0x62F666 + 3;
-		_F_SyncSet = hmodEXE + 0x31C3D5;
-		_F_AttachUpdateFlagFix01 = hmodEXE + 0x3B8FD1;
 		_F_ReadPlayerFactionType = hmodEXE + 0x2640F7;
 		_F_ReadPlayerFactionIcon = hmodEXE + 0x62BDAE;
 		_Ret_ReadPlayerFactionIcon = hmodEXE + 0x62BDD3;
 		_F_GetUnitOverlayIconSettings = hmodEXE + 0x15DDF9;
+		_F_SyncSet = hmodEXE + 0x31C3D5;
+		_F_AttachUpdateFlagFix01 = hmodEXE + 0x3B8FD1;
 		_F_SweepLaser01 = hmodEXE + 0x402227;
 		_F_SweepLaserActivate = hmodEXE + 0x321BC9;
 		_Ret_SweepLaserActivate = hmodEXE + 0x321BC9 + 0xC;
-		_F_CallRandomRadius = hmodEXE + 0x23F990;
 		ofs32C8C6 = hmodEXE + 0x36AE86;
 		_F_ActivateLaser = hmodEXE + 0x40D988;
 		_Ret_ActivateLaser = hmodEXE + 0x40D988 + 6;
@@ -268,11 +292,15 @@ bool __fastcall GetFunctionAddress()
 		_F_WeaponReloadActive = hmodEXE + 0x3FC3AF;
 		_F_WeaponReloadTimeCount = hmodEXE + 0x31A7E0;
 		_F_AttributeModifierT18Buff = hmodEXE + 0x11C4DD;
+		_F_CallRandomRadius = hmodEXE + 0x23F990;
 		_F_WeaponScatterRadius1 = hmodEXE + 0x3990AB;
 		_F_WeaponScatterRadius2 = hmodEXE + 0x3990CA;
 		_F_KillTibCrystalWhenEmpty1 = hmodEXE + 0x4608A7;
 		_F_KillTibCrystalWhenEmpty2 = hmodEXE + 0x46091D;
 		_F_CallKillGameObject = hmodEXE + 0x3DCDF0;
+		_F_BehaviorUpdate_TiberiumCrystal = hmodEXE + 0x343E96;
+		_Ret_BehaviorUpdate_TiberiumCrystal = hmodEXE + 0x343E96 + 5;
+		_F_AddBuildListCount = hmodEXE + 0x362485;
 
 		//
 		RA3::LuaEngine::InitializeLuaEngineOrigin(hmodEXE);
@@ -321,7 +349,7 @@ void mainInjectionExecution()
 		}
 
 		if (inputSetting.setDebug) {
-			MessageBox(NULL, L"Injection OK!\n   v2.4", L"Check", MB_OK);
+			MessageBox(NULL, L"Injection OK!\n   v2.402", L"Check", MB_OK);
 		}
 	}
 }

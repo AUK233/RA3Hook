@@ -5,8 +5,9 @@
 #include "commonStruct.h"
 
 extern inputSettingINFO inputSetting;
-extern uintptr_t _F_CallKillGameObject;
 extern uintptr_t _Ret_BloomOpen;
+extern uintptr_t _F_CallKillGameObject;
+extern uintptr_t _Ret_BehaviorUpdate_TiberiumCrystal;
 
 __declspec(naked) void __fastcall SetNoBloomASM()
 {
@@ -70,6 +71,65 @@ __declspec(naked) void __fastcall KillTibCrystalWhenEmptyASM2()
 	}
 }
 
+__declspec(naked) void __fastcall BehaviorUpdate_TiberiumCrystal()
+{
+	__asm {
+		// check if the mine is empty
+		// here we need to reduce by 16 bytes
+		cmp dword ptr[esi + 0x30 - 0x10], 0
+		jne addr705A26
+		push 0
+		push 8 // SUICIDED
+		push 6
+		mov ecx, ebp // ebp is GameObject pointer in 00705A17
+		call _F_CallKillGameObject
+		// then return instead of jumping back to original
+		pop esi
+		mov eax, 1
+		pop ebp
+		add esp, 0x10
+		ret
+	addr705A26:
+		cmp byte ptr[esi + 0x3C], 0
+		push ebx
+		jmp _Ret_BehaviorUpdate_TiberiumCrystal
+	}
+}
+
+__declspec(naked) int32_t __fastcall BuildList_GetNewBuildCountASM(BuildList_Producer* pBuilder, int32_t shiftOn)
+{
+	/*
+	__asm {
+		mov eax, [esp]
+		mov [esp], esi
+		push eax
+		jmp BuildList_GetNewBuildCountCPP
+	}*/
+	__asm {
+		// check if is JapanWallPiece
+		cmp dword ptr[esi+8], 4173660217
+		je JapanWallCount
+		mov eax, edx
+		shl eax, 5 // to 32
+		inc eax
+		ret
+	JapanWallCount:
+		xor eax, eax
+		// increase production only if the list is empty.
+		cmp [ecx+0x10], eax
+		je AddJapanWallCount
+		ret
+	AddJapanWallCount:
+		inc eax
+		ret
+	}
+}
+
+int32_t __fastcall BuildList_GetNewBuildCountCPP(BuildList_Producer* pBuilder, int32_t shiftOn, uintptr_t* pObjectHash)
+{
+	return shiftOn*32 + 1;
+}
+
 /*
 uintptr_t ofs982FE0 = 0x982FE0;
 
@@ -106,7 +166,7 @@ struct ValueNode
 
 struct FXParticleSystemManager {
 	BYTE pad1[0x38];
-	ValueNode node
+	ValueNode node;
 };
 static_assert(offsetof(FXParticleSystemManager, node) == 0x38);
 
