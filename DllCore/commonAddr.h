@@ -34,6 +34,12 @@ uintptr_t _F_KillTibCrystalWhenEmpty2 = 0;
 uintptr_t _F_BehaviorUpdate_TiberiumCrystal = 0;
 uintptr_t _Ret_BehaviorUpdate_TiberiumCrystal = 0;
 uintptr_t _F_AddBuildListCount = 0;
+// SecondaryObjectListenerModule
+uintptr_t _F_SecondaryObjectListenerModuleSize = 0x7DFF60;
+uintptr_t _F_SecondaryObjectListenerModuleInit = 0;
+uintptr_t _F_SecondaryObjectListenerModuleUpg = 0x7B19E3;
+uintptr_t _F_Call00792EF0 = 0x792EF0;
+uintptr_t _F_Call00779650 = 0x779650;
 // temp
 uintptr_t ofs32C8C6 = 0;
 

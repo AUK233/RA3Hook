@@ -8,6 +8,8 @@ extern inputSettingINFO inputSetting;
 extern uintptr_t _Ret_BloomOpen;
 extern uintptr_t _F_CallKillGameObject;
 extern uintptr_t _Ret_BehaviorUpdate_TiberiumCrystal;
+extern uintptr_t _F_Call00792EF0;
+extern uintptr_t _F_Call00779650;
 
 __declspec(naked) void __fastcall SetNoBloomASM()
 {
@@ -117,10 +119,7 @@ __declspec(naked) int32_t __fastcall BuildList_GetNewBuildCountASM(BuildList_Pro
 		xor eax, eax
 		// increase production only if the list is empty.
 		cmp [ecx+0x10], eax
-		je AddJapanWallCount
-		ret
-	AddJapanWallCount:
-		inc eax
+		sete al
 		ret
 	}
 }
@@ -128,6 +127,109 @@ __declspec(naked) int32_t __fastcall BuildList_GetNewBuildCountASM(BuildList_Pro
 int32_t __fastcall BuildList_GetNewBuildCountCPP(BuildList_Producer* pBuilder, int32_t shiftOn, uintptr_t* pObjectHash)
 {
 	return shiftOn*32 + 1;
+}
+
+__declspec(naked) void __fastcall SecondaryObjectListenerModule_Initialize()
+{
+	__asm {
+		// allocate 0 to the new address
+		mov [esi+0x1C], eax
+		mov eax, esi
+		pop esi
+		ret 8
+	}
+}
+
+__declspec(naked) void __fastcall SecondaryObjectListenerModule_SetupUpgrade1()
+{
+	__asm {
+		mov edx, [esi+4] // get module template pointer
+		// ModuleTag_SecondaryObjectListenerMARVmode
+		cmp dword ptr[edx + 4], 2809459055
+		je MARVmode
+		push eax
+		mov ecx, esi
+		call _F_Call00792EF0
+		mov al, 1
+		pop esi
+		ret 8
+	MARVmode:
+		mov edx, [esi+0x1C] // get garrison count
+		push edx // transfer parameter
+		inc edx // +1
+		mov [esi + 0x1C], edx // stored value
+		push eax // upgrade pointer
+		mov ecx, esi
+		call SecondaryObjectListenerModule_SetupUpgrade2
+		mov al, 1
+		pop esi
+		ret 8
+	}
+}
+
+__declspec(naked) void __fastcall SecondaryObjectListenerModule_SetupUpgrade2(void* pModule, void* edx, void* pUpgrade, int32_t Gcount)
+{
+	__asm {
+		mov eax, [esp + 4] // pUpgrade
+		mov edx, [esp + 8] // Gcount
+		push esi
+		//
+		add eax, 0x70
+		push eax
+		mov esi, ecx
+		call SecondaryObjectListenerModule_SetupUpgrade3
+		mov ecx, [esi + 4]
+		mov dl, 1
+		test [ecx + 8], dl
+		je ofs392F2D
+		mov eax, [esi + 8]
+		mov ecx, [eax + 0x37C]
+		test ecx, ecx
+		je ofs392F2D
+		mov eax, [ecx + 0x24]
+		cmp eax, [ecx + 0x28]
+		je ofs392F2D
+		align 16
+	ofs392F20:
+		mov esi, [eax]
+		add eax, 4
+		mov [esi + 0x32], dl
+		cmp eax, [ecx + 0x28]
+		jne ofs392F20
+	ofs392F2D:
+		pop esi
+		ret 8
+	}
+}
+
+__declspec(naked) void __fastcall SecondaryObjectListenerModule_SetupUpgrade3(void* pModule, int32_t Gcount, void* pUpgrade)
+{
+	__asm {
+		mov eax, [esp + 4]
+		push ebx
+		push esi
+		mov ebx, [eax + 4]
+		lea ebx, [ebx + edx * 4] // load current pointer
+		mov esi, ecx
+		//
+		mov ecx, [eax]
+		lea edx, [ebx + ecx * 4] // load last pointer
+		cmp ebx, edx
+		je ofs37C979
+		mov ebx, [ebx]
+		test ebx, ebx
+		je ofs37C979
+		//
+		mov eax, esi
+		mov ecx, [eax + 8]
+		push 0
+		push ebx
+		call _F_Call00779650
+	ofs37C979:
+		pop esi
+		pop ebx
+		ret 4
+	}
 }
 
 /*

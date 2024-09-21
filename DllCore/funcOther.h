@@ -26,3 +26,7 @@ struct BuildList_Producer
 int32_t __fastcall BuildList_GetNewBuildCountASM(BuildList_Producer* pBuilder, int32_t shiftOn);
 int32_t __fastcall BuildList_GetNewBuildCountCPP(BuildList_Producer* pBuilder, int32_t shiftOn, uintptr_t* pObjectHash);
 
+void __fastcall SecondaryObjectListenerModule_Initialize();
+void __fastcall SecondaryObjectListenerModule_SetupUpgrade1();
+void __fastcall SecondaryObjectListenerModule_SetupUpgrade2(void* pModule, void* edx, void* pUpgrade, int32_t Gcount);
+void __fastcall SecondaryObjectListenerModule_SetupUpgrade3(void* pModule, int32_t Gcount, void* pUpgrade);

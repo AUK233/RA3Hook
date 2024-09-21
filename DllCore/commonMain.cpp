@@ -59,7 +59,6 @@ void __fastcall hookFunctionGroup()
 	int ofs324085_3 = (uintptr_t)BuildList_GetNewBuildCountASM - (_F_AddBuildListCount + 7);
 	memcpy(&ofs324085[3], &ofs324085_3, 4U);
 	WriteHookToProcess((void*)_F_AddBuildListCount, &ofs324085, 9U);
-	//hookGameCall((void*)(_F_AddBuildListCount + 2), (uintptr_t)BuildList_GetNewBuildCount);
 
 	// Fix when AttachUpdate's Flags has FIND_BEST_PARENT
 	unsigned char set37AB71[] = {
@@ -127,6 +126,18 @@ void __fastcall hookFunctionGroup()
 	WriteHookToProcess((void*)(_F_KillTibCrystalWhenEmpty1 + 5), &nop1, 1U);
 	hookGameCall((void*)_F_KillTibCrystalWhenEmpty2, (uintptr_t)KillTibCrystalWhenEmptyASM2);
 	*/
+
+	// SecondaryObjectListenerModule
+	// original is 0x1C, but now increase its size
+	uint8_t ofs3DFF60 = 0x20;
+	WriteHookToProcess((void*)_F_SecondaryObjectListenerModuleSize, &ofs3DFF60, 1U);
+	// initialize memory
+	hookGameBlock((void*)_F_SecondaryObjectListenerModuleInit, (uintptr_t)SecondaryObjectListenerModule_Initialize);
+	// It is supported in MARV mode, but note that
+	// Do not support a garrison other than your own, so AllowAlliesInside="false"
+	// There is no exit function set, so you can't exit
+	hookGameBlock((void*)_F_SecondaryObjectListenerModuleUpg, (uintptr_t)SecondaryObjectListenerModule_SetupUpgrade1);
+	WriteHookToProcess((void*)(_F_SecondaryObjectListenerModuleUpg + 5), &nop3, 3U);
 }
 
 // 
@@ -242,6 +253,12 @@ bool __fastcall GetFunctionAddress()
 
 		_F_AddBuildListCount = hmodEXE + 0x324085;
 
+		_F_SecondaryObjectListenerModuleSize = hmodEXE + 0x3DFF60+1;
+		_F_SecondaryObjectListenerModuleInit = hmodEXE + 0x2E4BC3;
+		_F_SecondaryObjectListenerModuleUpg = hmodEXE + 0x3B19E3;
+		_F_Call00792EF0 = hmodEXE + 0x392EF0;
+		_F_Call00779650 = hmodEXE + 0x379650;
+
 		/*
 		initializeEnumStringType();
 		uintptr_t pCFlag = (uintptr_t)&g_CampaignFlag;
@@ -301,6 +318,11 @@ bool __fastcall GetFunctionAddress()
 		_F_BehaviorUpdate_TiberiumCrystal = hmodEXE + 0x343E96;
 		_Ret_BehaviorUpdate_TiberiumCrystal = hmodEXE + 0x343E96 + 5;
 		_F_AddBuildListCount = hmodEXE + 0x362485;
+		_F_SecondaryObjectListenerModuleSize = hmodEXE + 0x41E280+1;
+		_F_SecondaryObjectListenerModuleInit = hmodEXE + 0x323033;
+		_F_SecondaryObjectListenerModuleUpg = hmodEXE + 0x3EFD03;
+		_F_Call00792EF0 = hmodEXE + 0x3D1260;
+		_F_Call00779650 = hmodEXE + 0x3B7B10;
 
 		//
 		RA3::LuaEngine::InitializeLuaEngineOrigin(hmodEXE);
