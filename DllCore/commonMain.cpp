@@ -371,7 +371,7 @@ void mainInjectionExecution()
 		}
 
 		if (inputSetting.setDebug) {
-			MessageBox(NULL, L"Injection OK!\n   v2.402", L"Check", MB_OK);
+			MessageBox(NULL, L"Injection OK!\n   v2.403", L"Check", MB_OK);
 		}
 	}
 }

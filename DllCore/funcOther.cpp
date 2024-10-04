@@ -155,7 +155,11 @@ __declspec(naked) void __fastcall SecondaryObjectListenerModule_SetupUpgrade1()
 		ret 8
 	MARVmode:
 		mov edx, [esi+0x1C] // get garrison count
-		push edx // transfer parameter
+		cmp edx, [eax+0x70] // comparison with total upgrades 
+		jb NoReset
+		xor edx, edx // if exceeded, reset to 0
+	NoReset:
+		push edx // pass parameter
 		inc edx // +1
 		mov [esi + 0x1C], edx // stored value
 		push eax // upgrade pointer
@@ -173,11 +177,18 @@ __declspec(naked) void __fastcall SecondaryObjectListenerModule_SetupUpgrade2(vo
 		mov eax, [esp + 4] // pUpgrade
 		mov edx, [esp + 8] // Gcount
 		push esi
-		//
-		add eax, 0x70
-		push eax
 		mov esi, ecx
-		call SecondaryObjectListenerModule_SetupUpgrade3
+		//
+		mov ecx, [eax + 0x74]
+		lea ecx, [ecx + edx * 4] // load current upgrade pointer
+		mov eax, [ecx]
+		test eax, eax
+		je ofs392F2D
+		mov ecx, [esi + 8]
+		push 0
+		push eax
+		call _F_Call00779650
+		//
 		mov ecx, [esi + 4]
 		mov dl, 1
 		test [ecx + 8], dl
@@ -199,36 +210,6 @@ __declspec(naked) void __fastcall SecondaryObjectListenerModule_SetupUpgrade2(vo
 	ofs392F2D:
 		pop esi
 		ret 8
-	}
-}
-
-__declspec(naked) void __fastcall SecondaryObjectListenerModule_SetupUpgrade3(void* pModule, int32_t Gcount, void* pUpgrade)
-{
-	__asm {
-		mov eax, [esp + 4]
-		push ebx
-		push esi
-		mov ebx, [eax + 4]
-		lea ebx, [ebx + edx * 4] // load current pointer
-		mov esi, ecx
-		//
-		mov ecx, [eax]
-		lea edx, [ebx + ecx * 4] // load last pointer
-		cmp ebx, edx
-		je ofs37C979
-		mov ebx, [ebx]
-		test ebx, ebx
-		je ofs37C979
-		//
-		mov eax, esi
-		mov ecx, [eax + 8]
-		push 0
-		push ebx
-		call _F_Call00779650
-	ofs37C979:
-		pop esi
-		pop ebx
-		ret 4
 	}
 }
 
