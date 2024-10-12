@@ -12,12 +12,14 @@
 #include "funcWeapon.h"
 #include "funcMLaser.h"
 #include "funcOther.h"
+#include "funcAIUpdate.h"
 #include "commonMain.h"
 
 void __fastcall hookFunctionGroup()
 {
 	//hookGameBlock((void*)(hmodEXE + 0x2E5EC3), (uintptr_t)shdiahdiwaw);
 	//
+	HookAIUpdateModule();
 	RA3::LuaEngine::HookLuaEngine();
 	// Load PlayerTechStoreTemplate
 	hookGameBlock((void*)_F_PlayerTechStoreL, (uintptr_t)LoadPlayerTechStoreASM);
@@ -41,7 +43,7 @@ void __fastcall hookFunctionGroup()
 
 	// ra3_1.12.game+2DDE95
 	// Synchronized rendering and logical frames?
-	WriteHookToProcess((void*)_F_SyncSet, &nop6, 6U);
+	WriteHookToProcess((void*)_F_SyncSet, (void*)&nop6, 6U);
 
 	// ra3_1.12.game+324085
 	// Up shift build count to 33!
@@ -101,23 +103,23 @@ void __fastcall hookFunctionGroup()
 
 	// Let "ShowsAmmoPips" work
 	hookGameCall((void*)_F_ShowAmmo, (uintptr_t)ShowsAmmoPipsASM);
-	WriteHookToProcess((void*)(_F_ShowAmmo + 5), &nop2, 2U);
+	WriteHookToProcess((void*)(_F_ShowAmmo + 5), (void*)&nop2, 2U);
 	// Set up reloading ammunition
 	hookGameCall((void*)_F_WeaponReloadActive, (uintptr_t)WeaponReloadActiveASM);
-	WriteHookToProcess((void*)(_F_WeaponReloadActive + 5), &nop1, 1U);
+	WriteHookToProcess((void*)(_F_WeaponReloadActive + 5), (void*)&nop1, 1U);
 	hookGameCall((void*)_F_WeaponReloadTimeCount, (uintptr_t)WeaponReloadTimeCountASM);
-	WriteHookToProcess((void*)(_F_WeaponReloadTimeCount + 5), &nop1, 1U);
+	WriteHookToProcess((void*)(_F_WeaponReloadTimeCount + 5), (void*)&nop1, 1U);
 
 	// <Modifier Type="BOUNTY_PERCENTAGE" Value="50%"/>
 	hookGameCall((void*)_F_AttributeModifierT18Buff, (uintptr_t)AttributeModifierNo18BuffASM);
-	WriteHookToProcess((void*)(_F_AttributeModifierT18Buff + 5), &nop1, 1U);
+	WriteHookToProcess((void*)(_F_AttributeModifierT18Buff + 5), (void*)&nop1, 1U);
 
 	// Fix weapon scatter radius
 	//hookGameBlock((void*)_F_WeaponScatterRadius, (uintptr_t)WeaponScatterRadiusASM);
 	//WriteHookToProcess((void*)(_F_WeaponScatterRadius + 5), &nop3, 3U);
 	hookGameCall((void*)_F_WeaponScatterRadius1, (uintptr_t)WeaponScatterRadiusFixASM1);
 	hookGameCall((void*)_F_WeaponScatterRadius2, (uintptr_t)WeaponScatterRadiusFixASM2);
-	WriteHookToProcess((void*)(_F_WeaponScatterRadius2 + 5), &nop1, 1U);
+	WriteHookToProcess((void*)(_F_WeaponScatterRadius2 + 5), (void*)&nop1, 1U);
 
 	// Use the new method
 	hookGameBlock((void*)_F_BehaviorUpdate_TiberiumCrystal, (uintptr_t)BehaviorUpdate_TiberiumCrystal);
@@ -137,7 +139,7 @@ void __fastcall hookFunctionGroup()
 	// Do not support a garrison other than your own, so AllowAlliesInside="false"
 	// There is no exit function set, so you can't exit
 	hookGameBlock((void*)_F_SecondaryObjectListenerModuleUpg, (uintptr_t)SecondaryObjectListenerModule_SetupUpgrade1);
-	WriteHookToProcess((void*)(_F_SecondaryObjectListenerModuleUpg + 5), &nop3, 3U);
+	WriteHookToProcess((void*)(_F_SecondaryObjectListenerModuleUpg + 5), (void*)&nop3, 3U);
 }
 
 // 
@@ -185,11 +187,11 @@ DWORD WINAPI setFrameTo60() {
 	};
 	// coordinates when unit moves
 	WriteHookToProcess((void*)(hmodEXE + 0x1FFAD0), &setEAXto2, 5U);
-	WriteHookToProcess((void*)(hmodEXE + 0x1FFAD0 + 7), &nop6, 6U);
+	WriteHookToProcess((void*)(hmodEXE + 0x1FFAD0 + 7), (void*)&nop6, 6U);
 
 	// main logic
 	WriteHookToProcess((void*)(hmodEXE + 0x216256), &setEAXto2, 5U);
-	WriteHookToProcess((void*)(hmodEXE + 0x216256 + 7), &nop6, 6U);
+	WriteHookToProcess((void*)(hmodEXE + 0x216256 + 7), (void*)&nop6, 6U);
 	// build speed factor
 	uintptr_t pbuildSpeed = (uintptr_t)&buildSpeed;
 	WriteHookToProcess((void*)(hmodEXE + 0x2D3D63 + 2), &pbuildSpeed, 4U);

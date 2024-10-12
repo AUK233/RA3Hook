@@ -59,6 +59,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -78,6 +79,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <OmitFramePointers>true</OmitFramePointers>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -91,24 +93,28 @@
     <ClInclude Include="..\DllCore\commonAddr.h" />
     <ClInclude Include="..\DllCore\commonData.h" />
     <ClInclude Include="..\DllCore\commonMain.h" />
+    <ClInclude Include="..\DllCore\funcAIUpdate.h" />
     <ClInclude Include="..\DllCore\funcMLaser.h" />
     <ClInclude Include="..\DllCore\funcOther.h" />
     <ClInclude Include="..\DllCore\funcPlayer.h" />
     <ClInclude Include="..\DllCore\funcWeapon.h" />
     <ClInclude Include="..\DllCore\LuaEngine.h" />
     <ClInclude Include="..\DllCore\utiliy.h" />
+    <ClInclude Include="..\DllCore\utiliy_game.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="proxy.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\DllCore\commonMain.cpp" />
+    <ClCompile Include="..\DllCore\funcAIUpdate.cpp" />
     <ClCompile Include="..\DllCore\funcMLaser.cpp" />
     <ClCompile Include="..\DllCore\funcOther.cpp" />
     <ClCompile Include="..\DllCore\funcPlayer.cpp" />
     <ClCompile Include="..\DllCore\funcWeapon.cpp" />
     <ClCompile Include="..\DllCore\LuaEngine.cpp" />
     <ClCompile Include="..\DllCore\utiliy.cpp" />
+    <ClCompile Include="..\DllCore\utiliy_game.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

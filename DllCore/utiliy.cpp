@@ -49,12 +49,3 @@ void hookGameCall(void* targetAddr, uintptr_t dataAddr)
 
 	WriteHookToProcess(targetAddr, hookFunction, sizeof(hookFunction));
 }
-
-extern uintptr_t _F_CallRandomRadius;
-
-__declspec(naked) float __cdecl getRadomFloatValue(float minValue, float maxValue)
-{
-	__asm {
-		jmp _F_CallRandomRadius
-	}
-}

@@ -48,18 +48,21 @@
     <ClInclude Include="commonEnum.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LuaEngine.h">
+    <ClInclude Include="commonStruct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="commonStruct.h">
+    <ClInclude Include="funcAIUpdate.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaEngine.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utiliy_game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="utiliy.cpp">
@@ -80,7 +83,16 @@
     <ClCompile Include="commonMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="funcAIUpdate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="LuaEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utiliy_game.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>

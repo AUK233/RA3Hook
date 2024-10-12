@@ -2,6 +2,7 @@
 #include <format>
 
 #include "utiliy.h"
+#include "utiliy_game.h"
 #include "funcMLaser.h"
 
 int __fastcall SweepingLaserStateGetID(uintptr_t ptr)

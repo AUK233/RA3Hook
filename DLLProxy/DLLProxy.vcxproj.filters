@@ -51,6 +51,12 @@
     <ClInclude Include="..\DllCore\LuaEngine.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\DllCore\funcAIUpdate.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DllCore\utiliy_game.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -78,6 +84,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\DllCore\LuaEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DllCore\funcAIUpdate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DllCore\utiliy_game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

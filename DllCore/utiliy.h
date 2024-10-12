@@ -10,4 +10,3 @@ void hookGameBlock7(void* targetAddr, uintptr_t dataAddr);
 bool checkRA3Address(uintptr_t address);
 // Update game's original function with 5 bytes (Relative Call)
 void hookGameCall(void* targetAddr, uintptr_t dataAddr);
-float __cdecl getRadomFloatValue(float minValue, float maxValue);

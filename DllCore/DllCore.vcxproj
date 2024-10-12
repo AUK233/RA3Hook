@@ -54,6 +54,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <OmitFramePointers>false</OmitFramePointers>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -74,6 +75,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <OmitFramePointers>true</OmitFramePointers>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -90,6 +92,7 @@
     <ClInclude Include="commonMain.h" />
     <ClInclude Include="commonStruct.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="funcAIUpdate.h" />
     <ClInclude Include="funcMLaser.h" />
     <ClInclude Include="funcOther.h" />
     <ClInclude Include="funcPlayer.h" />
@@ -97,10 +100,15 @@
     <ClInclude Include="LuaEngine.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="utiliy.h" />
+    <ClInclude Include="utiliy_game.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="commonMain.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="funcAIUpdate.cpp">
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NoListing</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+    </ClCompile>
     <ClCompile Include="funcMLaser.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NoListing</AssemblerOutput>
     </ClCompile>
@@ -113,6 +121,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="utiliy.cpp" />
+    <ClCompile Include="utiliy_game.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
