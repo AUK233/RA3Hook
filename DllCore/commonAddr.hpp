@@ -1,5 +1,5 @@
 #pragma once
-#include "commonStruct.h"
+#include "commonStruct.hpp"
 
 inputSettingINFO inputSetting;
 uintptr_t hmodEXE = 0x00400000;
@@ -23,7 +23,6 @@ uintptr_t _F_AttributeModifierT18Buff = 0;
 // Fix weapon scatter radius (now it is useless)
 uintptr_t _F_WeaponScatterRadius = 0;
 uintptr_t _Ret_WeaponScatterRadius = 0;
-uintptr_t _F_CallRandomRadius = 0;
 // Fix weapon scatter radius
 uintptr_t _F_WeaponScatterRadius1 = 0;
 uintptr_t _F_WeaponScatterRadius2 = 0;

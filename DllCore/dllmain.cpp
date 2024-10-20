@@ -11,7 +11,7 @@
 #pragma comment( lib, "shlwapi.lib" )
 
 #include "commonMain.h"
-#include "commonStruct.h"
+#include "commonStruct.hpp"
 
 extern inputSettingINFO inputSetting;
 extern int InitializationCore;

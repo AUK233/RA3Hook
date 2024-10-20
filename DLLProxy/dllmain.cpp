@@ -7,7 +7,7 @@
 #pragma comment(lib, "shlwapi.lib")
 
 #include "..\DllCore\commonMain.h"
-#include "../DllCore/commonStruct.h"
+#include "../DllCore/commonStruct.hpp"
 
 extern inputSettingINFO inputSetting;
 extern int InitializationCore;

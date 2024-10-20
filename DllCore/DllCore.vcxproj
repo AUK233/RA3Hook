@@ -86,13 +86,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="commonAddr.h" />
-    <ClInclude Include="commonData.h" />
+    <ClInclude Include="commonAddr.hpp" />
+    <ClInclude Include="commonData.hpp" />
     <ClInclude Include="commonEnum.hpp" />
     <ClInclude Include="commonMain.h" />
-    <ClInclude Include="commonStruct.h" />
+    <ClInclude Include="commonStruct.hpp" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="funcAIUpdate.h" />
+    <ClInclude Include="funcAIUpdate_Address.hpp" />
     <ClInclude Include="funcMLaser.h" />
     <ClInclude Include="funcOther.h" />
     <ClInclude Include="funcPlayer.h" />
@@ -110,7 +111,7 @@
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyAndSourceCode</AssemblerOutput>
     </ClCompile>
     <ClCompile Include="funcMLaser.cpp">
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NoListing</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyAndSourceCode</AssemblerOutput>
     </ClCompile>
     <ClCompile Include="funcOther.cpp" />
     <ClCompile Include="funcPlayer.cpp" />

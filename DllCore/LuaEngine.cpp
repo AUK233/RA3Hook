@@ -5,7 +5,7 @@
 #pragma warning(disable:4996);
 
 #include "utiliy.h"
-#include "commonStruct.h"
+#include "commonStruct.hpp"
 #include "LuaEngine.h"
 
 extern inputSettingINFO inputSetting;

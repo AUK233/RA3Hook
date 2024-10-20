@@ -24,7 +24,7 @@
     <ClInclude Include="utiliy.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="commonAddr.h">
+    <ClInclude Include="commonAddr.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="funcMLaser.h">
@@ -33,7 +33,7 @@
     <ClInclude Include="funcOther.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="commonData.h">
+    <ClInclude Include="commonData.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="funcPlayer.h">
@@ -48,7 +48,7 @@
     <ClInclude Include="commonEnum.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="commonStruct.h">
+    <ClInclude Include="commonStruct.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="funcAIUpdate.h">
@@ -59,6 +59,9 @@
     </ClInclude>
     <ClInclude Include="utiliy_game.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="funcAIUpdate_Address.hpp">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -2,7 +2,7 @@
 #include <format>
 
 #include "funcOther.h"
-#include "commonStruct.h"
+#include "commonStruct.hpp"
 
 extern inputSettingINFO inputSetting;
 extern uintptr_t _Ret_BloomOpen;

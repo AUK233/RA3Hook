@@ -94,6 +94,7 @@
     <ClInclude Include="..\DllCore\commonData.h" />
     <ClInclude Include="..\DllCore\commonMain.h" />
     <ClInclude Include="..\DllCore\funcAIUpdate.h" />
+    <ClInclude Include="..\DllCore\funcAIUpdate_Address.hpp" />
     <ClInclude Include="..\DllCore\funcMLaser.h" />
     <ClInclude Include="..\DllCore\funcOther.h" />
     <ClInclude Include="..\DllCore\funcPlayer.h" />

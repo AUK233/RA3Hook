@@ -1,26 +1,27 @@
 #include "pch.h"
-#include "commonData.h"
-#include "commonAddr.h"
+#include "commonData.hpp"
+#include "commonAddr.hpp"
 #include "utiliy.h"
 #include <string>
 
 //#include "commonEnum.hpp"
 
-#include "LuaEngine.h"
+#include "commonMain.h"
 
+#include "utiliy_game.h"
+#include "LuaEngine.h"
 #include "funcPlayer.h"
 #include "funcWeapon.h"
 #include "funcMLaser.h"
 #include "funcOther.h"
 #include "funcAIUpdate.h"
-#include "commonMain.h"
 
 void __fastcall hookFunctionGroup()
 {
 	//hookGameBlock((void*)(hmodEXE + 0x2E5EC3), (uintptr_t)shdiahdiwaw);
 	//
-	HookAIUpdateModule();
 	RA3::LuaEngine::HookLuaEngine();
+	RA3::AI::HookAIUpdateModule();
 	// Load PlayerTechStoreTemplate
 	hookGameBlock((void*)_F_PlayerTechStoreL, (uintptr_t)LoadPlayerTechStoreASM);
 	// Read PlayerTechStoreTemplate
@@ -243,7 +244,6 @@ bool __fastcall GetFunctionAddress()
 		// now it is useless
 		//_F_WeaponScatterRadius = hmodEXE + 0x3140CB;
 		//_Ret_WeaponScatterRadius = hmodEXE + 0x3140F0;
-		_F_CallRandomRadius = hmodEXE + 0x200B10;
 		_F_WeaponScatterRadius1 = hmodEXE + 0x35AA6B;
 		_F_WeaponScatterRadius2 = hmodEXE + 0x35AA8A;
 
@@ -311,7 +311,6 @@ bool __fastcall GetFunctionAddress()
 		_F_WeaponReloadActive = hmodEXE + 0x3FC3AF;
 		_F_WeaponReloadTimeCount = hmodEXE + 0x31A7E0;
 		_F_AttributeModifierT18Buff = hmodEXE + 0x11C4DD;
-		_F_CallRandomRadius = hmodEXE + 0x23F990;
 		_F_WeaponScatterRadius1 = hmodEXE + 0x3990AB;
 		_F_WeaponScatterRadius2 = hmodEXE + 0x3990CA;
 		_F_KillTibCrystalWhenEmpty1 = hmodEXE + 0x4608A7;
@@ -327,7 +326,9 @@ bool __fastcall GetFunctionAddress()
 		_F_Call00779650 = hmodEXE + 0x3B7B10;
 
 		//
+		InitializeUtiliyGameFunctionsOrigin(hmodEXE);
 		RA3::LuaEngine::InitializeLuaEngineOrigin(hmodEXE);
+		RA3::AI::InitializeHookAIUpdateModuleOrigin(hmodEXE);
 	}
 	else
 	{
