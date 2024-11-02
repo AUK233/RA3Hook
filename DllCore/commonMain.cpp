@@ -15,6 +15,9 @@
 #include "funcMLaser.h"
 #include "funcOther.h"
 #include "funcAIUpdate.h"
+#include "funcAPT.h"
+
+std::wstring SettingINI;
 
 void __fastcall hookFunctionGroup()
 {
@@ -22,6 +25,7 @@ void __fastcall hookFunctionGroup()
 	//
 	RA3::LuaEngine::HookLuaEngine();
 	RA3::AI::HookAIUpdateModule();
+	RA3::APT::HookAptFunctionUpdate();
 	// Load PlayerTechStoreTemplate
 	hookGameBlock((void*)_F_PlayerTechStoreL, (uintptr_t)LoadPlayerTechStoreASM);
 	// Read PlayerTechStoreTemplate
@@ -348,10 +352,12 @@ void SetCPUAffinity()
 	//std::wstring threads_mum = std::to_wstring(threadsNum);
 	//MessageBoxW(NULL, threads_mum.c_str(), L"core", MB_OK);
 	HANDLE gameProcess = GetCurrentProcess();
+	/*
 	if (threadsNum >= 12) {
 		SetProcessAffinityMask(gameProcess, 0b010101010101);
 	}
-	else if (threadsNum >= 8) {
+	else*/
+	if (threadsNum >= 8) {
 		SetProcessAffinityMask(gameProcess, 0b01010101);
 	}
 	else if (threadsNum >= 6) {
@@ -374,13 +380,16 @@ void mainInjectionExecution()
 		}
 
 		if (inputSetting.setDebug) {
-			MessageBox(NULL, L"Injection OK!\n   v2.403", L"Check", MB_OK);
+			MessageBox(NULL, L"Injection OK!\n   v2.404", L"Check", MB_OK);
 		}
 	}
 }
 
 void mainInjectionSetting(LPCWSTR iniPath)
 {
+	SettingINI = iniPath;
+	//MessageBox(NULL, iniPath, L"Warning", MB_OK);
+
 	if (GetPrivateProfileIntW(L"PlayerTemplates", L"Customization", 0, iniPath)) {
 		playerNameHashToIndex[0][0] = GetPrivateProfileIntW(L"PlayerTemplates", L"Faction4", playerNameHashToIndex[0][0], iniPath);
 		playerNameHashToIndex[1][0] = GetPrivateProfileIntW(L"PlayerTemplates", L"Faction5", playerNameHashToIndex[1][0], iniPath);

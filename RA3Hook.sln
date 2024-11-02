@@ -22,6 +22,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CFAWB", "CFAWB\CFAWB.vcxpro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GetFreeMemorySize", "GetFreeMemorySize\GetFreeMemorySize.vcxproj", "{DBFA38AD-DF6D-49CB-B8F2-E43E98D1EEF1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RA3Configurator", "RA3Configurator\RA3Configurator.csproj", "{EAF28208-03DD-482A-9B2A-3FF5DD435648}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -289,6 +291,42 @@ Global
 		{DBFA38AD-DF6D-49CB-B8F2-E43E98D1EEF1}.Release|x64.Build.0 = Release|x64
 		{DBFA38AD-DF6D-49CB-B8F2-E43E98D1EEF1}.Release|x86.ActiveCfg = Release|Win32
 		{DBFA38AD-DF6D-49CB-B8F2-E43E98D1EEF1}.Release|x86.Build.0 = Release|Win32
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.Debug|x64.Build.0 = Debug|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.Debug|x86.Build.0 = Debug|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.netfx3.5-Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.netfx3.5-Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.netfx3.5-Debug|x64.ActiveCfg = Debug|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.netfx3.5-Debug|x64.Build.0 = Debug|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.netfx3.5-Debug|x86.ActiveCfg = Debug|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.netfx3.5-Debug|x86.Build.0 = Debug|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.netfx3.5-Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.netfx3.5-Release|Any CPU.Build.0 = Release|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.netfx3.5-Release|x64.ActiveCfg = Release|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.netfx3.5-Release|x64.Build.0 = Release|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.netfx3.5-Release|x86.ActiveCfg = Release|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.netfx3.5-Release|x86.Build.0 = Release|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.netfx4-Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.netfx4-Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.netfx4-Debug|x64.ActiveCfg = Debug|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.netfx4-Debug|x64.Build.0 = Debug|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.netfx4-Debug|x86.ActiveCfg = Debug|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.netfx4-Debug|x86.Build.0 = Debug|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.netfx4-Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.netfx4-Release|Any CPU.Build.0 = Release|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.netfx4-Release|x64.ActiveCfg = Release|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.netfx4-Release|x64.Build.0 = Release|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.netfx4-Release|x86.ActiveCfg = Release|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.netfx4-Release|x86.Build.0 = Release|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.Release|x64.ActiveCfg = Release|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.Release|x64.Build.0 = Release|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.Release|x86.ActiveCfg = Release|Any CPU
+		{EAF28208-03DD-482A-9B2A-3FF5DD435648}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

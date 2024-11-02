@@ -1,0 +1,15 @@
+﻿<Window x:Class="RA3Configurator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RA3Configurator"
+        mc:Ignorable="d"
+        Title="CFA External Configurator" Height="135" Width="350">
+    <Grid>
+        <CheckBox x:Name="CheckBoxCrate" Content="Random Crates" Checked="OnRandomCratesChanged" Unchecked="OnRandomCratesChanged" Margin="20,10,0,0" Width="130" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="False"/>
+        <CheckBox x:Name="CheckBoxPower" Content="Powerful Mode" Checked="OnPowerfulModeChanged" Unchecked="OnPowerfulModeChanged" Margin="20,33,0,0" Width="130" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="False"/>
+        <CheckBox x:Name="CheckBoxMap" Content="Enhanced Map" Checked="OnEnhancedMapChanged" Unchecked="OnEnhancedMapChanged" Margin="20,56,0,0" Width="130" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="False"/>
+
+    </Grid>
+</Window>

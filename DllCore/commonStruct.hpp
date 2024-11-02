@@ -11,7 +11,7 @@ typedef struct inputSettingINFOtype
 	unsigned char align[3];
 } inputSettingINFO;
 
-
+//
 typedef struct vector2Dpos_t
 {
 	float x;
@@ -24,6 +24,23 @@ typedef struct vector3Dpos_t
 	float y;
 	float z;
 } vector3Dpos;
+//
+
+typedef struct ruleDataStruct_t
+{
+	unsigned char pad[0x74];
+	// should be int, but now as 4 bytes
+	char RandomCrate[4];
+} ruleDataStruct;
+static_assert(offsetof(ruleDataStruct_t, RandomCrate) == 0x74);
+
+typedef struct ruleDataPointer_t
+{
+	void* v_table;
+	unsigned char pad[8];
+	ruleDataStruct_t* ruleData;
+} ruleDataPointer;
+static_assert(offsetof(ruleDataPointer_t, ruleData) == 0xC);
 
 typedef struct GameObject_t {
 	void* v_table;

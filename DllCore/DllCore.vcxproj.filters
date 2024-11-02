@@ -63,6 +63,9 @@
     <ClInclude Include="funcAIUpdate_Address.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="funcAPT.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -97,6 +100,9 @@
     </ClCompile>
     <ClCompile Include="utiliy_game.cpp">
       <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="funcAPT.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

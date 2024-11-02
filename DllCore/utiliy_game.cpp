@@ -21,6 +21,16 @@ __declspec(naked) void* __fastcall newMemoryAllocation(UINT32 size)
 	}
 }
 
+uintptr_t _F_SkirmishSettingsPointerCDBBE0 = 0xCDBBE0;
+uintptr_t _F_GameTextPointerCDB754 = 0xCDB754;
+uintptr_t _F_GameObjectHashCE6C58 = 0xCE6C58;
+
+uintptr_t _F_CallGetEAString4CB750 = 0x4CB750;
+uintptr_t _F_CallFreeEAString4CB6D0 = 0x4CB6D0;
+uintptr_t _F_CallGetPointer7E4230 = 0x7E4230;
+uintptr_t _F_Call4D8420 = 0x4D8420;
+uintptr_t _F_Call416830 = 0x416830;
+
 void __fastcall InitializeUtiliyGameFunctionsOrigin(uintptr_t hmodEXE)
 {
 	_F_CallRandomRadius = hmodEXE + 0x23F990;

@@ -60,6 +60,9 @@
     <ClInclude Include="..\DllCore\funcAIUpdate_Address.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\DllCore\funcAPT.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -93,6 +96,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\DllCore\utiliy_game.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DllCore\funcAPT.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
