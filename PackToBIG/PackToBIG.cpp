@@ -27,6 +27,11 @@ std::string WideToUTF8(const std::wstring& source)
 	return conv.to_bytes(source);
 }
 
+void __fastcall WriteFileCountToByte(void* bytes, void* value)
+{
+	*(int32_t*)bytes = _byteswap_ulong(*(int32_t*)value);
+}
+
 //Converts a string to lower case
 std::wstring __fastcall ConvertToLower(std::wstring in)
 {
@@ -146,6 +151,9 @@ void __fastcall SetCheckedFileType(UINT32 in)
 {
 	switch (in)
 	{
+	case 3:
+		v_excludeFile.push_back(L"xml");
+		return;
 	case 2:
 		v_includeFile.push_back(L"cdata");
 		return;

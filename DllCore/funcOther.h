@@ -29,3 +29,5 @@ int32_t __fastcall BuildList_GetNewBuildCountCPP(BuildList_Producer* pBuilder, i
 void __fastcall SecondaryObjectListenerModule_Initialize();
 void __fastcall SecondaryObjectListenerModule_SetupUpgrade1();
 void __fastcall SecondaryObjectListenerModule_SetupUpgrade2(void* pModule, void* edx, void* pUpgrade, int32_t Gcount);
+
+void __fastcall newForceFeedback0x5216D0ASM(void* pthis, void* edx, void* projectile, void* attacker);

@@ -39,6 +39,8 @@ uintptr_t _F_SecondaryObjectListenerModuleInit = 0;
 uintptr_t _F_SecondaryObjectListenerModuleUpg = 0x7B19E3;
 uintptr_t _F_Call00792EF0 = 0x792EF0;
 uintptr_t _F_Call00779650 = 0x779650;
+// other
+uintptr_t _VFT_ForceFeedback7ECA18 = 0xBECA18;
 // temp
 uintptr_t ofs32C8C6 = 0;
 

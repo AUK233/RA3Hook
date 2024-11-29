@@ -6,5 +6,7 @@ void __fastcall UpdateToggleRandomCrateOptionsCPP(ruleDataPointer* prule);
 void __fastcall UpdateToggleRandomCrateOptionsASM();
 void __fastcall UpdateRandomCrateCreateFunctionASM();
 
+
+void __fastcall InitializeHookAptFunctionUpdateOrigin(uintptr_t hmodEXE);
 void __fastcall HookAptFunctionUpdate();
 }

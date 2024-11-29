@@ -37,7 +37,7 @@
 powerfulMode:
     cmp byte ptr [ebx+0x74+1], 0
     je ofs216E23
-    mov edx, 0x86F89A33
+    mov edx, 3804486283 // GenericPowerfulMode
     mov eax, _F_GameObjectHashCE6C58
     mov ecx, [eax]
     push edx // hash

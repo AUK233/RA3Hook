@@ -18,6 +18,7 @@ void __fastcall HookGetProfileDataINI();
 // lua scripts
 int SetCFACampaignFlag(void* pLua);
 int CheckCFACampaignFlag(void* pLua);
+int CheckRuleEnhancedMap(void* pLua);
 // object scripts
 uintptr_t __fastcall GetCurrentGameObjectPtrASM();
 int CurDrawableCurrentObjectSuicided(void* pLua);

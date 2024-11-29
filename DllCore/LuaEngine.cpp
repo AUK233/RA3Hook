@@ -10,6 +10,7 @@
 
 extern inputSettingINFO inputSetting;
 extern uintptr_t _F_CallKillGameObject;
+extern uintptr_t _F_RuleSettingsCE3A74;
 
 struct CFACampaignINI {
 	std::wstring wstr;
@@ -203,6 +204,17 @@ namespace RA3::LuaEngine {
 		return out;
 	}
 
+	char luaStr_CheckRuleEnhancedMap[] = "CheckRuleEnhancedMap";
+	int CheckRuleEnhancedMap(void* pLua)
+	{
+		ruleDataStruct* pRule = *(ruleDataStruct**)_F_RuleSettingsCE3A74;
+		char* rule74 = pRule->RandomCrate;
+		if (rule74[2]) {
+			return 1;
+		}
+		return 0;
+	}
+
 	__declspec(naked) uintptr_t __fastcall GetCurrentGameObjectPtrASM()
 	{
 		__asm {
@@ -280,6 +292,18 @@ namespace RA3::LuaEngine {
 			push eax
 			push edx
 			call _F_pushLuaGetFunction
+			// CheckRuleEnhancedMap
+			mov ecx, [esi + 0x24]
+			lea eax, CheckRuleEnhancedMap
+			push 0
+			push eax
+			push ecx
+			call _F_pushLuaExecuteFunction
+			mov edx, [esi + 0x24]
+			lea eax, luaStr_CheckRuleEnhancedMap
+			push eax
+			push edx
+			call _F_pushLuaGetFunction
 			// return original
 			movd esp, xmm3
 			jmp _Ret_readLuaScript
@@ -313,6 +337,18 @@ namespace RA3::LuaEngine {
 			call _F_pushLuaExecuteFunction
 			mov edx, [esi + 0x28]
 			lea eax, luaStr_CheckCFACampaignFlag
+			push eax
+			push edx
+			call _F_pushLuaGetFunction
+			// CheckRuleEnhancedMap
+			mov ecx, [esi + 0x28]
+			lea eax, CheckRuleEnhancedMap
+			push 0
+			push eax
+			push ecx
+			call _F_pushLuaExecuteFunction
+			mov edx, [esi + 0x28]
+			lea eax, luaStr_CheckRuleEnhancedMap
 			push eax
 			push edx
 			call _F_pushLuaGetFunction

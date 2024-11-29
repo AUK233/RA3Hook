@@ -20,8 +20,6 @@ extern uintptr_t _F_Call416830;
 
 namespace RA3::APT {
 
-uintptr_t _ret_ToggleRandomCrateOptions = 0xB26271;
-
 __declspec(naked) void __fastcall PushTheRuleTextToOnlineChatBox(ruleDataPointer* pRule, LPCSTR pText)
 {
 	__asm {
@@ -41,22 +39,23 @@ void __fastcall UpdateToggleRandomCrateOptionsCPP(ruleDataPointer* prule)
 	uint8_t RandomCrate = GetPrivateProfileIntW(L"SkirmishSetting", L"RandomCrate", 1, SettingINI.c_str());
 	rule74[0] = RandomCrate;
 	if (RandomCrate) {
-		PushTheRuleTextToOnlineChatBox(prule, "GUI:SANDBOXMODE");
+		PushTheRuleTextToOnlineChatBox(prule, "GUI:RuleEnableRandomCrate");
 	}
 
 	uint8_t PowerfulMode = GetPrivateProfileIntW(L"SkirmishSetting", L"PowerfulMode", 0, SettingINI.c_str());
 	rule74[1] = PowerfulMode;
 	if (PowerfulMode) {
-		PushTheRuleTextToOnlineChatBox(prule, "GUI:SANDBOXMODE");
+		PushTheRuleTextToOnlineChatBox(prule, "GUI:RuleEnablePowerfulMode");
 	}
 
 	uint8_t EnhancedMap = GetPrivateProfileIntW(L"SkirmishSetting", L"EnhancedMap", 0, SettingINI.c_str());
 	rule74[2] = EnhancedMap;
 	if (EnhancedMap) {
-		PushTheRuleTextToOnlineChatBox(prule, "GUI:SANDBOXMODE");
+		PushTheRuleTextToOnlineChatBox(prule, "GUI:RuleEnableEnhancedMap");
 	}
 }
 
+CHAR strGUIRuleDisableExtraSettings[] = "GUI:RuleDisableExtraSettings";
 __declspec(naked) void __fastcall UpdateToggleRandomCrateOptionsASM()
 {
 	__asm {
@@ -65,16 +64,21 @@ __declspec(naked) void __fastcall UpdateToggleRandomCrateOptionsASM()
 		test ecx, ecx
 		je isZeroBlock
 		// ToggleRandomCrates turn off
-		push 6
 		mov dword ptr[eax + 0x74], 0
-		jmp _ret_ToggleRandomCrateOptions
+		lea edx, strGUIRuleDisableExtraSettings
+		mov ecx, ebx
+		call PushTheRuleTextToOnlineChatBox
+		jmp ofs72629B
 	isZeroBlock:
 		// ToggleRandomCrates turn on
-		push 0
-		mov edx, _ret_ToggleRandomCrateOptions
 		mov ecx, ebx
-		push edx
-		jmp UpdateToggleRandomCrateOptionsCPP
+		call UpdateToggleRandomCrateOptionsCPP
+	ofs72629B:
+		pop edi
+		pop esi
+		pop ebx
+		add esp, 0x3C
+		ret 8
 	}
 }
 
@@ -85,12 +89,21 @@ __declspec(naked) void __fastcall UpdateRandomCrateCreateFunctionASM()
 	}
 }
 
+uintptr_t _F_ToggleRandomCrateOptions = 0xB261A9;
+uintptr_t _F_RandomCrateCreateFunction = 0x616DD9;
+
+void __fastcall InitializeHookAptFunctionUpdateOrigin(uintptr_t hmodEXE)
+{
+	_F_ToggleRandomCrateOptions = hmodEXE + 0x6BB1D9;
+	_F_RandomCrateCreateFunction = hmodEXE + 0x255CE9;
+}
+
 void __fastcall HookAptFunctionUpdate()
 {
-	hookGameBlock((void*)0xB261A9, (uintptr_t)UpdateToggleRandomCrateOptionsASM);
+	hookGameBlock((void*)_F_ToggleRandomCrateOptions, (uintptr_t)UpdateToggleRandomCrateOptionsASM);
 
-	hookGameBlock((void*)0x616DD9, (uintptr_t)UpdateRandomCrateCreateFunctionASM);
-	WriteHookToProcess((void*)(0x616DD9 + 5), (void*)&nop1, 1U);
+	hookGameBlock((void*)_F_RandomCrateCreateFunction, (uintptr_t)UpdateRandomCrateCreateFunctionASM);
+	WriteHookToProcess((void*)(_F_RandomCrateCreateFunction + 5), (void*)&nop1, 1U);
 }
 
 }

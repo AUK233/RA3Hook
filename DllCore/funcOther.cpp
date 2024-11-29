@@ -213,6 +213,25 @@ __declspec(naked) void __fastcall SecondaryObjectListenerModule_SetupUpgrade2(vo
 	}
 }
 
+__declspec(naked) void __fastcall newForceFeedback0x5216D0ASM(void* pthis, void* edx, void* projectile, void* attacker)
+{
+	__asm {
+		mov eax, [esp + 4]
+		test eax, eax
+		je ofs1216ED
+		lea edx, [eax + 8]
+		push 0
+		push 0
+		push edx
+		mov edx, [ecx] // maybe is 0xBECA10
+		add eax, 0x38
+		push eax
+		call dword ptr [edx + 4]
+	ofs1216ED:
+		ret 8
+	}
+}
+
 /*
 uintptr_t ofs982FE0 = 0x982FE0;
 

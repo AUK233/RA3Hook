@@ -22,6 +22,9 @@ struct fileInfoStore
 void PushStringToVector(std::string strn, std::vector< BYTE >* bytes);
 //
 std::string WideToUTF8(const std::wstring& source);
+// in asm
+// extern "C" 
+void __fastcall WriteFileCountToByte(void* bytes, void* value);
 //Converts a string to lower case
 std::wstring __fastcall ConvertToLower(std::wstring in);
 //
@@ -37,6 +40,3 @@ fileInfoStore __fastcall WriteDataToBuffer(std::wstring mainPath, std::wstring d
 //
 void __fastcall OutBIGFile(std::wstring inPath, std::wstring outPath);
 
-// in asm
-//
-extern "C" void __fastcall WriteFileCountToByte(void* bytes, void* value);

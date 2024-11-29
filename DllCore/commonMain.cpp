@@ -145,6 +145,10 @@ void __fastcall hookFunctionGroup()
 	// There is no exit function set, so you can't exit
 	hookGameBlock((void*)_F_SecondaryObjectListenerModuleUpg, (uintptr_t)SecondaryObjectListenerModule_SetupUpgrade1);
 	WriteHookToProcess((void*)(_F_SecondaryObjectListenerModuleUpg + 5), (void*)&nop3, 3U);
+
+	// fix FXList's ForceFeedback crash
+	uintptr_t p5216D0 = (uintptr_t)newForceFeedback0x5216D0ASM;
+	WriteHookToProcess((void*)_VFT_ForceFeedback7ECA18, &p5216D0, 4U);
 }
 
 // 
@@ -265,6 +269,8 @@ bool __fastcall GetFunctionAddress()
 		_F_Call00792EF0 = hmodEXE + 0x392EF0;
 		_F_Call00779650 = hmodEXE + 0x379650;
 
+		_VFT_ForceFeedback7ECA18 = 0xBECA18;
+
 		/*
 		initializeEnumStringType();
 		uintptr_t pCFlag = (uintptr_t)&g_CampaignFlag;
@@ -329,10 +335,13 @@ bool __fastcall GetFunctionAddress()
 		_F_Call00792EF0 = hmodEXE + 0x3D1260;
 		_F_Call00779650 = hmodEXE + 0x3B7B10;
 
+		_VFT_ForceFeedback7ECA18 = 0xBF4060;
+
 		//
 		InitializeUtiliyGameFunctionsOrigin(hmodEXE);
 		RA3::LuaEngine::InitializeLuaEngineOrigin(hmodEXE);
 		RA3::AI::InitializeHookAIUpdateModuleOrigin(hmodEXE);
+		RA3::APT::InitializeHookAptFunctionUpdateOrigin(hmodEXE);
 	}
 	else
 	{
@@ -380,7 +389,7 @@ void mainInjectionExecution()
 		}
 
 		if (inputSetting.setDebug) {
-			MessageBox(NULL, L"Injection OK!\n   v2.404", L"Check", MB_OK);
+			MessageBox(NULL, L"Injection OK!\n   v2.405", L"Check", MB_OK);
 		}
 	}
 }
@@ -388,7 +397,7 @@ void mainInjectionExecution()
 void mainInjectionSetting(LPCWSTR iniPath)
 {
 	SettingINI = iniPath;
-	//MessageBox(NULL, iniPath, L"Warning", MB_OK);
+	//MessageBox(NULL, iniPath, L"Check", MB_OK);
 
 	if (GetPrivateProfileIntW(L"PlayerTemplates", L"Customization", 0, iniPath)) {
 		playerNameHashToIndex[0][0] = GetPrivateProfileIntW(L"PlayerTemplates", L"Faction4", playerNameHashToIndex[0][0], iniPath);
