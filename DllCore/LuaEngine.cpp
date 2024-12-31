@@ -24,13 +24,25 @@ namespace RA3::LuaEngine {
 	uintptr_t _F_loadConfigINIPath = 0;
 	uintptr_t _Ret_loadConfigINIPath = 0;
 	//
-	uintptr_t _F_pushLuaExecuteFunction = 0;
-	uintptr_t _F_pushLuaGetFunction = 0;
 	uintptr_t _F_readLuaScript = 0;
 	uintptr_t _Ret_readLuaScript = 0;
 	uintptr_t _p_ExecuteAction = 0;
 	uintptr_t _F_readObjectScript = 0;
 	uintptr_t _Ret_readObjectScript = 0;
+
+	uintptr_t _F_pushLuaExecuteFunction = 0;
+	__declspec(naked) void __cdecl pushLuaExecuteFunction(void* pLua, uintptr_t pFunction, int n) {
+		__asm {
+			jmp _F_pushLuaExecuteFunction
+		}
+	}
+
+	uintptr_t _F_pushLuaGetFunction = 0;
+	__declspec(naked) void __cdecl pushLuaGetFunction(void* pLua, const char* name) {
+		__asm {
+			jmp _F_pushLuaGetFunction
+		}
+	}
 
 	uintptr_t _p_Lua_tostring = 0;
 	__declspec(naked) const char* __cdecl Lua_tostring(void* pLua, int index) {
@@ -59,13 +71,96 @@ namespace RA3::LuaEngine {
 	}
 
 	uintptr_t _p_Lua_pushstring = 0;
-	void __cdecl Lua_pushstring(void* pLua, const char* text) {
+	__declspec(naked) void __cdecl Lua_pushstring(void* pLua, const char* text) {
 		__asm {
 			jmp _p_Lua_pushstring
 		}
 	}
 
+
+	uintptr_t _p_Lua_pushvalue = 0;
+	__declspec(naked) void __cdecl Lua_pushvalue(void* pLua, int value) {
+		__asm {
+			jmp _p_Lua_pushvalue
+		}
+	}
+
+	__declspec(naked) int __fastcall Lua_GetParameterCount(void* pLua)
+	{
+		// in 0040A3D0
+		__asm {
+			mov eax, [ecx]
+			sub eax, [ecx + 0x10]
+			sar eax, 4
+			ret
+		}
+	}
+
+	__declspec(naked) uint32_t __fastcall Lua_GetTableNewMemberOrNull(void* pLua, int index)
+	{
+		__asm {
+			mov eax, edx
+			test eax, eax
+			jl ofsA5ED
+			mov edx, [ecx + 0x10]
+			shl eax, 4
+			lea eax, [edx + eax - 0x10]
+			cmp eax, [ecx]
+			jb ofsA5F2
+		ofsA5EA:
+			xor eax, eax
+			ret
+		ofsA5ED:
+			shl eax, 4
+			add eax, [ecx]
+		ofsA5F2:
+			test eax, eax
+			je ofsA5EA
+			cmp dword ptr[eax], 4
+			jne ofsA5EA
+			mov edx, [eax + 0x8]
+			mov eax, [edx + 0xC]
+			ret
+		}
+	}
+
+	uintptr_t _Ret_004DEE52 = 0x4DEE52;
+	__declspec(naked) GameObject* __fastcall GetGameObjectPointerFromObjectID(uint32_t id)
+	{
+		__asm {
+			sub esp, 0xC
+			test ecx, ecx
+			je return0
+			push esi
+			push edi
+			mov eax, ecx
+			jmp _Ret_004DEE52
+		return0 :
+			xor eax, eax
+			add esp, 0xC
+			ret
+		}
+	}
+
+	GameObject* __fastcall GetGameObjectPointer(void* pLua, int index)
+	{
+		// 005781B4
+		int argc = Lua_GetParameterCount(pLua);
+		if (argc < index) {
+			return nullptr;
+		}
+
+		uint32_t id = Lua_GetTableNewMemberOrNull(pLua, index);
+		if (!id) {
+			return nullptr;
+		}
+
+		GameObject* pGO = GetGameObjectPointerFromObjectID(id);
+		return pGO;
+	}
+
 	void __fastcall InitializeLuaEngineSteam(uintptr_t hmodEXE) {
+		_p_Lua_pushvalue = hmodEXE + 0xA4D0;
 		_p_Lua_tostring = hmodEXE + 0xA790;
 		_p_Lua_pushnil = hmodEXE + 0xA8B0;
 		_p_Lua_pushnumber = hmodEXE + 0xA910;
@@ -86,6 +181,7 @@ namespace RA3::LuaEngine {
 	}
 
 	void __fastcall InitializeLuaEngineOrigin(uintptr_t hmodEXE) {
+		_p_Lua_pushvalue = hmodEXE + 0xA4F0;
 		_p_Lua_tostring = hmodEXE + 0xA7B0;
 		_p_Lua_pushnil = hmodEXE + 0xA8D0;
 		_p_Lua_pushnumber = hmodEXE + 0xA930;
@@ -103,6 +199,9 @@ namespace RA3::LuaEngine {
 		_p_ExecuteAction = hmodEXE + 0x1C4370;
 		_F_readObjectScript = hmodEXE + 0x1C430E;
 		_Ret_readObjectScript = hmodEXE + 0x1C430E + 5;
+
+		//
+		_Ret_004DEE52 = hmodEXE + 0x120852;
 	}
 
 	void __fastcall HookLuaEngine() {
@@ -173,7 +272,7 @@ namespace RA3::LuaEngine {
 	}
 
 	char luaStr_SetCFACampaignFlag[] = "SetCFACampaignFlag";
-	int SetCFACampaignFlag(void* pLua) {
+	int __cdecl SetCFACampaignFlag(void* pLua) {
 		/*
 		std::string arg1 = Lua_tostring(pLua, 1);
 		std::string arg2 = Lua_tostring(pLua, 2);
@@ -195,7 +294,7 @@ namespace RA3::LuaEngine {
 	}
 
 	char luaStr_CheckCFACampaignFlag[] = "CheckCFACampaignFlag";
-	int CheckCFACampaignFlag(void* pLua) {
+	int __cdecl CheckCFACampaignFlag(void* pLua) {
 		int out = 0;
 		if (CampaignINIPath.init) {
 			std::wstring arg1 = Lua_toWString(pLua, 1);
@@ -205,7 +304,7 @@ namespace RA3::LuaEngine {
 	}
 
 	char luaStr_CheckRuleEnhancedMap[] = "CheckRuleEnhancedMap";
-	int CheckRuleEnhancedMap(void* pLua)
+	int __cdecl CheckRuleEnhancedMap(void* pLua)
 	{
 		ruleDataStruct* pRule = *(ruleDataStruct**)_F_RuleSettingsCE3A74;
 		char* rule74 = pRule->RandomCrate;
@@ -215,30 +314,34 @@ namespace RA3::LuaEngine {
 		return 0;
 	}
 
-	__declspec(naked) uintptr_t __fastcall GetCurrentGameObjectPtrASM()
+	int __cdecl CheckRuleNoSuperWeapon(void* pLua)
 	{
-		__asm {
-			mov ecx, _F_luaScriptEngine
-			mov eax, [ecx]
-			xor ecx, ecx
-			cmp eax, ecx
-			je ofsReturn
-			mov eax, [eax + 0x128]
-			cmp eax, ecx
-			je ofsReturn
-			mov eax, [eax + 0xC]
-			/*
-			cmp eax, ecx
-			je ofsReturn
-			mov eax, [eax + 0x138]
-			*/
-		ofsReturn:
-			ret
+		ruleDataStruct* pRule = *(ruleDataStruct**)_F_RuleSettingsCE3A74;
+		char* rule74 = pRule->RandomCrate;
+		if (rule74[3]) {
+			return 1;
 		}
+		return 0;
 	}
 
+	int __cdecl GetThisPlayer(void* pLua)
+	{
+		GameObject* pGO = GetGameObjectPointer(pLua, 1);
+		if (pGO) {
+			Player* player = pGO->relevantPlayer;
+			//MessageBoxA(NULL, player->inScriptName, "nore", MB_OK);
+			Lua_pushstring(pLua, player->inScriptName);
+		}
+		else {
+			Lua_pushstring(pLua, "Player_0");
+		}
+		
+		return 1;
+	}
+
+
 	char luaStr_CurrentObjectSuicided[] = "CurDrawableCurrentObjectSuicided";
-	__declspec(naked) int CurDrawableCurrentObjectSuicided(void* pLua)
+	__declspec(naked) int __cdecl CurDrawableCurrentObjectSuicided(void* pLua)
 	{
 		__asm {
 			mov ecx, _F_luaScriptEngine
@@ -263,123 +366,55 @@ namespace RA3::LuaEngine {
 		}
 	}
 
+	void __fastcall HookLuaScriptEngineCPP(void* pLua)
+	{
+		pushLuaExecuteFunction(pLua, (uintptr_t)SetCFACampaignFlag, 0);
+		pushLuaGetFunction(pLua, "SetCFACampaignFlag");
+		pushLuaExecuteFunction(pLua, (uintptr_t)CheckCFACampaignFlag, 0);
+		pushLuaGetFunction(pLua, "CheckCFACampaignFlag");
+
+		pushLuaExecuteFunction(pLua, (uintptr_t)CheckRuleEnhancedMap, 0);
+		pushLuaGetFunction(pLua, "CheckRuleEnhancedMap");
+		pushLuaExecuteFunction(pLua, (uintptr_t)CheckRuleNoSuperWeapon, 0);
+		pushLuaGetFunction(pLua, "CheckRuleNoSuperWeapon");
+
+		pushLuaExecuteFunction(pLua, (uintptr_t)GetThisPlayer, 0);
+		pushLuaGetFunction(pLua, "GetThisPlayer");
+	}
+
 	__declspec(naked) void __fastcall HookLuaScriptEngineASM() {
 		__asm {
 			call _F_pushLuaGetFunction
-			movd xmm3, esp // save stack pointer
 			// new block
-			// SetCFACampaignFlag
 			mov ecx, [esi + 0x24]
-			lea eax, SetCFACampaignFlag
-			push 0
-			push eax
-			push ecx
-			call _F_pushLuaExecuteFunction
-			mov edx, [esi + 0x24]
-			lea eax, luaStr_SetCFACampaignFlag
-			push eax
-			push edx
-			call _F_pushLuaGetFunction
-			// CheckCFACampaignFlag
-			mov ecx, [esi + 0x24]
-			lea eax, CheckCFACampaignFlag
-			push 0
-			push eax
-			push ecx
-			call _F_pushLuaExecuteFunction
-			mov edx, [esi + 0x24]
-			lea eax, luaStr_CheckCFACampaignFlag
-			push eax
-			push edx
-			call _F_pushLuaGetFunction
-			// CheckRuleEnhancedMap
-			mov ecx, [esi + 0x24]
-			lea eax, CheckRuleEnhancedMap
-			push 0
-			push eax
-			push ecx
-			call _F_pushLuaExecuteFunction
-			mov edx, [esi + 0x24]
-			lea eax, luaStr_CheckRuleEnhancedMap
-			push eax
-			push edx
-			call _F_pushLuaGetFunction
+			call HookLuaScriptEngineCPP
 			// return original
-			movd esp, xmm3
 			jmp _Ret_readLuaScript
 		}
 	}
 
-	char luaStr_ExecuteActionInObject[] = "ExecuteActionInObject";
+	void __fastcall HookObjectScriptEngineCPP(void* pLua)
+	{
+		pushLuaExecuteFunction(pLua, (uintptr_t)SetCFACampaignFlag, 0);
+		pushLuaGetFunction(pLua, "SetCFACampaignFlag");
+		pushLuaExecuteFunction(pLua, (uintptr_t)CheckCFACampaignFlag, 0);
+		pushLuaGetFunction(pLua, "CheckCFACampaignFlag");
+
+		pushLuaExecuteFunction(pLua, (uintptr_t)CheckRuleEnhancedMap, 0);
+		pushLuaGetFunction(pLua, "CheckRuleEnhancedMap");
+
+		pushLuaExecuteFunction(pLua, _p_ExecuteAction, 0);
+		pushLuaGetFunction(pLua, "ExecuteActionInObject");
+
+	}
+
 	__declspec(naked) void __fastcall HookObjectScriptEngineASM() {
 		__asm {
 			call _F_pushLuaGetFunction
-			movd xmm3, esp // save stack pointer
 			// new block
-			// SetCFACampaignFlag
 			mov ecx, [esi + 0x28]
-			lea eax, SetCFACampaignFlag
-			push 0
-			push eax
-			push ecx
-			call _F_pushLuaExecuteFunction
-			mov edx, [esi + 0x28]
-			lea eax, luaStr_SetCFACampaignFlag
-			push eax
-			push edx
-			call _F_pushLuaGetFunction
-			// CheckCFACampaignFlag
-			mov ecx, [esi + 0x28]
-			lea eax, CheckCFACampaignFlag
-			push 0
-			push eax
-			push ecx
-			call _F_pushLuaExecuteFunction
-			mov edx, [esi + 0x28]
-			lea eax, luaStr_CheckCFACampaignFlag
-			push eax
-			push edx
-			call _F_pushLuaGetFunction
-			// CheckRuleEnhancedMap
-			mov ecx, [esi + 0x28]
-			lea eax, CheckRuleEnhancedMap
-			push 0
-			push eax
-			push ecx
-			call _F_pushLuaExecuteFunction
-			mov edx, [esi + 0x28]
-			lea eax, luaStr_CheckRuleEnhancedMap
-			push eax
-			push edx
-			call _F_pushLuaGetFunction
-			// CurDrawableCurrentObjectSuicided
-			/*
-			mov ecx, [esi + 0x28]
-			lea eax, CurDrawableCurrentObjectSuicided
-			push 0
-			push eax
-			push ecx
-			call _F_pushLuaExecuteFunction
-			mov edx, [esi + 0x28]
-			lea eax, luaStr_CurrentObjectSuicided
-			push eax
-			push edx
-			call _F_pushLuaGetFunction
-			*/
-			// ExecuteActionInObject
-			mov ecx, [esi + 0x28]
-			mov eax, _p_ExecuteAction
-			push 0
-			push eax
-			push ecx
-			call _F_pushLuaExecuteFunction
-			mov edx, [esi + 0x28]
-			lea eax, luaStr_ExecuteActionInObject
-			push eax
-			push edx
-			call _F_pushLuaGetFunction
+			call HookObjectScriptEngineCPP
 			// return original
-			movd esp, xmm3
 			jmp _Ret_readObjectScript
 		}
 	}

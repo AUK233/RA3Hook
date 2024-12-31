@@ -53,6 +53,12 @@ void __fastcall UpdateToggleRandomCrateOptionsCPP(ruleDataPointer* prule)
 	if (EnhancedMap) {
 		PushTheRuleTextToOnlineChatBox(prule, "GUI:RuleEnableEnhancedMap");
 	}
+
+	uint8_t NoSuperWeapon = GetPrivateProfileIntW(L"SkirmishSetting", L"NoSuperWeapon", 0, SettingINI.c_str());
+	rule74[3] = NoSuperWeapon;
+	if (NoSuperWeapon) {
+		PushTheRuleTextToOnlineChatBox(prule, "GUI:RuleEnableNoSuperWeapon");
+	}
 }
 
 CHAR strGUIRuleDisableExtraSettings[] = "GUI:RuleDisableExtraSettings";

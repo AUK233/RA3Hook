@@ -42,13 +42,24 @@ typedef struct ruleDataPointer_t
 } ruleDataPointer;
 static_assert(offsetof(ruleDataPointer_t, ruleData) == 0xC);
 
+typedef struct Player_t {
+	void* v_table;
+	unsigned char pad[0x10];
+	wchar_t* displayName;
+	char* inScriptName;
+} Player;
+static_assert(offsetof(Player_t, inScriptName) == 0x18);
+
 typedef struct GameObject_t {
 	void* v_table;
 	unsigned char pad[0x40];
 	// it is radian
 	float objectAngle;
+	unsigned char pad222[0x3D0];
+	Player_t* relevantPlayer;
 } GameObject;
 static_assert(offsetof(GameObject_t, objectAngle) == 0x44);
+static_assert(offsetof(GameObject_t, relevantPlayer) == 0x418);
 
 typedef struct CommonAssetHashHeader_t {
 	UINT32 moduleHash;

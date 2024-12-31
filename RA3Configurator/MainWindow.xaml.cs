@@ -52,6 +52,11 @@ namespace RA3Configurator
             {
                 CheckBoxMap.IsChecked = true;
             }
+
+            if (INIfile.ReadINTData("NoSuperWeapon", INIPath) > 0)
+            {
+                CheckBoxNoSW.IsChecked = true;
+            }
         }
 
         private void OnRandomCratesChanged(object sender, RoutedEventArgs e)
@@ -85,6 +90,17 @@ namespace RA3Configurator
             else
             {
                 INIfile.WriteData("EnhancedMap", "0", SettingPath, configPath);
+            }
+        }
+        private void OnNoSuperWeaponChanged(object sender, RoutedEventArgs e)
+        {
+            if (CheckBoxNoSW.IsChecked == true)
+            {
+                INIfile.WriteData("NoSuperWeapon", "1", SettingPath, configPath);
+            }
+            else
+            {
+                INIfile.WriteData("NoSuperWeapon", "0", SettingPath, configPath);
             }
         }
     }

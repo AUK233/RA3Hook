@@ -10,6 +10,7 @@
         <CheckBox x:Name="CheckBoxCrate" Content="Random Crates" Checked="OnRandomCratesChanged" Unchecked="OnRandomCratesChanged" Margin="20,10,0,0" Width="130" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="False"/>
         <CheckBox x:Name="CheckBoxPower" Content="Powerful Mode" Checked="OnPowerfulModeChanged" Unchecked="OnPowerfulModeChanged" Margin="20,33,0,0" Width="130" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="False"/>
         <CheckBox x:Name="CheckBoxMap" Content="Enhanced Map" Checked="OnEnhancedMapChanged" Unchecked="OnEnhancedMapChanged" Margin="20,56,0,0" Width="130" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="False"/>
+        <CheckBox x:Name="CheckBoxNoSW" Content="No Super Weapon" Checked="OnNoSuperWeaponChanged" Unchecked="OnNoSuperWeaponChanged" Margin="155,10,0,0" Width="148" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="False"/>
 
     </Grid>
 </Window>

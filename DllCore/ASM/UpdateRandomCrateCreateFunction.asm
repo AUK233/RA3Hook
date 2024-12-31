@@ -36,8 +36,33 @@
     mov [esp+0x24], eax
 powerfulMode:
     cmp byte ptr [ebx+0x74+1], 0
-    je ofs216E23
+    je noSuperWeapon
     mov edx, 3804486283 // GenericPowerfulMode
+    mov eax, _F_GameObjectHashCE6C58
+    mov ecx, [eax]
+    push edx // hash
+    call _F_CallGetPointer7E4230
+    test eax, eax
+    je noSuperWeapon
+    mov [esp+8], eax
+    lea ecx, [esp+8]
+    push ecx
+    call _F_Call4D8420
+    add esp, 4
+    //
+    xor eax, eax
+    //mov [esp+8], eax
+    mov [esp+0xC], eax
+    mov [esp+0x10], eax
+    mov [esp+0x14], eax
+    mov [esp+0x18], eax
+    mov [esp+0x1C], eax
+    mov [esp+0x20], eax
+    mov [esp+0x24], eax
+noSuperWeapon:
+    cmp byte ptr [ebx+0x74+3], 0
+    je ofs216E23
+    mov edx, 2717237826 // GenericNoSuperWeaponMode
     mov eax, _F_GameObjectHashCE6C58
     mov ecx, [eax]
     push edx // hash
