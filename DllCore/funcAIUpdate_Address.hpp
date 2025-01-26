@@ -29,4 +29,7 @@ namespace RA3::AI {
 	uintptr_t _ret_CirclesForAttack787138 = 0x787138;
 	uintptr_t _F_ofs8E8F60 = 0xCE8F60;
 	uintptr_t _ret_CirclesForAttack787282 = 0x787282;
+
+	// The game will crash in here some times
+	uintptr_t _F_ofs43CBB8 = 0x83CBB8;
 }

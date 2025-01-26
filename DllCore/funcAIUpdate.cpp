@@ -333,6 +333,9 @@ namespace RA3::AI {
 		AIModuleStateMachine_7FF2D0 = (AIModuleStateMachineInitialization)0x83D4D0;
 		AIModuleStateMachine_7FF190 = (AIModuleStateMachineInitialization)0x83D390;
 		AIModuleStateMachine_80EE30 = (AIModuleStateMachineInitialization)0x84CFE0;
+
+
+		_F_ofs43CBB8 = hmodEXE + 0x47AC68;
 	}
 
 	void __fastcall HookAIUpdateModule()
@@ -349,6 +352,22 @@ namespace RA3::AI {
 		hookGameBlock((void*)_F_PushStateMachineIndex0x21, (uintptr_t)PushStateMachineIndex0x21ASM);
 		hookGameBlock((void*)_F_CirclesForAttack787119, (uintptr_t)JetAIUpdateCirclesForAttackCheckApproach);
 		WriteHookToProcess((void*)(_F_CirclesForAttack787119 + 5), (void*)&nop2, 2U);
+
+		//
+		//test eax, eax
+		//je ra3_1.12.83CBC2
+		//cmp dword ptr[eax + 10], ecx
+		//setne al
+		//ret
+		BYTE playerAC[]= {
+			0x85, 0xC0,
+			0x74, 0x06,
+			0x39, 0x48, 0x10,
+			0x0F, 0x95, 0xC0,
+			0xC3
+		};
+		//WriteHookToProcess((void*)_F_ofs43CBB8, (void*)&playerAC, 11U);
+		//WriteHookToProcess((void*)(_F_ofs43CBB8+0x20), (void*)&playerAC, 11U);
 	}
 
 }

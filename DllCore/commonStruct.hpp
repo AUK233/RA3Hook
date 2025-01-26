@@ -24,6 +24,21 @@ typedef struct vector3Dpos_t
 	float y;
 	float z;
 } vector3Dpos;
+
+typedef struct U8Color_t
+{
+	UINT8 b;
+	UINT8 g;
+	UINT8 r;
+	UINT8 a;
+} U8Color;
+
+
+typedef struct CommonAssetHashHeader_t {
+	UINT32 moduleHash;
+	UINT32 nameHash;
+} CommonAssetHashHeader;
+static_assert(offsetof(CommonAssetHashHeader_t, nameHash) == 4);
 //
 
 typedef struct ruleDataStruct_t
@@ -47,25 +62,27 @@ typedef struct Player_t {
 	unsigned char pad[0x10];
 	wchar_t* displayName;
 	char* inScriptName;
+	unsigned char pad22222[0x64];
+	U8Color_t color1;
+	U8Color_t color2;
+	U8Color_t color3;
 } Player;
 static_assert(offsetof(Player_t, inScriptName) == 0x18);
+static_assert(offsetof(Player_t, color1) == 0x80);
 
 typedef struct GameObject_t {
 	void* v_table;
 	unsigned char pad[0x40];
 	// it is radian
 	float objectAngle;
-	unsigned char pad222[0x3D0];
+	unsigned char pad222[0x31c];
+	void* TiberiumCrystalBehavior;
+	unsigned char pad2dwad2[0xB0];
 	Player_t* relevantPlayer;
 } GameObject;
 static_assert(offsetof(GameObject_t, objectAngle) == 0x44);
+static_assert(offsetof(GameObject_t, TiberiumCrystalBehavior) == 0x364);
 static_assert(offsetof(GameObject_t, relevantPlayer) == 0x418);
-
-typedef struct CommonAssetHashHeader_t {
-	UINT32 moduleHash;
-	UINT32 nameHash;
-} CommonAssetHashHeader;
-static_assert(offsetof(CommonAssetHashHeader_t, nameHash) == 4);
 
 typedef struct AIStateMachine_t {
 	void* v_table;

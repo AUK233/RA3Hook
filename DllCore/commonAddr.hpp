@@ -15,17 +15,6 @@ uintptr_t _Ret_ActivateLaser = 0;
 uintptr_t _F_ActivateLaserCheck54h = 0;
 uintptr_t _F_BloomOpen = 0;
 uintptr_t _Ret_BloomOpen = 0;
-uintptr_t _F_ShowAmmo = 0;
-uintptr_t _F_WeaponReloadActive = 0;
-uintptr_t _F_WeaponReloadTimeCount = 0;
-// this is <Modifier Type="BOUNTY_PERCENTAGE" Value="50%"/>
-uintptr_t _F_AttributeModifierT18Buff = 0;
-// Fix weapon scatter radius (now it is useless)
-uintptr_t _F_WeaponScatterRadius = 0;
-uintptr_t _Ret_WeaponScatterRadius = 0;
-// Fix weapon scatter radius
-uintptr_t _F_WeaponScatterRadius1 = 0;
-uintptr_t _F_WeaponScatterRadius2 = 0;
 // thiscall KillGameObject(void* GameObject, int unk1, UINT deathType, int unk2)
 uintptr_t _F_CallKillGameObject = 0;
 uintptr_t _F_KillTibCrystalWhenEmpty1 = 0;

@@ -26,6 +26,8 @@ void __fastcall hookFunctionGroup()
 	RA3::LuaEngine::HookLuaEngine();
 	RA3::AI::HookAIUpdateModule();
 	RA3::APT::HookAptFunctionUpdate();
+	RA3::Weapon::HookWeaponFunctionUpdate();
+
 	// Load PlayerTechStoreTemplate
 	hookGameBlock((void*)_F_PlayerTechStoreL, (uintptr_t)LoadPlayerTechStoreASM);
 	// Read PlayerTechStoreTemplate
@@ -105,26 +107,6 @@ void __fastcall hookFunctionGroup()
 		0x85                    // pad
 	};
 	WriteHookToProcess((void*)_F_ActivateLaserCheck54h, &set34BD77, 12U);
-
-	// Let "ShowsAmmoPips" work
-	hookGameCall((void*)_F_ShowAmmo, (uintptr_t)ShowsAmmoPipsASM);
-	WriteHookToProcess((void*)(_F_ShowAmmo + 5), (void*)&nop2, 2U);
-	// Set up reloading ammunition
-	hookGameCall((void*)_F_WeaponReloadActive, (uintptr_t)WeaponReloadActiveASM);
-	WriteHookToProcess((void*)(_F_WeaponReloadActive + 5), (void*)&nop1, 1U);
-	hookGameCall((void*)_F_WeaponReloadTimeCount, (uintptr_t)WeaponReloadTimeCountASM);
-	WriteHookToProcess((void*)(_F_WeaponReloadTimeCount + 5), (void*)&nop1, 1U);
-
-	// <Modifier Type="BOUNTY_PERCENTAGE" Value="50%"/>
-	hookGameCall((void*)_F_AttributeModifierT18Buff, (uintptr_t)AttributeModifierNo18BuffASM);
-	WriteHookToProcess((void*)(_F_AttributeModifierT18Buff + 5), (void*)&nop1, 1U);
-
-	// Fix weapon scatter radius
-	//hookGameBlock((void*)_F_WeaponScatterRadius, (uintptr_t)WeaponScatterRadiusASM);
-	//WriteHookToProcess((void*)(_F_WeaponScatterRadius + 5), &nop3, 3U);
-	hookGameCall((void*)_F_WeaponScatterRadius1, (uintptr_t)WeaponScatterRadiusFixASM1);
-	hookGameCall((void*)_F_WeaponScatterRadius2, (uintptr_t)WeaponScatterRadiusFixASM2);
-	WriteHookToProcess((void*)(_F_WeaponScatterRadius2 + 5), (void*)&nop1, 1U);
 
 	// Use the new method
 	hookGameBlock((void*)_F_BehaviorUpdate_TiberiumCrystal, (uintptr_t)BehaviorUpdate_TiberiumCrystal);
@@ -245,15 +227,6 @@ bool __fastcall GetFunctionAddress()
 		_F_ActivateLaser = hmodEXE + 0x3CF668;
 		_Ret_ActivateLaser = hmodEXE + 0x3CF668 + 6;
 		_F_ActivateLaserCheck54h = hmodEXE + 0x34BD77;
-		_F_ShowAmmo = hmodEXE + 0x128746;
-		_F_WeaponReloadActive = hmodEXE + 0x3BE05F;
-		_F_WeaponReloadTimeCount = hmodEXE + 0x2DC270;
-		_F_AttributeModifierT18Buff = hmodEXE + 0xDAABD;
-		// now it is useless
-		//_F_WeaponScatterRadius = hmodEXE + 0x3140CB;
-		//_Ret_WeaponScatterRadius = hmodEXE + 0x3140F0;
-		_F_WeaponScatterRadius1 = hmodEXE + 0x35AA6B;
-		_F_WeaponScatterRadius2 = hmodEXE + 0x35AA8A;
 
 		_F_KillTibCrystalWhenEmpty1 = hmodEXE + 0x422717;
 		_F_KillTibCrystalWhenEmpty2 = hmodEXE + 0x42278D;
@@ -317,12 +290,6 @@ bool __fastcall GetFunctionAddress()
 		_F_ActivateLaser = hmodEXE + 0x40D988;
 		_Ret_ActivateLaser = hmodEXE + 0x40D988 + 6;
 		_F_ActivateLaserCheck54h = hmodEXE + 0x38A397;
-		_F_ShowAmmo = hmodEXE + 0x169D96;
-		_F_WeaponReloadActive = hmodEXE + 0x3FC3AF;
-		_F_WeaponReloadTimeCount = hmodEXE + 0x31A7E0;
-		_F_AttributeModifierT18Buff = hmodEXE + 0x11C4DD;
-		_F_WeaponScatterRadius1 = hmodEXE + 0x3990AB;
-		_F_WeaponScatterRadius2 = hmodEXE + 0x3990CA;
 		_F_KillTibCrystalWhenEmpty1 = hmodEXE + 0x4608A7;
 		_F_KillTibCrystalWhenEmpty2 = hmodEXE + 0x46091D;
 		_F_CallKillGameObject = hmodEXE + 0x3DCDF0;
@@ -342,6 +309,7 @@ bool __fastcall GetFunctionAddress()
 		RA3::LuaEngine::InitializeLuaEngineOrigin(hmodEXE);
 		RA3::AI::InitializeHookAIUpdateModuleOrigin(hmodEXE);
 		RA3::APT::InitializeHookAptFunctionUpdateOrigin(hmodEXE);
+		RA3::Weapon::InitializeHookWeaponFunctionUpdateOrigin(hmodEXE);
 	}
 	else
 	{
@@ -389,7 +357,7 @@ void mainInjectionExecution()
 		}
 
 		if (inputSetting.setDebug) {
-			MessageBox(NULL, L"Injection OK!\n   v2.410", L"Check", MB_OK);
+			MessageBox(NULL, L"Injection OK!\n   v2.5", L"Check", MB_OK);
 		}
 	}
 }
