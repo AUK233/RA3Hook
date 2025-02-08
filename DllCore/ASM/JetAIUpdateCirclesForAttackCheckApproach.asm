@@ -1,8 +1,12 @@
 			// check CirclesForAttack is 0x11
-			mov edx, [esi]
-			mov ecx, esi
-			call dword ptr[edx + 0x250]
-			cmp al, 0x11
+			//mov edx, [esi]
+			//mov ecx, esi
+			//call dword ptr[edx + 0x250]
+			//cmp al, 0x11
+            // now check AttackWithCircle
+            mov ecx, [esi+0x3C]
+            mov al, [ecx+0xA4]
+            cmp al, 1
 			je getNewPos
 		ofs387119:
 			// if x^2 + y^2 <= 2500

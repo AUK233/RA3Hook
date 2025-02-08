@@ -119,9 +119,15 @@ typedef struct AIModuleStateMachine_t {
 	unsigned char pad1111[0x88];
 	// Original size end
 	void* CombinedGoal;
+	// Here to check the circles
+	unsigned char AttackWithCircle;
+	unsigned char pad222[3];
+	float CircleRadius;
 } AIModuleStateMachine;
 static_assert(offsetof(AIModuleStateMachine_t, pStateMachine) == 4);
 static_assert(offsetof(AIModuleStateMachine_t, CombinedGoal) == 0xA0);
+static_assert(offsetof(AIModuleStateMachine_t, AttackWithCircle) == 0xA4);
+static_assert(offsetof(AIModuleStateMachine_t, CircleRadius) == 0xA8);
 
 typedef void(__fastcall* GetCurrentStateMachine_t)(CommonStateMachine_t* pCommonStateMachine, void* useless,
 												StateMachinePointer_t** ppStateMachinePointer, UINT32* pState);

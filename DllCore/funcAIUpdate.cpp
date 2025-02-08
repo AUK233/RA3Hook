@@ -86,8 +86,10 @@ namespace RA3::AI {
 		float radian = atan2(pPos[1].y, pPos[1].x);
 		//float radian = pAI->pGameObject->objectAngle;
 		//radian += 0.314f * getRadomFloatValue(0.0f, 1.0f);
-		JetAIUpdateModuleAsset* pJetAI = (JetAIUpdateModuleAsset*)pAI->pModuleAsset;
-		float ringRadius = pJetAI->ParkingOffset;
+		
+		//JetAIUpdateModuleAsset* pJetAI = (JetAIUpdateModuleAsset*)pAI->pModuleAsset;
+		//float ringRadius = pJetAI->ParkingOffset;
+		float ringRadius = pAI->pModuleStateMachine->CircleRadius;
 		if (ringRadius > 0) {
 			// move clockwise
 			radian += 1.57f*1.5f;
@@ -176,12 +178,15 @@ namespace RA3::AI {
 
 	void __fastcall Initialize_AIModuleStateMachineNewData(AIModuleStateMachine* pMSM)
 	{
-		pMSM->CombinedGoal = 0;
+		//pMSM->CombinedGoal = 0;
+		//*(int*)&pMSM->AttackWithCircle = 1;
+		ZeroMemory(&pMSM->CombinedGoal, 12U);
 	}
 
 
 	AIModuleStateMachine* __fastcall Initialize_AIUpdateStateMachine2A4(AIUpdateModule* pAI)
 	{
+		// return value written to pAI->pModuleStateMachine
 		int StateMachineIndex = pAI->pModuleAsset->StateMachine;
 
 		if (StateMachineIndex < AIStateMachineType_TotalCount) {
@@ -246,19 +251,22 @@ namespace RA3::AI {
 					return pModuleStateMachine;
 				} else if (pAI->pModuleAsset->hash.nameHash == 3494529041U) {
 					// ModuleTag_JetAIUpdateForGunship
-					// used for circle
-					JetAIUpdateModuleAsset* pJetAI = (JetAIUpdateModuleAsset*)pAI->pModuleAsset;
-					pJetAI->CirclesForAttack = 0x11;
-					if (*(int*)&pJetAI->ParkingOffset == 0) {
-						pJetAI->ParkingOffset = 150.0f;
-					}
-
 					pModuleStateMachine = AIModuleStateMachine_7FF0C0(pModuleStateMachine, 0, pGameObject, 0xC2DA23E1U);
 					uintptr_t v_table = (uintptr_t)pModuleStateMachine->v_table;
 					CallFunctionOnlyECXandNoReturn callFunc = *(CallFunctionOnlyECXandNoReturn*)(v_table + 0x4C);
 					callFunc(pModuleStateMachine);
 
 					Initialize_AIModuleStateMachineNewData(pModuleStateMachine);
+					// used for circle
+					pModuleStateMachine->AttackWithCircle = 1;
+					JetAIUpdateModuleAsset* pJetAI = (JetAIUpdateModuleAsset*)pAI->pModuleAsset;
+					if (*(int*)&pJetAI->ParkingOffset == 0) {
+						pModuleStateMachine->CircleRadius = 150.0f;
+					}
+					else {
+						pModuleStateMachine->CircleRadius = pJetAI->ParkingOffset;
+					}
+
 					return pModuleStateMachine;
 				}
 				// default case
