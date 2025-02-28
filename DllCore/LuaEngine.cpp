@@ -56,6 +56,14 @@ namespace RA3::LuaEngine {
 		return conv.from_bytes(Lua_tostring(pLua, index));
 	}
 
+	uintptr_t _p_Lua_ToNumber = 0x40A700;
+	__declspec(naked) double __cdecl Lua_ToNumber(void* pLua, int index)
+	{
+		__asm {
+			jmp _p_Lua_ToNumber
+		}
+	}
+
 	uintptr_t _p_Lua_pushnil = 0;
 	__declspec(naked) void __cdecl Lua_pushnil(void* pLua) {
 		__asm {
@@ -201,6 +209,7 @@ namespace RA3::LuaEngine {
 		_Ret_readObjectScript = hmodEXE + 0x1C430E + 5;
 
 		//
+		_p_Lua_ToNumber = hmodEXE + 0xA720;
 		_Ret_004DEE52 = hmodEXE + 0x120852;
 	}
 
@@ -303,25 +312,43 @@ namespace RA3::LuaEngine {
 		return out;
 	}
 
-	char luaStr_CheckRuleEnhancedMap[] = "CheckRuleEnhancedMap";
-	int __cdecl CheckRuleEnhancedMap(void* pLua)
+	int __cdecl CheckSkirmishRule(void* pLua)
 	{
 		ruleDataStruct* pRule = *(ruleDataStruct**)_F_RuleSettingsCE3A74;
+		int type = Lua_ToNumber(pLua, 1);
 		char* rule74 = pRule->RandomCrate;
-		if (rule74[2]) {
-			return 1;
-		}
-		return 0;
-	}
 
-	int __cdecl CheckRuleNoSuperWeapon(void* pLua)
-	{
-		ruleDataStruct* pRule = *(ruleDataStruct**)_F_RuleSettingsCE3A74;
-		char* rule74 = pRule->RandomCrate;
-		if (rule74[3]) {
-			return 1;
+		int value = 0;
+		switch (type)
+		{
+		case 1: {
+			// is EnhancedMap
+			BYTE checkBit = rule74[1];
+			if (checkBit & 1) {
+				value = 1;
+			}
+			break;
 		}
-		return 0;
+		case 2:{
+			// is NoSuperWeapon
+			BYTE checkBit = rule74[1];
+			if (checkBit & 0b10){
+				value = 1;
+			}
+			break;
+		}
+		case 3: {
+			// is CrazyMode
+			BYTE checkBit = rule74[1];
+			if (checkBit & 0b100) {
+				value = 1;
+			}
+			break;
+		}
+		default:
+			break;
+		}
+		return value;
 	}
 
 	int __cdecl GetThisPlayer(void* pLua)
@@ -373,10 +400,8 @@ namespace RA3::LuaEngine {
 		pushLuaExecuteFunction(pLua, (uintptr_t)CheckCFACampaignFlag, 0);
 		pushLuaGetFunction(pLua, "CheckCFACampaignFlag");
 
-		pushLuaExecuteFunction(pLua, (uintptr_t)CheckRuleEnhancedMap, 0);
-		pushLuaGetFunction(pLua, "CheckRuleEnhancedMap");
-		pushLuaExecuteFunction(pLua, (uintptr_t)CheckRuleNoSuperWeapon, 0);
-		pushLuaGetFunction(pLua, "CheckRuleNoSuperWeapon");
+		pushLuaExecuteFunction(pLua, (uintptr_t)CheckSkirmishRule, 0);
+		pushLuaGetFunction(pLua, "CheckSkirmishRule");
 
 		pushLuaExecuteFunction(pLua, (uintptr_t)GetThisPlayer, 0);
 		pushLuaGetFunction(pLua, "GetThisPlayer");
@@ -399,9 +424,6 @@ namespace RA3::LuaEngine {
 		pushLuaGetFunction(pLua, "SetCFACampaignFlag");
 		pushLuaExecuteFunction(pLua, (uintptr_t)CheckCFACampaignFlag, 0);
 		pushLuaGetFunction(pLua, "CheckCFACampaignFlag");
-
-		pushLuaExecuteFunction(pLua, (uintptr_t)CheckRuleEnhancedMap, 0);
-		pushLuaGetFunction(pLua, "CheckRuleEnhancedMap");
 
 		pushLuaExecuteFunction(pLua, _p_ExecuteAction, 0);
 		pushLuaGetFunction(pLua, "ExecuteActionInObject");

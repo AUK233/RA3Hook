@@ -9,6 +9,7 @@ void __cdecl pushLuaGetFunction(void* pLua, const char* name);
 //
 const char* __cdecl Lua_tostring(void* pLua, int index);
 std::wstring __fastcall Lua_toWString(void* pLua, int index);
+double __cdecl Lua_ToNumber(void* pLua, int index);
 void __cdecl Lua_pushnil(void* pLua);
 void __cdecl Lua_pushnumber(void* pLua, double value);
 void __cdecl Lua_pushstring(void* pLua, const char* text);
@@ -32,8 +33,7 @@ void __fastcall HookGetProfileDataINI();
 // lua scripts
 int __cdecl SetCFACampaignFlag(void* pLua);
 int __cdecl CheckCFACampaignFlag(void* pLua);
-int __cdecl CheckRuleEnhancedMap(void* pLua);
-int __cdecl CheckRuleNoSuperWeapon(void* pLua);
+int __cdecl CheckSkirmishRule(void* pLua);
 int __cdecl GetThisPlayer(void* pLua);
 // object scripts
 int __cdecl CurDrawableCurrentObjectSuicided(void* pLua);

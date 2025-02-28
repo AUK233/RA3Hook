@@ -259,12 +259,12 @@ namespace RA3::AI {
 					Initialize_AIModuleStateMachineNewData(pModuleStateMachine);
 					// used for circle
 					pModuleStateMachine->AttackWithCircle = 1;
-					JetAIUpdateModuleAsset* pJetAI = (JetAIUpdateModuleAsset*)pAI->pModuleAsset;
-					if (*(int*)&pJetAI->ParkingOffset == 0) {
-						pModuleStateMachine->CircleRadius = 150.0f;
+					PJetAIUpdateModuleAsset pJetAI = (PJetAIUpdateModuleAsset)pAI->pModuleAsset;
+					if (*(int*)&pJetAI->SpawnOffsetRadius == 0) {
+						pModuleStateMachine->CircleRadius = 277.0f;
 					}
 					else {
-						pModuleStateMachine->CircleRadius = pJetAI->ParkingOffset;
+						pModuleStateMachine->CircleRadius = pJetAI->SpawnOffsetRadius;
 					}
 
 					return pModuleStateMachine;

@@ -24,18 +24,18 @@ typedef enum AIStateMachineType {
 
 typedef struct AIUpdateModuleAsset_t {
 	CommonAssetHashHeader_t hash;
-	unsigned char pad[0x34];
+	unsigned char pad[0x30];
+	float SpawnOffsetRadius;
 	int StateMachine;
 } AIUpdateModuleAsset;
 static_assert(offsetof(AIUpdateModuleAsset_t, StateMachine) == 0x3C);
 
-typedef struct JetAIUpdateModuleAsset_t {
-	AIUpdateModuleAsset_t common;
+typedef struct JetAIUpdateModuleAsset_t : AIUpdateModuleAsset_t {
 	unsigned char pad1[0x14];
 	float ParkingOffset;
 	unsigned char pad2[0xB];
 	char CirclesForAttack;
-} JetAIUpdateModuleAsset;
+} *PJetAIUpdateModuleAsset;
 static_assert(offsetof(JetAIUpdateModuleAsset_t, CirclesForAttack) == 0x63);
 
 typedef struct AIUpdateModule_t {

@@ -63,29 +63,39 @@ void __fastcall UpdateToggleRandomCrateOptionsCPP(ruleDataPointer* prule)
 	}
 
 	*(int*)rule74 = 0;
+	// +0 series
 	uint8_t RandomCrate = GetPrivateProfileIntW(L"SkirmishSetting", L"RandomCrate", 1, SettingINI.c_str());
-	rule74[0] = RandomCrate;
 	if (RandomCrate) {
+		rule74[0] |= 1;
 		PushTheRuleTextToOnlineChatBox(prule, "GUI:RuleEnableRandomCrate");
 	}
 
 	uint8_t PowerfulMode = GetPrivateProfileIntW(L"SkirmishSetting", L"PowerfulMode", 0, SettingINI.c_str());
-	rule74[1] = PowerfulMode;
 	if (PowerfulMode) {
+		rule74[0] |= 0b10;
 		PushTheRuleTextToOnlineChatBox(prule, "GUI:RuleEnablePowerfulMode");
 	}
+	// +0 series end
 
+	// +1 series
 	uint8_t EnhancedMap = GetPrivateProfileIntW(L"SkirmishSetting", L"EnhancedMap", 0, SettingINI.c_str());
-	rule74[2] = EnhancedMap;
 	if (EnhancedMap) {
+		rule74[1] |= 1;
 		PushTheRuleTextToOnlineChatBox(prule, "GUI:RuleEnableEnhancedMap");
 	}
 
 	uint8_t NoSuperWeapon = GetPrivateProfileIntW(L"SkirmishSetting", L"NoSuperWeapon", 0, SettingINI.c_str());
-	rule74[3] = NoSuperWeapon;
 	if (NoSuperWeapon) {
+		rule74[1] |= 0b10;
 		PushTheRuleTextToOnlineChatBox(prule, "GUI:RuleEnableNoSuperWeapon");
 	}
+
+	uint8_t CrazyMode = GetPrivateProfileIntW(L"SkirmishSetting", L"CrazyMode", 0, SettingINI.c_str());
+	if (CrazyMode) {
+		rule74[1] |= 0b100;
+		PushTheRuleTextToOnlineChatBox(prule, "GUI:RuleEnableCrazyMode");
+	}
+	// +1 series end
 }
 
 CHAR strGUIRuleDisableExtraSettings[] = "GUI:RuleDisableExtraSettings";
