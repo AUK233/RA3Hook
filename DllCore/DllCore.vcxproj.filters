@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\Base">
+      <UniqueIdentifier>{9d76b902-1041-484f-8430-8ed0c0bd7f47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Modules">
+      <UniqueIdentifier>{8d577e99-8315-495d-9c8e-288d2efd5f5c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -25,9 +31,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="commonAddr.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="funcMLaser.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="funcOther.h">
@@ -66,15 +69,30 @@
     <ClInclude Include="funcAPT.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Base\CommonStructure.hpp">
+      <Filter>Source Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Modules\M_ShieldSphereUpdate.h">
+      <Filter>Source Files\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Modules\M_LaserState.h">
+      <Filter>Source Files\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Modules\1CallModules.hpp">
+      <Filter>Source Files\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\SSE.hpp">
+      <Filter>Source Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\GlobalStructure.h">
+      <Filter>Source Files\Base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="utiliy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="funcMLaser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="funcOther.cpp">
@@ -103,6 +121,12 @@
     </ClCompile>
     <ClCompile Include="funcAPT.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Modules\M_LaserState.cpp">
+      <Filter>Source Files\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\GlobalStructure.cpp">
+      <Filter>Source Files\Base</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

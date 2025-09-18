@@ -55,7 +55,7 @@ void __fastcall SweepingLaserStateCPP1(uintptr_t ptr, int cfg)
 	switch (cfg)
 	{
 	case SweepLaserT_baseRotation: {
-		*(char*)(ptr + 0xBC) = 2;
+		*(char*)(ptr + 0xBD) = 1;
 		*(int*)(ptr + 0xA0) = 0;
 		// sweep start position
 		*(float*)(ptr + 0xA4) = *(float*)(ptr + 0x3C);
@@ -392,30 +392,8 @@ __declspec(naked) void __fastcall SweepingLaserStateASM1(uintptr_t ptr)
 	}
 }
 
-extern uintptr_t _Ret_ActivateLaser;
 
-__declspec(naked) void __fastcall ActivateLaserNuggetASM(uintptr_t ptr)
-{
-	__asm {
-			je retFunc
-			mov eax, [ebp + 0x10]
-			// check laser id
-			cmp dword ptr [eax+0x2C], 3000
-			jl Original
-			// check laser activation
-			cmp byte ptr [esi+0x94], 0
-			jne retFunc
-		Original:
-			jmp _Ret_ActivateLaser
-		retFunc:
-			pop edi
-			pop esi
-			pop ebp
-			pop ebx
-			add esp, 0x10
-			ret 0x10
-	}
-}
+
 
 void __fastcall SweepingLaserActivateCPP(uintptr_t ptr, SweepingLaserPos* inPtr, float inXMM3)
 {
@@ -434,12 +412,12 @@ void __fastcall SweepingLaserActivateCPP(uintptr_t ptr, SweepingLaserPos* inPtr,
 	inPtr->z = *(float*)(ptr + 0xAC);
 }
 
-extern uintptr_t _Ret_SweepLaserActivate;
+uintptr_t _Ret_SweepLaserActivate;
 
 __declspec(naked) void __fastcall SweepingLaserActivateASM(uintptr_t ptr)
 {
 	__asm {
-		cmp byte ptr[ecx + 0xBC], 2
+		cmp byte ptr[ecx + 0xBD], 1
 		je NewFuncBlock
 		subss xmm3, [esp]
 		jmp _Ret_SweepLaserActivate

@@ -1,8 +1,8 @@
 #include "pch.h"
+#include <string>
 #include "commonData.hpp"
 #include "commonAddr.hpp"
 #include "utiliy.h"
-#include <string>
 
 //#include "commonEnum.hpp"
 
@@ -16,6 +16,9 @@
 #include "funcOther.h"
 #include "funcAIUpdate.h"
 #include "funcAPT.h"
+//
+#include "base/GlobalStructure.h"
+#include "Modules/1CallModules.hpp"
 
 std::wstring SettingINI;
 
@@ -27,6 +30,8 @@ void __fastcall hookFunctionGroup()
 	RA3::AI::HookAIUpdateModule();
 	RA3::APT::HookAptFunctionUpdate();
 	RA3::Weapon::HookWeaponFunctionUpdate();
+	//
+	RA3::Module::HookFunctionSeries_Module();
 
 	// Load PlayerTechStoreTemplate
 	hookGameBlock((void*)_F_PlayerTechStoreL, (uintptr_t)LoadPlayerTechStoreASM);
@@ -91,22 +96,6 @@ void __fastcall hookFunctionGroup()
 		0x66, 0x90        // nop 2
 	};
 	WriteHookToProcess((void*)ofs32C8C6, &set32C8C6, 5U);
-	// Allows for vertical sweep, and change sweep angle
-	hookGameBlock((void*)_F_SweepLaser01, (uintptr_t)SweepingLaserStateASM1);
-	//
-	hookGameBlock((void*)_F_SweepLaserActivate, (uintptr_t)SweepingLaserActivateASM);
-	// Set laser to activate only when not activated
-	hookGameBlock((void*)_F_ActivateLaser, (uintptr_t)ActivateLaserNuggetASM);
-	// Fix no laser for attacking a target when DamageDealtAtSelfPosition is true
-	unsigned char set34BD77[] = {
-		0x83, 0x7E, 0x54, 0x00, // cmp dword ptr [esi+0x54], 0
-		0x5F,                   // pop edi
-		0x74, 0x25,             // je
-		0x85, 0xED,             // test ebp, ebp
-		0x75, 0x16,             // jne
-		0x85                    // pad
-	};
-	WriteHookToProcess((void*)_F_ActivateLaserCheck54h, &set34BD77, 12U);
 
 	// Use the new method
 	hookGameBlock((void*)_F_BehaviorUpdate_TiberiumCrystal, (uintptr_t)BehaviorUpdate_TiberiumCrystal);
@@ -220,13 +209,7 @@ bool __fastcall GetFunctionAddress()
 		_F_GetUnitOverlayIconSettings = hmodEXE + 0x11C609;
 		_F_SyncSet = hmodEXE + 0x2DDE95;
 		_F_AttachUpdateFlagFix01 = hmodEXE + 0x37AB71;
-		_F_SweepLaser01 = hmodEXE + 0x3C3ED7;
-		_F_SweepLaserActivate = hmodEXE + 0x2E3759;
-		_Ret_SweepLaserActivate = hmodEXE + 0x2E3759 + 0xC;
 		ofs32C8C6 = hmodEXE + 0x32C8C6;
-		_F_ActivateLaser = hmodEXE + 0x3CF668;
-		_Ret_ActivateLaser = hmodEXE + 0x3CF668 + 6;
-		_F_ActivateLaserCheck54h = hmodEXE + 0x34BD77;
 
 		_F_KillTibCrystalWhenEmpty1 = hmodEXE + 0x422717;
 		_F_KillTibCrystalWhenEmpty2 = hmodEXE + 0x42278D;
@@ -283,13 +266,7 @@ bool __fastcall GetFunctionAddress()
 		_F_GetUnitOverlayIconSettings = hmodEXE + 0x15DDF9;
 		_F_SyncSet = hmodEXE + 0x31C3D5;
 		_F_AttachUpdateFlagFix01 = hmodEXE + 0x3B8FD1;
-		_F_SweepLaser01 = hmodEXE + 0x402227;
-		_F_SweepLaserActivate = hmodEXE + 0x321BC9;
-		_Ret_SweepLaserActivate = hmodEXE + 0x321BC9 + 0xC;
 		ofs32C8C6 = hmodEXE + 0x36AE86;
-		_F_ActivateLaser = hmodEXE + 0x40D988;
-		_Ret_ActivateLaser = hmodEXE + 0x40D988 + 6;
-		_F_ActivateLaserCheck54h = hmodEXE + 0x38A397;
 		_F_KillTibCrystalWhenEmpty1 = hmodEXE + 0x4608A7;
 		_F_KillTibCrystalWhenEmpty2 = hmodEXE + 0x46091D;
 		_F_CallKillGameObject = hmodEXE + 0x3DCDF0;
@@ -310,6 +287,9 @@ bool __fastcall GetFunctionAddress()
 		RA3::AI::InitializeHookAIUpdateModuleOrigin(hmodEXE);
 		RA3::APT::InitializeHookAptFunctionUpdateOrigin(hmodEXE);
 		RA3::Weapon::InitializeHookWeaponFunctionUpdateOrigin(hmodEXE);
+		//
+		G_GlobalStructure_Initialize(hmodEXE, 1);
+		RA3::Module::InitializeHookFunctionSeries_Module(hmodEXE, 1);
 	}
 	else
 	{
@@ -357,7 +337,7 @@ void mainInjectionExecution()
 		}
 
 		if (inputSetting.setDebug) {
-			MessageBox(NULL, L"Injection OK!\n   v2.50A", L"Check", MB_OK);
+			MessageBox(NULL, L"Injection OK!\n   v2.501", L"Check", MB_OK);
 		}
 	}
 }

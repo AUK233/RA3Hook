@@ -7,12 +7,6 @@ int InitializationCore = 0;
 // 
 uintptr_t _F_SyncSet = 0;
 uintptr_t _F_AttachUpdateFlagFix01 = 0;
-uintptr_t _F_SweepLaser01 = 0;
-uintptr_t _F_SweepLaserActivate = 0;
-uintptr_t _Ret_SweepLaserActivate = 0;
-uintptr_t _F_ActivateLaser = 0;
-uintptr_t _Ret_ActivateLaser = 0;
-uintptr_t _F_ActivateLaserCheck54h = 0;
 uintptr_t _F_BloomOpen = 0;
 uintptr_t _Ret_BloomOpen = 0;
 // thiscall KillGameObject(void* GameObject, int unk1, UINT deathType, int unk2)

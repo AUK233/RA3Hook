@@ -49,7 +49,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;DllCore_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -70,7 +70,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;DllCore_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -83,10 +83,13 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Base\CommonStructure.hpp" />
+    <ClInclude Include="Base\GlobalStructure.h" />
+    <ClInclude Include="Base\SSE.hpp" />
     <ClInclude Include="commonAddr.hpp" />
     <ClInclude Include="commonData.hpp" />
     <ClInclude Include="commonEnum.hpp" />
@@ -96,16 +99,19 @@
     <ClInclude Include="funcAIUpdate.h" />
     <ClInclude Include="funcAIUpdate_Address.hpp" />
     <ClInclude Include="funcAPT.h" />
-    <ClInclude Include="funcMLaser.h" />
     <ClInclude Include="funcOther.h" />
     <ClInclude Include="funcPlayer.h" />
     <ClInclude Include="funcWeapon.h" />
     <ClInclude Include="LuaEngine.h" />
+    <ClInclude Include="Modules\1CallModules.hpp" />
+    <ClInclude Include="Modules\M_LaserState.h" />
+    <ClInclude Include="Modules\M_ShieldSphereUpdate.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="utiliy.h" />
     <ClInclude Include="utiliy_game.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Base\GlobalStructure.cpp" />
     <ClCompile Include="commonMain.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="funcAIUpdate.cpp">
@@ -115,14 +121,16 @@
     <ClCompile Include="funcAPT.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyAndSourceCode</AssemblerOutput>
     </ClCompile>
-    <ClCompile Include="funcMLaser.cpp">
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyAndSourceCode</AssemblerOutput>
-    </ClCompile>
     <ClCompile Include="funcOther.cpp" />
     <ClCompile Include="funcPlayer.cpp" />
     <ClCompile Include="funcWeapon.cpp" />
     <ClCompile Include="LuaEngine.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+    </ClCompile>
+    <ClCompile Include="Modules\M_LaserState.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../pch.h</PrecompiledHeaderFile>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NoListing</AssemblerOutput>
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

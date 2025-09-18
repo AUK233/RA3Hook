@@ -57,6 +57,11 @@ namespace RA3Configurator
             {
                 CheckBoxNoSW.IsChecked = true;
             }
+
+            if (INIfile.ReadINTData("CrazyMode", INIPath) > 0)
+            {
+                CheckBoxCrazy.IsChecked = true;
+            }
         }
 
         private void OnRandomCratesChanged(object sender, RoutedEventArgs e)
@@ -101,6 +106,17 @@ namespace RA3Configurator
             else
             {
                 INIfile.WriteData("NoSuperWeapon", "0", SettingPath, configPath);
+            }
+        }
+        private void OnCrazyModeChanged(object sender, RoutedEventArgs e)
+        {
+            if (CheckBoxCrazy.IsChecked == true)
+            {
+                INIfile.WriteData("CrazyMode", "1", SettingPath, configPath);
+            }
+            else
+            {
+                INIfile.WriteData("CrazyMode", "0", SettingPath, configPath);
             }
         }
     }
