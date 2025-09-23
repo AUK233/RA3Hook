@@ -32,6 +32,8 @@ uintptr_t _F_CallGetPointer7E4230 = 0x7E4230;
 uintptr_t _F_Call4D8420 = 0x4D8420;
 uintptr_t _F_Call416830 = 0x416830;
 
+uintptr_t _F_Call4EDEC0 = 0x4EDEC0;
+
 void __fastcall InitializeUtiliyGameFunctionsOrigin(uintptr_t hmodEXE)
 {
 	_F_CallRandomRadius = hmodEXE + 0x23F990;
@@ -47,4 +49,5 @@ void __fastcall InitializeUtiliyGameFunctionsOrigin(uintptr_t hmodEXE)
 	_F_CallGetPointer7E4230 = hmodEXE + 0x422510;
 	_F_Call4D8420 = hmodEXE + 0x11A210;
 	_F_Call416830 = hmodEXE + 0x16A00;
+	_F_Call4EDEC0 = 0x52F7D0;
 }

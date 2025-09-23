@@ -192,11 +192,29 @@ namespace RA3::Module {
 			float cosAngle = std::cos(sweepAngle);
 			float sinAngle = std::sin(sweepAngle);
 
-			float ofsx = pIn->SweepEndPos[0];
+			/*float ofsx = pIn->SweepEndPos[0];
 			float ofsy = pIn->SweepEndPos[1];
-
 			pOutPos[0] = pIn->SweepStartPos[0] + (cosAngle * ofsx) - (sinAngle * ofsy);
-			pOutPos[1] = pIn->SweepStartPos[1] + (cosAngle * ofsy) + (sinAngle * ofsx);
+			pOutPos[1] = pIn->SweepStartPos[1] + (cosAngle * ofsy) + (sinAngle * ofsx);*/
+
+			// sin, 0, cos, 0
+			__m128 vSinCos = _mm_movelh_ps(_mm_set_ss(sinAngle), _mm_set_ss(cosAngle));
+			// to sin, cos, sin, cos
+			vSinCos = _mm_shuffle_ps(vSinCos, vSinCos, MY_SHUFFLE(0, 2, 0, 2));
+
+			__m128 deltaPos = _mm_loadu_ps(pIn->SweepEndPos);
+			// to -y, x, x, y
+			deltaPos = _mm_shuffle_ps(deltaPos, deltaPos, MY_SHUFFLE(1, 0, 0, 1));
+			deltaPos = _mm_xor_ps(deltaPos, _mm_set_ps(-0.0f, 0.0f, 0.0f, 0.0f));
+			// -siny, cosx, sinx, cosy
+			deltaPos = _mm_mul_ps(deltaPos, vSinCos);
+			// cosx - siny (0+1), cosy + sinx (2+3)
+			deltaPos = _mm_hadd_ps(deltaPos, deltaPos);
+
+			__m128 endPos = _mm_loadu_ps(pIn->SweepStartPos); // this is necessary!
+			deltaPos = _mm_add_ps(deltaPos, endPos);
+			pOutPos[0] = deltaPos.m128_f32[0];
+			pOutPos[1] = deltaPos.m128_f32[1];
 			pOutPos[2] = pIn->SweepStartPos[2];
 		}
 		// end
@@ -244,8 +262,8 @@ namespace RA3::Module {
 		else {
 			// horizontal sweep, both directions
 			pIn->bIsSwapDirection = !pIn->bIsSwapDirection;
-			__m128 negativeX = _mm_set_ps(-1.0f, 1.0f, 0.0f, 0.0f);
-			deltaXYZ = _mm_mul_ps(deltaXYZ, negativeX);
+			__m128 negativeX = _mm_set_ps(-0.0f, 0.0f, 0.0f, 0.0f);
+			deltaXYZ = _mm_xor_ps(deltaXYZ, negativeX);
 			deltaXYZ = _mm_shuffle_ps(deltaXYZ, deltaXYZ, MY_SHUFFLE(1, 0, my_unused_xmm, my_unused_xmm));
 			/*float DeltaX = -deltaXYZ.m128_f32[0];
 
@@ -319,8 +337,8 @@ namespace RA3::Module {
 		else {
 			// horizontal sweep, both directions
 			pIn->bIsSwapDirection = !pIn->bIsSwapDirection;
-			__m128 negativeX = _mm_set_ps(-1.0f, 1.0f, 0.0f, 0.0f);
-			deltaXYZ = _mm_mul_ps(deltaXYZ, negativeX);
+			__m128 negativeX = _mm_set_ps(-0.0f, 0.0f, 0.0f, 0.0f);
+			deltaXYZ = _mm_xor_ps(deltaXYZ, negativeX);
 			deltaXYZ = _mm_shuffle_ps(deltaXYZ, deltaXYZ, MY_SHUFFLE(1, 0, my_unused_xmm, my_unused_xmm));
 		}
 
