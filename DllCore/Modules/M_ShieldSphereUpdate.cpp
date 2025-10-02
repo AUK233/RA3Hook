@@ -5,6 +5,7 @@
 #include "../utiliy.h"
 #include "../utiliy_game.h"
 #include "../Base/GlobalStructure.h"
+#include "../Base/SSE.hpp"
 #include "M_ShieldSphereUpdate.h"
 
 extern uintptr_t _F_Call4EDEC0;
@@ -33,7 +34,7 @@ namespace RA3::Module {
 
 		memcpy(_VFT_module_ShieldSphereUpdate_Chargeable, (void*)_F_ShieldSphereUpdateVFT_M, 16U);
 		_VFT_module_ShieldSphereUpdate_Chargeable[0] = (uintptr_t)M_ShieldSphereUpdate_Module00_ChargeableASM;
-		_VFT_module_ShieldSphereUpdate_Chargeable[3] = (uintptr_t)M_ShieldSphereUpdate_Module0C_Movable;
+		_VFT_module_ShieldSphereUpdate_Chargeable[3] = (uintptr_t)M_ShieldSphereUpdate_Module0C_Chargeable;
 
 		hookGameBlock((void*)_F_ShieldSphereUpdateInitialize, (uintptr_t)M_ShieldSphereUpdate_InitializeASM);
 
@@ -80,17 +81,26 @@ namespace RA3::Module {
 	void __fastcall M_ShieldSphereUpdate_InitializeCPP(pM_ShieldSphereUpdate pIn, pData_ShieldSphereUpdate pData)
 	{
 		static_assert(offsetof(M_ShieldSphereUpdate_t, bAlwaysDisplayBar) == 0x69);
-		pIn->vft_module = _VFT_module_ShieldSphereUpdate_Chargeable;
-		pIn->bAlwaysDisplayBar = true;
+		pIn->bAlwaysDisplayBar = false;
+
+		UINT32 IDhash = pData->IDHash;
+		if (IDhash == 796263629) {
+			// ModuleTag_ShieldUpdate
+			pIn->vft_module = _VFT_module_ShieldSphereUpdate_Chargeable;
+		}
+		// end
 	}
 
 	__declspec(naked) int __fastcall M_ShieldSphereUpdate_Module00_ChargeableASM(char* pIn)
 	{
 		__asm{
-			mov eax, [ecx - 8] // pGameObject
-			add eax, 0x26C
+			mov edx, [ecx - 8] // pGameObject
 			add ecx, -0x10
-			cmp dword ptr[eax], 0
+			mov eax, [edx+0xA0]
+			test eax, 1000000000000b // check "STRUCTURE_UNPACKING"
+			jnz checkActived
+			add edx, 0x26C
+			cmp dword ptr[edx], 0
 			jne maxDamage
 			push ecx
 			call M_ShieldSphereUpdate_Module00_ChargeableCPP
@@ -118,19 +128,43 @@ namespace RA3::Module {
 
 	int __fastcall M_ShieldSphereUpdate_Module00_ChargeableCPP(pM_ShieldSphereUpdate pIn)
 	{
+		// to fix issue where shield disappears when read a savedata
+		if (!pIn->bAlwaysDisplayBar) {
+			// save current damage
+			float currentDamage = pIn->ShieldCurrentDamage;
+
+			pIn->bAlwaysDisplayBar = true;
+			_call_ShieldSphereUpdate_Reset(pIn);
+			_call_ShieldSphereUpdate_ScaleModel(pIn, 0, 0);
+
+			// reactivation
+			_call_ShieldSphereUpdate_Activate(pIn);
+			// restore current damage
+			pIn->ShieldCurrentDamage = currentDamage;
+
+			auto pGameObject = (char*)pIn->pGameObject;
+			// set to can move
+			*(int*)(pGameObject + 0x84) &= 0xFFF7FFFF;
+			return 1;
+		}
+
 		static_assert(offsetof(M_ShieldSphereUpdate_t, ShieldCurrentDamage) == 0x48);
 		static_assert(offsetof(M_ShieldSphereUpdate_t, ShieldMaxDamage) == 0x4C);
 		static_assert(offsetof(M_ShieldSphereUpdate_t, ShieldCurrentState) == 0x58);
 		static_assert(offsetof(M_ShieldSphereUpdate_t, bIsActivate) == 0x68);
 		if (pIn->bIsActivate) {
-			float currentDamage = pIn->ShieldCurrentDamage + pIn->ShieldDamageChange + pIn->ShieldDamageChange;
-			pIn->ShieldCurrentDamage = currentDamage;
-
+			float currentDamage = pIn->ShieldCurrentDamage;
 			float maxDamage = pIn->ShieldMaxDamage;
+
 			if (currentDamage >= maxDamage) {
 				return 0;
 			}
 
+			currentDamage -= pIn->ShieldDamageChange;
+			currentDamage = _mm_max_ss(_mm_set_ss(currentDamage), _mm_setzero_ps()).m128_f32[0];
+			pIn->ShieldCurrentDamage = currentDamage;
+
+			// set shield size
 			float scale = (maxDamage - currentDamage) / maxDamage;
 			scale *= pIn->ShieldDeltaRadius;
 
@@ -139,7 +173,7 @@ namespace RA3::Module {
 			scale /= pData->RadiusMax;
 			_call_ShieldSphereUpdate_ScaleModel(pIn, 0, scale);
 
-
+			// set state
 			UINT32 currentState = pIn->ShieldCurrentState + 1;
 			pIn->ShieldCurrentState = currentState;
 			if (currentState >= pIn->ShieldMaxState) {
@@ -150,7 +184,7 @@ namespace RA3::Module {
 			return 1;
 		}
 		else {
-			float currentDamage = pIn->ShieldCurrentDamage - (pIn->ShieldDamageChange * 10);
+			float currentDamage = pIn->ShieldCurrentDamage - (pIn->ShieldDamageChange * 2);
 			pIn->ShieldCurrentDamage = currentDamage;
 			if (currentDamage <= 0.0f) {
 				_call_ShieldSphereUpdate_Activate(pIn);
@@ -164,7 +198,6 @@ namespace RA3::Module {
 			//return 0x3FFFFFFF;
 		}
 
-		//DllCore.dll+8059
 		// original
 		/*if (pIn->bIsActivate) {
 			float currentDamage = pIn->ShieldCurrentDamage + pIn->ShieldDamageChange;
@@ -198,13 +231,23 @@ namespace RA3::Module {
 		}*/
 	}
 
-	void __fastcall M_ShieldSphereUpdate_Module0C_Movable(char* pIn, int, int a1)
+	void __fastcall M_ShieldSphereUpdate_Module0C_Chargeable(char* pIn, int, int a1)
 	{
 		_call_ShieldSphereUpdateModule0C(pIn, 0, a1);
+
 		pM_ShieldSphereUpdate pM = (pM_ShieldSphereUpdate)(pIn-0x10);
+		// now this set to always display
+		pM->bAlwaysDisplayBar = true;
+
 		auto pGameObject = (char*)pM->pGameObject;
 		// set to can move
 		*(int*)(pGameObject + 0x84) &= 0xFFF7FFFF;
+
+		// check "STRUCTURE_UNPACKING"
+		if (*(int*)(pGameObject + 0xA0) & (1 << 12)) {
+			_call_ShieldSphereUpdate_Reset(pM);
+			_call_ShieldSphereUpdate_ScaleModel(pM, 0, 0);
+		}
 	}
 
 	__declspec(naked) void __fastcall M_ShieldSphereUpdate_DisplayShieldBarASM()

@@ -95,6 +95,9 @@
     <ClInclude Include="commonEnum.hpp" />
     <ClInclude Include="commonMain.h" />
     <ClInclude Include="commonStruct.hpp" />
+    <ClInclude Include="Core\1CallCore.hpp" />
+    <ClInclude Include="Core\C_AttributeModifier.h" />
+    <ClInclude Include="Core\C_Weapon.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="funcAIUpdate.h" />
     <ClInclude Include="funcAIUpdate_Address.hpp" />
@@ -104,6 +107,7 @@
     <ClInclude Include="funcWeapon.h" />
     <ClInclude Include="LuaEngine.h" />
     <ClInclude Include="Modules\1CallModules.hpp" />
+    <ClInclude Include="Modules\M_BezierProjectile.h" />
     <ClInclude Include="Modules\M_LaserState.h" />
     <ClInclude Include="Modules\M_ShieldSphereUpdate.h" />
     <ClInclude Include="pch.h" />
@@ -113,6 +117,8 @@
   <ItemGroup>
     <ClCompile Include="Base\GlobalStructure.cpp" />
     <ClCompile Include="commonMain.cpp" />
+    <ClCompile Include="Core\C_AttributeModifier.cpp" />
+    <ClCompile Include="Core\C_Weapon.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="funcAIUpdate.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NoListing</AssemblerOutput>

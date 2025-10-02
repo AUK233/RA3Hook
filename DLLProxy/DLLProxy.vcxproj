@@ -90,17 +90,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\DllCore\commonAddr.h" />
-    <ClInclude Include="..\DllCore\commonData.h" />
+    <ClInclude Include="..\DllCore\Base\CommonStructure.hpp" />
+    <ClInclude Include="..\DllCore\Base\GlobalStructure.h" />
+    <ClInclude Include="..\DllCore\Base\SSE.hpp" />
+    <ClInclude Include="..\DllCore\commonAddr.hpp" />
+    <ClInclude Include="..\DllCore\commonData.hpp" />
+    <ClInclude Include="..\DllCore\commonEnum.hpp" />
     <ClInclude Include="..\DllCore\commonMain.h" />
+    <ClInclude Include="..\DllCore\commonStruct.hpp" />
+    <ClInclude Include="..\DllCore\Core\1CallCore.hpp" />
+    <ClInclude Include="..\DllCore\Core\C_AttributeModifier.h" />
     <ClInclude Include="..\DllCore\funcAIUpdate.h" />
     <ClInclude Include="..\DllCore\funcAIUpdate_Address.hpp" />
     <ClInclude Include="..\DllCore\funcAPT.h" />
-    <ClInclude Include="..\DllCore\funcMLaser.h" />
     <ClInclude Include="..\DllCore\funcOther.h" />
     <ClInclude Include="..\DllCore\funcPlayer.h" />
     <ClInclude Include="..\DllCore\funcWeapon.h" />
     <ClInclude Include="..\DllCore\LuaEngine.h" />
+    <ClInclude Include="..\DllCore\Modules\1CallModules.hpp" />
+    <ClInclude Include="..\DllCore\Modules\M_LaserState.h" />
+    <ClInclude Include="..\DllCore\Modules\M_ShieldSphereUpdate.h" />
     <ClInclude Include="..\DllCore\utiliy.h" />
     <ClInclude Include="..\DllCore\utiliy_game.h" />
     <ClInclude Include="framework.h" />
@@ -108,14 +117,34 @@
     <ClInclude Include="proxy.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\DllCore\Base\GlobalStructure.cpp" />
     <ClCompile Include="..\DllCore\commonMain.cpp" />
-    <ClCompile Include="..\DllCore\funcAIUpdate.cpp" />
-    <ClCompile Include="..\DllCore\funcAPT.cpp" />
-    <ClCompile Include="..\DllCore\funcMLaser.cpp" />
+    <ClCompile Include="..\DllCore\Core\C_AttributeModifier.cpp" />
+    <ClCompile Include="..\DllCore\funcAIUpdate.cpp">
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+    </ClCompile>
+    <ClCompile Include="..\DllCore\funcAPT.cpp">
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+    </ClCompile>
     <ClCompile Include="..\DllCore\funcOther.cpp" />
     <ClCompile Include="..\DllCore\funcPlayer.cpp" />
     <ClCompile Include="..\DllCore\funcWeapon.cpp" />
-    <ClCompile Include="..\DllCore\LuaEngine.cpp" />
+    <ClCompile Include="..\DllCore\LuaEngine.cpp">
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+    </ClCompile>
+    <ClCompile Include="..\DllCore\Modules\M_LaserState.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../pch.h</PrecompiledHeaderFile>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NoListing</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NoListing</AssemblerOutput>
+    </ClCompile>
+    <ClCompile Include="..\DllCore\Modules\M_ShieldSphereUpdate.cpp">
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NoListing</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NoListing</AssemblerOutput>
+    </ClCompile>
     <ClCompile Include="..\DllCore\utiliy.cpp" />
     <ClCompile Include="..\DllCore\utiliy_game.cpp" />
     <ClCompile Include="dllmain.cpp" />

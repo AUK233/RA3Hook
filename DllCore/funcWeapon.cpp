@@ -101,21 +101,6 @@ __declspec(naked) void __fastcall WeaponReloadTimeCountASM()
 	}
 }
 
-__declspec(naked) void __fastcall AttributeModifierNo18BuffASM()
-{
-	__asm {
-	// check it is 1.0f
-		cmp dword ptr [esp + 0x18 + 4], 0x3F800000
-		je returnOld
-		addss xmm0, [esp + 0x18 + 4]
-		ret
-	// they need +4 because of esp has decreased by 4
-	returnOld :
-		//mulss xmm0, [esp + 0x18 + 4]
-		ret
-	}
-}
-
 float baseWarheadTargetPositionX = 1.0f;
 float baseWarheadTargetPositionY = 1.0f;
 
@@ -273,8 +258,6 @@ __declspec(naked) bool __fastcall CheckNoEMPInUnitShieldASM(void* pShieldBody)
 uintptr_t _F_ShowAmmo = 0x00400000 + 0x128746;
 uintptr_t _F_WeaponReloadActive = 0x00400000 + 0x3BE05F;
 uintptr_t _F_WeaponReloadTimeCount = 0x00400000 + 0x2DC270;
-// this is <Modifier Type="BOUNTY_PERCENTAGE" Value="50%"/>
-uintptr_t _F_AttributeModifierT18Buff = 0x00400000 + 0xDAABD;
 // Fix weapon scatter radius
 uintptr_t _F_WeaponScatterRadius1 = 0x00400000 + 0x35AA6B;
 uintptr_t _F_WeaponScatterRadius2 = 0x00400000 + 0x35AA8A;
@@ -288,7 +271,6 @@ void __fastcall InitializeHookWeaponFunctionUpdateOrigin(uintptr_t hmodEXE)
 	_F_WeaponReloadActive = hmodEXE + 0x3FC3AF;
 	_F_WeaponReloadTimeCount = hmodEXE + 0x31A7E0;
 
-	_F_AttributeModifierT18Buff = hmodEXE + 0x11C4DD;
 
 	_F_WeaponScatterRadius1 = hmodEXE + 0x3990AB;
 	_F_WeaponScatterRadius2 = hmodEXE + 0x3990CA;
@@ -308,9 +290,6 @@ void __fastcall HookWeaponFunctionUpdate()
 	hookGameCall((void*)_F_WeaponReloadTimeCount, (uintptr_t)WeaponReloadTimeCountASM);
 	WriteHookToProcess((void*)(_F_WeaponReloadTimeCount + 5), (void*)&nop1, 1U);
 
-	// <Modifier Type="BOUNTY_PERCENTAGE" Value="50%"/>
-	hookGameCall((void*)_F_AttributeModifierT18Buff, (uintptr_t)AttributeModifierNo18BuffASM);
-	WriteHookToProcess((void*)(_F_AttributeModifierT18Buff + 5), (void*)&nop1, 1U);
 
 	// Fix weapon scatter radius
 	//hookGameBlock((void*)_F_WeaponScatterRadius, (uintptr_t)WeaponScatterRadiusASM);

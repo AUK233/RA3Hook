@@ -18,6 +18,7 @@
 #include "funcAPT.h"
 //
 #include "base/GlobalStructure.h"
+#include "Core/1CallCore.hpp"
 #include "Modules/1CallModules.hpp"
 
 std::wstring SettingINI;
@@ -31,6 +32,7 @@ void __fastcall hookFunctionGroup()
 	RA3::APT::HookAptFunctionUpdate();
 	RA3::Weapon::HookWeaponFunctionUpdate();
 	//
+	RA3::Core::HookFunctionSeries_Core();
 	RA3::Module::HookFunctionSeries_Module();
 
 	// Load PlayerTechStoreTemplate
@@ -289,6 +291,7 @@ bool __fastcall GetFunctionAddress()
 		RA3::Weapon::InitializeHookWeaponFunctionUpdateOrigin(hmodEXE);
 		//
 		G_GlobalStructure_Initialize(hmodEXE, 1);
+		RA3::Core::InitializeHookFunctionSeries_Core(hmodEXE, 1);
 		RA3::Module::InitializeHookFunctionSeries_Module(hmodEXE, 1);
 	}
 	else
@@ -337,7 +340,7 @@ void mainInjectionExecution()
 		}
 
 		if (inputSetting.setDebug) {
-			MessageBox(NULL, L"Injection OK!\n   v2.501", L"Check", MB_OK);
+			MessageBox(NULL, L"Injection OK!\n   v2.502", L"Check", MB_OK);
 		}
 	}
 }

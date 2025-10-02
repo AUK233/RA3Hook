@@ -1,0 +1,138 @@
+007061E0 SquishCollide初始化
+00C30EE8 另一个虚表
+ra3_1.12.game+3A38B9 加载CrushKillDelay
+ra3_1.12.game+3A3771 检查AllowAllyCrush
+007A3584 判断是否碾压，al是CrushableLevel, bl是CrusherLevel
+007A37D2
+ra3_1.12.game+3A3A9F ecx是被摧毁的目标
+ra3_1.12.game+3A3642 检查碾压时是否在移动
+
+ra3_1.12.game+F87E4 call模块虚表
+
+00C5BCE0 player虚表
+00857F94 初始化player的squad
+
+ra3_1.12.game+4DDAEA - 8B CF                 - mov ecx,edi
+call的崩溃点
+ra3_1.12.game+4E35EA 每建造完成一个载具就会给ebx+28加4
+
+
+
+110700387
+
+00 00 00 40 66 66 E6 3F E1 7A B4 3F
+
+闪电阴影角度返回值
+ra3_1.12.game+1C9B12 - D9 44 24 1C           - fld dword ptr [esp+1C]
+
+给予地图主光照r
+ra3_1.12.game+1C98C1 - 89 08                 - mov [eax],ecx
+ra3_1.12.game+1C9B94 - 89 08                 - mov [eax],ecx
+
+覆盖当前地图主光照
+ra3_1.12.game+5AEF68 - 89 10                 - mov [eax],edx
+
+
+获取原始的地图主光照r
+ra3_1.12.game+1D2364 - F3 0F10 50 0C         - movss xmm2,[eax+0C]
+
+
+
+应用闪电阴影角度
+ra3_1.12.game+50BDF1 - 89 50 0C              - mov [eax+0C],edx
+
+泰矿雷达颜色
+cnc3game.dat+1D125D - 8B 52 08              - mov edx,[edx+08] 获取值？
+cnc3game.dat+618C82 - 8B 78 1C              - mov edi,[eax+1C] 读取bgra uint8
+
+3161573548
+
+
+006E5EA9 - 8B 52 08  - mov edx,[edx+08]
+esi+1c，雷达颜色bgr
+
+00A8C49A 初始化雷达颜色
+00A8C1B9 - 8B 76 04  - mov esi,[esi+04]
+确认单位雷达大小
+00A8C207 写入单位雷达颜色
+
+
+泰矿
+3161573548
+
+007CC350 SupplyTruckAIUpdate初始化
+
+采矿
+0082275E - 8B 51 0C  - mov edx,[ecx+0C] call 0076C590
+
+
+ra3_1.12.game+36C5A0 采矿时获取采矿上限
+ra3_1.12.game+36C5F6 采矿时写入泰矿价值
+ra3_1.12.game+36C62D 采矿未知
+
+
+
+ra3_1.12.game+35517F 卸矿时获取当前泰矿价值
+ra3_1.12.game+3551B7 卸矿时获取采矿上限
+ra3_1.12.game+35561A 泰矿价值返回到此处
+
+006EE2DB在此处由28变成36
+call eax可能是006EE2E0
+ra3_1.12.game+3556D6 这里由36变成12
+ra3_1.12.game+4277BB 返回到这里
+007557CF 用于显示加钱
+
+008277B9 的call eax可执行到下面的地址
+=> ra3_1.12.game+355784 => ra3_1.12.game+44CA6F => 005293A9
+ra3_1.12.game+449557 此处写入玩家金钱
+00AF2A6D 此处更改玩家金钱
+
+
+
+00A8AC80 此处edx +8是颜色，+c是文本指针
+
+
+卸矿调用
+0072E8A7 - 8B 42 0C  - mov eax,[edx+0C]
+00764765 - 8B 50 0C  - mov edx,[eax+0C] 可能是资源获取统计
+
+泰矿指针大小0x50？
+006E5EBD 泰矿矿量初始化
+00705A17 泰矿状态更新
+泰矿增长赋值
+ra3_1.12.game+305C52 - 89 46 20              - mov [esi+20],eax
+泰矿完成增长
+ra3_1.12.game+305BF7 - 89 4E 20              - mov [esi+20],ecx
+
+========
+00793800 ShieldBody初始化
+ra3_1.12.game+3D34A3 受到攻击时减少护盾
+
+0071E143 被emp时清空护盾
+ra3_1.12.game+3CFAB8 返回地址
+
+007CFB76 这里赋予单位emp状态
+========
+
+007274EB 可用于增加emp状态
+0072750C 可用于移除emp状态
+
+
+
+
+
+结算界面阵营类型返回地址
+ra3_1.12.game+2251CC - 8B CF                 - mov ecx,edi
+
+结算界面 绘制阵营图标 获取阵营类型
+ra3_1.12.game+69732A - 8B 7C 1F 08           - mov edi,[edi+ebx+08]
+
+
+APT获取阵营类型返回地址
+ra3_1.12.game+21B7CF - 3B 74 24 5C           - cmp esi,[esp+5C]
+
+为UnitOverlayIconSettings设置指针
+ra3_1.12.game+11C620
+
+00CDB7A0 +34， +4， +8
+

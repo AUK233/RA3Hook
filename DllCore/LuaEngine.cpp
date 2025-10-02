@@ -399,7 +399,6 @@ namespace RA3::LuaEngine {
 		pushLuaGetFunction(pLua, "SetCFACampaignFlag");
 		pushLuaExecuteFunction(pLua, (uintptr_t)CheckCFACampaignFlag, 0);
 		pushLuaGetFunction(pLua, "CheckCFACampaignFlag");
-
 		pushLuaExecuteFunction(pLua, (uintptr_t)CheckSkirmishRule, 0);
 		pushLuaGetFunction(pLua, "CheckSkirmishRule");
 
@@ -424,6 +423,8 @@ namespace RA3::LuaEngine {
 		pushLuaGetFunction(pLua, "SetCFACampaignFlag");
 		pushLuaExecuteFunction(pLua, (uintptr_t)CheckCFACampaignFlag, 0);
 		pushLuaGetFunction(pLua, "CheckCFACampaignFlag");
+		pushLuaExecuteFunction(pLua, (uintptr_t)CheckSkirmishRule, 0);
+		pushLuaGetFunction(pLua, "CheckSkirmishRule");
 
 		pushLuaExecuteFunction(pLua, _p_ExecuteAction, 0);
 		pushLuaGetFunction(pLua, "ExecuteActionInObject");

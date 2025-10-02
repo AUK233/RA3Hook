@@ -9,15 +9,21 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Source Files\Base">
       <UniqueIdentifier>{9d76b902-1041-484f-8430-8ed0c0bd7f47}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Modules">
       <UniqueIdentifier>{8d577e99-8315-495d-9c8e-288d2efd5f5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\core">
+      <UniqueIdentifier>{536f829d-ba70-4ff6-bf60-35ec6f39c96a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core">
+      <UniqueIdentifier>{d2e78db8-d4c6-432e-8b19-fc6016eb5dcf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -48,20 +54,11 @@
     <ClInclude Include="commonMain.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="commonEnum.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="commonStruct.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="funcAIUpdate.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="LuaEngine.h">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="utiliy_game.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="funcAIUpdate_Address.hpp">
       <Filter>Source Files</Filter>
@@ -87,11 +84,29 @@
     <ClInclude Include="Base\GlobalStructure.h">
       <Filter>Source Files\Base</Filter>
     </ClInclude>
+    <ClInclude Include="commonEnum.hpp">
+      <Filter>Header Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="commonStruct.hpp">
+      <Filter>Header Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="utiliy_game.h">
+      <Filter>Header Files\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\1CallCore.hpp">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\C_AttributeModifier.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Modules\M_BezierProjectile.h">
+      <Filter>Source Files\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\C_Weapon.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dllmain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="utiliy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -116,9 +131,6 @@
     <ClCompile Include="pch.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="utiliy_game.cpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="funcAPT.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -130,6 +142,18 @@
     </ClCompile>
     <ClCompile Include="Modules\M_ShieldSphereUpdate.cpp">
       <Filter>Source Files\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utiliy_game.cpp">
+      <Filter>Header Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\C_AttributeModifier.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\C_Weapon.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

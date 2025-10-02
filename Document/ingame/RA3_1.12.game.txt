@@ -1,0 +1,433 @@
+007B08DD BezierProjectile每帧的行为，ecx是模块指针
+0074B390 这里初始化
+0077B8F8 比较加速度是否小于0
+
+================================================
+
+0079FC50 WeaponTemplate初始化？
+
+006FE7D0 真正的武器初始化？
++40 是攻击坐标xyz
++4c 是攻击目标的坐标xyz
++6c 是复制攻击坐标xyz
+
+006E028E 强制攻击时写入武器攻击坐标
+00747860 攻击目标时写入坐标
+
+0075A69F 复制武器攻击坐标
+006FEDE4 攻击目标时复制坐标
+
+武器静态数据 +e0是PreAttackWeapon的指针
+0079FB59 检查预攻击武器是否存在
+007B6032 起义的地址
+
+0079FB75 预攻击武器写入目标指针
+0075A862 预攻击武器读取预设位置 即0079FB84此处
+
+================================================
+
+ra3_1.12.game+3E15C0
+分配ShieldSphereUpdate内存并初始化，模块标头固定0x10大小
++10是vft，vft+0是更新函数，vft大小0x10
++48是护盾受损值，0代表无损伤
++4c是最大受损值
+
+ra3_1.12.game+38A194 - 0F2F 46 3C            - comiss xmm0,[esi+3C]
+检查护盾是否超过上限
+
+ra3_1.12.game+3246C9 - 38 88 04010000        - cmp [eax+00000104],cl
+初始化时检查是否立即激活（事实上无效）
+
+ShieldSphereUpdate数据
++8是RadiusMax，+c是RadiusMin
++18是ScanFrequency，+1c是Duration
++20是MaxDamage
+
+0078A265 此处激活护盾
+0052808F 此处为0则不显示护盾条
+0078A0B5 此处是禁止移动
+0073ED87 此处解除禁止移动
+
+007099BE 激活模块
+
+ra3_1.12.game+33ECE6 护盾受到伤害
+
+0051CCB0 复制ModelConditionBitFlags
+
+ra3_1.12.game+3752CB StructureUnpackUpdate解除建造中
+
+0084D5C4 获取BOUNTY_PERCENTAGE的加成值
+
+
+================================================
+
+0x6D1BBC
+
+发射时读ScatterRadius
+ra3_1.12.game+2F9511 - D9 40 24              - fld dword ptr [eax+24]
+
+每发炮弹读ScatterRadius
+ra3_1.12.game+313BE5 - F3 0F10 40 24         - movss xmm0,[eax+24]
+ebp为0跳转位置
+
+ra3_1.12.game+3140D7
+
+返回地址
+ra3_1.12.game+35AAA9 - 8B 08                 - mov ecx,[eax]
+3871D0 起义
+赋值
+mov esi, dword ptr [esp+58]
+mov eax, dword ptr [esi+2C]
+movss xmm0, dword ptr [eax]
+mov ecx, dword ptr [esi+1C]
+movss dword ptr [esp+2C], xmm0
+
+写入弹头目标坐标
+00713BF6 - D9 1E  - fstp dword ptr [esi]
+esi+1c的指针为基础坐标
+
+
+
+792df2 退出
+7b19df 进入
+
+分配SecondaryObjectListenerModule内存 007DFF60
+006E4BB6 - C7 06 502CC200 - mov [esi],00C22C50 初始化
+
+ifv步兵进入获取升级
+RA3_1.12.game+392F05 - 84 51 08              - test [ecx+08],dl
+ifv步兵进入获取升级，确认升级hash，返回值007B19EB
+0077C8F0 - 8B 2B  - mov ebp,[ebx]
+ifv步兵退出移除升级
+RA3_1.12.game+392E78 - 84 58 08              - test [eax+08],bl
+ifv步兵退出移除升级，确认升级hash
+00792E54 - 8B 06  - mov eax,[esi]
+
+ifv步兵进入
+006E4C49 - 8B 77 14  - mov esi,[edi+14]
+ifv步兵进入载入ifv步兵的hash
+004DFF83 - 8B 0C B8   - mov ecx,[eax+edi*4]
+
+007CC240 JetAIUpdate 资产模块+63是CirclesForAttack
++3c是状态机指针 006D9233这里写入 由00C4E268+2a4 call获得 2D8F0A
+RA3_1.12.game+3C24A7 返回地址
+0080FCF5 JetAIUpdate状态机初始化结尾
+
+RA3_1.12.game+386F35 检查静态状态机是否过大
+RA3_1.12.game+3CC303 返回CirclesForAttack结果 是虚表+250
+00786F6F 由此处call
+
+00787132 检查飞机是否需要靠近敌人
+
+
+
+
+
+
+
+80F72E此处可获取ai指针
+ai指针+28是目标序号
+
+
+00811389，00817248（应该是这里），0081DEBF
+均可能可能写入UnitAICombinedUnitState虚表 状态0x51
+0059CE0D tw对应AICombinedUnitState 由+c和+10获取AICombinedUnitStateMachine
+
+006F003B 赋予状态0x51，edx是AIUpdate虚表
+RA3_1.12.game+387CB9 由这里call断点0x54 787ca2
+
+RA3_1.12.game+36E738 赋予状态0xA
+RA3_1.12.game+36EE21 赋予状态0x21 00C540E8
+00721C5A 赋予状态0
+
+
+
+
+
+RA3_1.12.game+364274 获取状态机状态，仅获取一次 RA3_1.12.game+37D281
+RA3_1.12.game+38F798 一段一段时间获取一次状态机状态
+
+RA3_1.12.game+3F6C90 获取下一个状态
+0060170E 获取下一个状态
+
+
+00817429 写入AIGuardState虚表
+状态是0x10
+
+00813491 写入UnitAICombinedUnitMoveToState虚表
+006099BF 此处释放
+
+cnc3game.dat+180AAB - E8 33FFFFFF           - call cnc3game.dat+1809E3
+cnc3game.dat+1565EE - 8B 4E 04              - mov ecx,[esi+04]
+cnc3game.dat+195B75 - 8B F8                 - mov edi,eax
+AICombinedUnitMoveToState
+
+AICombinedUnitStateMachine
+0081352B 获取ai的指针 tw写入005809FD虚表
+RA3_1.12.game+3F4F35 写入ai指针
+返回00609B99
+00609B8B 此处写入获取ai指针的功能
+对应 cnc3game.dat+1565E2
+
+RA3_1.12.game+4236C0 返回
+RA3_1.12.game+2F003F 返回
+00813469 写入ai指针虚表，+0是释放
+RA3_1.12.game+420021 从ai指针中获取跳转
+006039A0 跳转目标地址
+RA3_1.12.game+3F4FB8 将ai指针释放了
+RA3_1.12.game+214969 准备释放 tw对应00547EAB
+RA3_1.12.game+3F6300 写入新的ai指针
+
+cnc3game.dat+17EAF8 此处写回了ai指针 AIGuardState
+007F15D0 可能对应这个地方
+
+起义先锋
+007D4F17 初始化jetai
+006E8780 call初始化ai状态
+ra3ep1_1.0.game+2E8A20 初始化炮艇状态机
+00C66498 先锋攻击状态机
+00C6C6C8 炮艇状态机
+0082CFAE 写入炮艇状态机虚表
+0080FA41 call写入炮艇状态机 00C66498+50 真正是由006E8AA8
+
+
+
+RA3_1.12.game+359AB8 - 8B 16                 - mov edx,[esi]
+RA3_1.12.game+359B1A - 8B 16                 - mov edx,[esi]
+武器弹药
+
+检测攻击鼠标
+RA3_1.12.game+359707 - 83 B9 B8000000 00     - cmp dword ptr [ecx+000000B8],00
+
+检测弹药
+ +AC 是WeaponFlagsBitFlags
+ +F8 是装填时间的地址
+RA3_1.12.game+35A577 - 83 78 70 00           - cmp dword ptr [eax+70],00
+装弹？
+RA3_1.12.game+35A5AE - 83 B8 B8000000 00     - cmp dword ptr [eax+000000B8],00
+返回地址 609b99
+RA3_1.12.AptTarget::SetNext+A129 - 8B 4E 04              - mov ecx,[esi+04]
+另一个call edx
+RA3_1.12.game+342590 - 83 EC 4C              - sub esp,4C
+
+获取武器装填时间
+006dc702 小
+RA3_1.12.AptAnimationTarget::GetFocusButton+1C72 - F3 0F10 00            - movss xmm0,[eax]
+006dc782 大
+RA3_1.12.AptAnimationTarget::GetFocusButton+1CF2 - F3 0F10 40 04         - movss xmm0,[eax+04]
+返回值地址
+RA3_1.12.game+3BE046 - 50                    - push eax
+
+
+007BE051 写入装填时间
+检测装填时间
+RA3_1.12.game+3BE079 - 39 5E 28              - cmp [esi+28],ebx
+
+006DC273 检查装填时间
+RA3_1.12.AptAnimationTarget::GetFocusButton+17E0 - 8B 41 28              - mov eax,[ecx+28]
+
+检查武器加特林状态？
+RA3_1.12.game+3420A2 - 3B 48 74              - cmp ecx,[eax+74]
+
+
+
+
+
+给单位当前弹药赋值
+RA3_1.12.game+3BE062 - 89 41 1C              - mov [ecx+1C],eax
+
+飞机上弹
+007256FC - 83 B8 B8000000 02 - cmp dword ptr [eax+000000B8],02
+返回值
+ra3_1.12.game+34181A - E8 B13EFEFF           - call ra3_1.12.AptRI3DHelper::SetXRotation+7890
+需要上弹时
+ra3_1.12.game+341823 - 32 DB                 - xor bl,bl
+返回值
+ra3_1.12.game+3EDC06 - F6 D8                 - neg al
+
+飞机上弹？
+0071306f
+ra3_1.12.game+31306F - 83 BA B8000000 02     - cmp dword ptr [edx+000000B8],02
+
+UnitAIReloadAmmoState
+007EDB99
+
+武器call函数的位置
+006039E1
+
+WeaponReadyState
+006DC190
+
+检查装填时是否禁止移动
+RA3_1.12.game+3BE0CD - 74 14                 - je RA3_1.12.game+3BE0E3
+
+
+
+
+将弹药值加到一个寄存器
+00986ed8
+RA3_1.12.AptCharacterTextInst::GetLength+3808 - 03 01                 - add eax,[ecx]
+
+
+
+
+00b20d20
+RA3_1.12.AptCharacterTextInst::GetTextValueConst+430 - 83 BD B8000000 02     - cmp dword ptr [ebp+000000B8],02
+
+00528746 显示弹药
+RA3_1.12.AptCharacterInst::GetCharacterConst+3AD6 - 83 B8 B8000000 02     - cmp dword ptr [eax+000000B8],02
+
+未知
+RA3_1.12.game+34729D - 83 B8 B8000000 00     - cmp dword ptr [eax+000000B8],00
+
+攻击相关，效果未知
+RA3_1.12.game+2016FA - 83 2D F034CE00 01     - sub dword ptr [RA3_1.12.game+8E34F0],01
+
+
+
+
+
+
+
+
+
+004DAA6D 获取AttributeModifier的Category
+RA3_1.12.AptPseudoDisplayList::GetFirstItem+588A - 8B 42 04              - mov eax,[edx+04]
+
+获取AttributeModifier的持续时间
+RA3_1.12.game+D49D5 - F3 0F10 40 08         - movss xmm0,[eax+08]
+
+赋予时检查Modifier类型
+RA3_1.12.game+ED000 - 83 38 0F              - cmp dword ptr [eax],0F
+
+ed2b4
+
+到期时检查Modifier类型
+RA3_1.12.game+E5D10 - 83 38 21              - cmp dword ptr [eax],21
+
+完成
+==================================
+赏金获取
+004DA98F
+ra3_1.12.AptPseudoDisplayList::GetFirstItem+57AA - F3 0F10 40 04         - movss xmm0,[eax+04]
+
+决定Modifier的计算类型
+RA3_1.12.game+DAABD
+==================================
+
+
+====
+4173660217
+
+检查建造序列
+00723FBB - 3B 51 08              - cmp edx,[ecx+08]
+007240A9 - 3B 48 08              - cmp ecx,[eax+08]
+006DA709 - 3B 48 08              - cmp ecx,[eax+08]
+
+获取当前单位的建造数量
+RA3_1.12.game+6E1C3C - 89 41 6C              - mov [ecx+6C],eax
+RA3_1.12.game+6DFE34 - 8B 46 6C              - mov eax,[esi+6C]
+
+从此处call的建造 ra3_1.12.game+6D1188
+006DAA00 此处获取建造数量，从下面函数call的
+ra3_1.12.game+6B4AB0 - 8B C1                 - mov eax,ecx
+
+===============
+00724085 设置shift点击增加的建造数量的hash，此处esi是AD指针
+007242C4 - 8B 13  - mov edx,[ebx] 设置建造序列
+
+ebx+10是当前生产单位指针，指针+10是AD指针，AD指针+8是单位的hash，+4是GameObject的hash
+生产单位指针+54是下一个AD指针，相关信息可由006DAA00获取
+ebx+14是最后一个生产单位指针？
+ebx+18是点击的单位数量，似乎无用
+
+ebx+1C是等待生产的单位数量
+0072443D - 01 75 40  - add [ebp+40],esi 此处减少
+0072436B - 83 45 40 01 - add dword ptr [ebp+40],01 此处增加
+===============
+
+ra3_1.12.game+A650B 00A8298E返回地址
+004C9603 可能是阵营指针的内存分配
+
+===============
+
+战役flag
+004E1F3A 传递flag名
+00988710 call edx的目标
+
+===============
+
+随机箱
+
+RA3_1.12.game+216DFF - 8B 51 08              - mov edx,[ecx+08] 获取随机箱生成器的名字
+
+00B28DF5 - 89 15 743ACE00  - mov [00CE3A74],edx 写入遭遇战配置指针
++74四字是随机箱开启
+RA3_1.12.game+373524 - 39 68 74              - cmp [eax+74],ebp 此处也检查过
+00B261B6 - 89 48 74  - mov [eax+74],ecx 此处切换随机箱
+00B295FD - 8B 74 B1 5C  - mov esi,[ecx+esi*4+5C] 此处读取随机箱设置
+
+00A8F487 读取apt的状态机
+cmp edi, 0x3EA17A0D ToggleRandomCrates
+
+00B26430 读取EA字符串
+
+===============
+
+
+
+设置逻辑时间？
+RA3_1.12.game+7B3091
+00CAF9D4 int 30
+8AF9D4
+
+00CDBC58 float 15
+
+RA3_1.12.game+8AF8FC 0.25f 渲染用
+
+RA3_1.12.game+8AF9D0 int15 逻辑帧 ======修改它 30
+*0.001 = RA3_1.12.game+8DBC4C 逻辑帧0001
+/1000 = RA3_1.12.game+8DBC1C 帧间隔？ ======修改它 1000/60
+= RA3_1.12.game+8DBC58 逻辑帧F ======修改它 30
+1 / 8DBC58 = RA3_1.12.game+8DBC94 逻辑帧间隔 ======修改它 1/30
+
+RA3_1.12.game+8AF9D4 int30 渲染帧
+
+*0.001 = RA3_1.12.game+8DBC5C 渲染帧0001
+= RA3_1.12.game+8DBC50 渲染帧F ======修改它 60
+/2 = 8DD1CC
+/2 = 8DD310
+/2 = 8E149C
+1 / 8DBC50 = RA3_1.12.game+8DBD34 渲染帧间隔
+1000 / 8AF9D4 = RA3_1.12.game+8E176C 渲染帧速度
+
+RA3_1.12.game+7E6200
+
+
+
+RA3_1.12.game+35C986 - F3 0F10 05 94BCCD00   - movss xmm0,[RA3_1.12.game+8DBC94]
+
+主逻辑时间
+RA3_1.12.game+2297F8 - 8B C8                 - mov ecx,eax
+
+ra3_1.12.game+4D7A05 - 0FAF 05 D0F9CA00      - imul eax,[ra3_1.12.game+8AF9D0]
+
+读粒子特效是否平行于地面
+RA3_1.12.game+2D126F - 83 79 28 00           - cmp dword ptr [ecx+28],00
+
+005F43A0 call函数
+
+=================================================
+
+00CDD190 TheScriptEngine指针存放
+ALLOW_DISALLOW_ONE_BUILDING
+
+ra3_1.12.game+17522F 比较脚本序号，为地编加一
+
+ra3_1.12.game+188E98 返回玩家序号？
+
+
+
+
+
+

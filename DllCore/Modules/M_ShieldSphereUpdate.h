@@ -32,7 +32,7 @@ namespace RA3::Module {
 
 	int __fastcall M_ShieldSphereUpdate_Module00_ChargeableASM(char* pIn);
 	int __fastcall M_ShieldSphereUpdate_Module00_ChargeableCPP(pM_ShieldSphereUpdate pIn);
-	void __fastcall M_ShieldSphereUpdate_Module0C_Movable(char* pIn, int, int a1);
+	void __fastcall M_ShieldSphereUpdate_Module0C_Chargeable(char* pIn, int, int a1);
 
 	void __fastcall M_ShieldSphereUpdate_DisplayShieldBarASM();
 }

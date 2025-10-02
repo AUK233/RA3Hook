@@ -1,5 +1,6 @@
 #pragma once
 
+#include "M_BezierProjectile.h"
 #include "M_LaserState.h"
 #include "M_ShieldSphereUpdate.h"
 
