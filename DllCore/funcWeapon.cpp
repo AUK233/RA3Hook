@@ -23,7 +23,7 @@ __declspec(naked) void __fastcall ShowsAmmoPipsASM()
 			cmp dword ptr[eax + 0xB8], 2
 			je SetFlag
 			// ShowsAmmoPips is true
-			cmp dword ptr[eax + 0x134], 1
+			cmp byte ptr[eax + 0x134], 1
 			je SetFlag
 			mov eax, 1
 			test eax, eax

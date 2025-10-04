@@ -155,5 +155,8 @@
     <ClCompile Include="Core\C_Weapon.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="Modules\M_BezierProjectile.cpp">
+      <Filter>Source Files\Modules</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

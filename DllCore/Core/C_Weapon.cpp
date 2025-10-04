@@ -24,7 +24,9 @@ namespace RA3::Core {
 
 	void __fastcall C_Weapon_Initialize(uintptr_t hmodEXE, int isNewSteam)
 	{
-		if (isNewSteam) {}
+		if (isNewSteam) {
+			_F_SetupPreAttackWeaponPos = 0x7DDF0E;
+		}
 	}
 
 	__declspec(naked) void __fastcall C_Weapon_SetupPreAttackWeaponPosASM()
@@ -32,7 +34,7 @@ namespace RA3::Core {
 		// esp need +4 because of esp has decreased by 4
 		__asm {
 			// ShowsAmmoPips is true
-			cmp dword ptr[edx + 0x134 - 0x10], 1 // Requires -10h, because it's not header.
+			cmp byte ptr[edx + 0x134 - 0x10], 1 // Requires -10h, because it's not header.
 			lea edx, [esp + 0x10 + 4]
 			jne addr79FB6E
 			test ecx, ecx

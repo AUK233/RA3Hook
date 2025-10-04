@@ -2,12 +2,14 @@
 #include "../Base/CommonStructure.hpp"
 
 typedef struct M_BezierProjectile_t : baseCommonModule_t {
-	char pad24[0x58];
+	char pad24[0x34];
+	float pos1[3], pos2[3];
+	float deltaPos[3];
 	float ammospeed; // is WeaponSpeed / logicframe in 0077B8E4
-	char pad80[0x48];
+	int int80, alivetime;
+	char pad88[0x40];
 	float CurrentSpeed; // really?
 }*pM_BezierProjectile;
-static_assert(offsetof(M_BezierProjectile_t, ammospeed) == 0x7C);
 
 typedef struct Data_BezierProjectile_t : baseBinDataHeader_t {
 	char pad08[0x10];
@@ -18,4 +20,10 @@ typedef struct Data_BezierProjectile_t : baseBinDataHeader_t {
 	char pad34[0xB4];
 	float MaxDistanceToTravel, TargetVectorOffset, Acceleration;
 }*pData_BezierProjectile;
-static_assert(offsetof(Data_BezierProjectile_t, Acceleration) == 0xF0);
+
+namespace RA3::Module {
+	void __fastcall M_BezierProjectile_Hook();
+	void __fastcall M_BezierProjectile_Initialize(uintptr_t hmodEXE, int isNewSteam);
+
+	int __fastcall M_BezierProjectile_Module00CPP(char* pIn);
+}

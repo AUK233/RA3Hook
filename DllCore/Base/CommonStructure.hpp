@@ -14,6 +14,7 @@ struct baseCommonModule_t {
 };
 
 typedef void(__fastcall* void_fastcallNoParameter)(void*);
+typedef int(__fastcall* int_fastcallNoParameter)(void*);
 
 typedef void(__fastcall* void_thiscallHasParameter1)(void* ecx, int, int a1);
 typedef void(__fastcall* void_thiscallHasParameter2)(void* ecx, int, int a1, int a2);
