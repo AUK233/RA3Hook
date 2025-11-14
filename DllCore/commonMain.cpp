@@ -86,8 +86,7 @@ void __fastcall hookFunctionGroup()
 	WriteHookToProcess((void*)(_F_AttachUpdateFlagFix01), &set37AB71, 16U);
 	unsigned char set37AB5E = 0xC;
 	WriteHookToProcess((void*)(_F_AttachUpdateFlagFix01 - 0x11), &set37AB5E, 1U);
-	// C*C = 0x90
-	int set37AB64 = 0x90;
+	int set37AB64 = 0xC * 0xC;
 	WriteHookToProcess((void*)(_F_AttachUpdateFlagFix01 - 0xB), &set37AB64, 4U);
 
 	// LASER!
@@ -340,7 +339,7 @@ void mainInjectionExecution()
 		}
 
 		if (inputSetting.setDebug) {
-			MessageBox(NULL, L"Injection OK!\n   v2.502", L"Check", MB_OK);
+			MessageBox(NULL, L"Injection OK!\n   v2.504", L"Check", MB_OK);
 		}
 	}
 }

@@ -2,7 +2,7 @@
 #include "../Base/CommonStructure.hpp"
 
 typedef struct M_ShieldSphereUpdate_t : baseCommonModule_t {
-	char pad[0x24];
+	char pad24[0x24];
 	float ShieldCurrentDamage, ShieldMaxDamage;
 	float ShieldDeltaRadius; // is RadiusMax - RadiusMin
 	float ShieldDamageChange; // increased damage value per logic
@@ -19,8 +19,11 @@ typedef struct Data_ShieldSphereUpdate_t : baseBinDataHeader_t {
 	float ScanFrequency, Duration; // unit is seconds
 	float MaxDamage;
 	char BitFlagsPad[0x5C];
-	char* ShieldBoneName;
+	char* ShieldBoneName; // if ShieldBoneName="", this is 0
 	float ShieldSizeMultiplier;
+	char pad88[0x78];
+	void* pIgnoreInsideToInsideCheck;
+	bool InitiallyActive;
 }*pData_ShieldSphereUpdate;
 
 namespace RA3::Module {

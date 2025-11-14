@@ -9,8 +9,7 @@
 
 namespace RA3::Module {
 
-	// mov dword ptr [esi+10], ra3_1.12.C376A0
-	uintptr_t _F_BezierProjectileInitialize = 0x74B3CB + 3;
+	uintptr_t _F_BezierProjectileInitialize = 0x74B51C;
 	// is p+0x10
 	uintptr_t _F_BezierProjectileVFT_M = 0xC376A0;
 
@@ -25,15 +24,33 @@ namespace RA3::Module {
 		_VFT_module_BezierProjectileNew[0] = (uintptr_t)M_BezierProjectile_Module00CPP;
 
 		// movement that always skips the first frame.
-		uintptr_t newVirtualFunction = (uintptr_t)&_VFT_module_BezierProjectileNew[0];
-		WriteHookToProcess((void*)_F_BezierProjectileInitialize, &newVirtualFunction, 4U);
+		hookGameBlock((void*)_F_BezierProjectileInitialize, (uintptr_t)M_BezierProjectile_InitializeASM);
+		WriteHookToProcess((void*)(_F_BezierProjectileInitialize + 5), (void*)&nop2, 2U);
 	}
 
 	void __fastcall M_BezierProjectile_Initialize(uintptr_t hmodEXE, int isNewSteam)
 	{
 		if (isNewSteam) {
-			_F_BezierProjectileInitialize = 0x7899EB + 3;
+			_F_BezierProjectileInitialize = 0x789B3C;
 			_F_BezierProjectileVFT_M = 0xC3E828;
+		}
+	}
+
+	__declspec(naked) void __fastcall M_BezierProjectile_InitializeASM()
+	{
+		__asm {
+			mov edx, [esi + 4] // get module data pointer
+			cmp dword ptr[edx+0xF0], 0 // check Acceleration
+			jne ofs34B51C
+			// set new vft
+			lea eax, _VFT_module_BezierProjectileNew
+			mov [esi + 0x10], eax
+			//
+		ofs34B51C:
+			pop edi
+			mov eax, esi
+			pop esi
+			ret 8
 		}
 	}
 

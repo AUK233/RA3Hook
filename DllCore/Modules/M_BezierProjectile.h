@@ -25,5 +25,6 @@ namespace RA3::Module {
 	void __fastcall M_BezierProjectile_Hook();
 	void __fastcall M_BezierProjectile_Initialize(uintptr_t hmodEXE, int isNewSteam);
 
+	void __fastcall M_BezierProjectile_InitializeASM();
 	int __fastcall M_BezierProjectile_Module00CPP(char* pIn);
 }

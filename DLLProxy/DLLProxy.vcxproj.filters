@@ -107,6 +107,15 @@
     <ClInclude Include="..\DllCore\Core\C_Weapon.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
+    <ClInclude Include="..\DllCore\Core\C_Subsystem.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DllCore\Modules\M_PassiveAreaEffectBehavior.h">
+      <Filter>Source Files\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DllCore\Core\C_GameObject.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -159,6 +168,12 @@
     </ClCompile>
     <ClCompile Include="..\DllCore\Core\C_Weapon.cpp">
       <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DllCore\Core\C_Subsystem.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DllCore\Modules\M_PassiveAreaEffectBehavior.cpp">
+      <Filter>Source Files\Modules</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

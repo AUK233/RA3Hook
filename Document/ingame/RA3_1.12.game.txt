@@ -1,10 +1,117 @@
+
+ra3_1.12.game+387CBB - 80 7F 58 00           - cmp byte ptr [edi+58],00
+应该是给单位指令的函数
+
+ra3_1.12.game+394EF0 TransportContain初始化
+
+ra3_1.12.game+394E43 - 80 B9 8E000000 00     - cmp byte ptr [ecx+0000008E],00
+检查ShowPips
+
+ra3_1.12.game+394EA0 - 8B 4F 08              - mov ecx,[edi+08]
+显示成员图标
+
+ra3_1.12.game+682673 - 84 C0                 - test al,al
+决定能否进驻
+
+ra3_1.12.game+308531 - 8B 5C 24 08           - mov ebx,[esp+08]
+这里是显示进驻图标的成员指针
+
+ra3_1.12.game+30855A - 3B 86 18040000        - cmp eax,[esi+00000418]
+比较成员和载具的阵营
+
+ra3_1.12.game+50FBD7 - 83 BF EC030000 00     - cmp dword ptr [edi+000003EC],00
+检查成员已进驻？edi是载具的指针
+
+ra3_1.12.game+396F42 - 8B 87 28030000        - mov eax,[edi+00000328]
+ebx是成员，edi是载具
+
+ra3_1.12.game+38776C - 8B 90 84000000        - mov edx,[eax+00000084]
+让ai进入载具，是AIUpdate的虚表
+对象指针+374是AIUpdate
+
+
+================================================
+
+0057F341 写入脚本执行的事件
+0059D797 写入ScriptEngine虚表
+
+ra3_1.12.game+17522F - 39 43 10              - cmp [ebx+10],eax
+检查是不是NAMED_GARRISON_SPECIFIC_BUILDING
+
+ra3_1.12.game+18F950 - E8 AB27FEFF           - call ra3_1.12.game+172100
+NAMED_GARRISON_SPECIFIC_BUILDING 执行单位进驻，此处esi是成员的AIUpdate，edi是载具
+ra3_1.12.game+1A6C80 - 8D 8C 24 FC020000     - lea ecx,[esp+000002FC]
+返回地址
+
+ra3_1.12.game+1AE425 - FF D0                 - call eax
+这里负责执行脚本？
+005A2B65 由脚本号选择所需要执行的脚本
+
+ra3_1.12.game+18C022 
+检查对象是否存在？
+
+================================================
+
+ra3_1.12.game+3E1970
+PassiveAreaEffectBehavior初始化
+
+ra3_1.12.game+3A2103 和 ra3_1.12.game+3A218B
+读EffectRadius
+
+ra3_1.12.game+363DC4 - 3B 6F 0C              - cmp ebp,[edi+0C]
+检查治疗数是否超过MaxBeneficiaries
+
+00763E39 这里是MaxBeneficiaries不为0时治疗单位
+
+ra3_1.12.game+31CD96 - 8B 77 34              - mov esi,[edi+34]
+治疗时触发Modifier
+
+ra3_1.12.game+3A2300 写入需要治疗的单位
+
+ra3_1.12.game+3A2123 - 8B 4D 38              - mov ecx,[ebp+38]
+获取AllowFilter
+
+007A2167 检查是否是受伤的单位
+
+================================================
+
+ra3_1.12.game+30DB1C - 80 79 61 00           - cmp byte ptr [ecx+61],00
+AttributeModifierAuraUpdate初始化，检查InitiallyActive
+
+data
++28是RefreshDelay，作为浮点秒
++2c是Range
++63是AllowSelf
+
+ra3_1.12.game+3567EB - F3 0F10 46 2C         - movss xmm0,[esi+2C]
+获取Range的值，0070DAE9此处赋予vft，是指针+18是vtt+0
+
+ra3_1.12.game+3565D9 - F6 81 A8000000 01     - test byte ptr [ecx+000000A8],01
+检查单位是否在攻击状态
+
+ra3_1.12.game+3228DF - 8B 48 3C              - mov ecx,[eax+3C]
+检查MaxActiveRank
+
+================================================
+
+00CE8C98是TheMpGameRulesSubsystem
+
+00CE8C98->+28->+4是SkirmishStartCash
+ra3_1.12.game+450533 - 8B 1F                 - mov ebx,[edi]
+SkirmishStartCash的LoCash
+
+================================================
+
 0074B390 BezierProjectile初始化
 +7c是速度
 
 007B08DD BezierProjectile每帧的行为，ecx是模块指针，是模块+10的vft +0
 0077B8F8 比较加速度是否小于0
 
+008E47A7 DynamicsUpdate初始化
 
+a0198e Dynamics碰撞检测系统
+ra3_1.12.game+4E2547 释放INTERCOLLIDING类型的碰撞
 
 
 ================================================
@@ -44,7 +151,7 @@ ra3_1.12.game+38A194 - 0F2F 46 3C            - comiss xmm0,[esi+3C]
 检查护盾是否超过上限
 
 ra3_1.12.game+3246C9 - 38 88 04010000        - cmp [eax+00000104],cl
-初始化时检查是否立即激活（事实上无效）
+初始化时检查是否立即激活
 
 ShieldSphereUpdate数据
 +8是RadiusMax，+c是RadiusMin

@@ -101,7 +101,9 @@ extern "C" int PowerfulGameLaunch(LPCWSTR FileName, LPCWSTR Arguments, LPCWSTR B
 		originalFile.seekg(0, std::ios::beg);
 		std::vector<char> buffer(size);
 		if (originalFile.read(buffer.data(), size)) {
-			//buffer[0x126] |= 0b00100000;
+			buffer[0x126] |= 0b00100000;
+			*(int*)&buffer[0x170] = 4 * 1024 * 1024; // 4MB, stack reserve size
+			*(int*)&buffer[0x178] = 4 * 1024 * 1024; // 4MB, heap reserve size
 
 			// Check file exists
 			if (std::filesystem::exists(newFilePath)) {

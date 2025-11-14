@@ -182,9 +182,10 @@ fileInfoStore __fastcall WriteDataToBuffer(std::wstring mainPath, std::wstring d
 	file.seekg(0, std::ios::beg);
 	std::vector<char> buffer(size);
 	if (file.read(buffer.data(), size)) {
-		for (size_t i = 0; i < buffer.size(); i++) {
+		/*for (size_t i = 0; i < buffer.size(); i++) {
 			dataBytes->push_back(buffer[i]);
-		}
+		}*/
+		dataBytes->insert(dataBytes->end(), buffer.begin(), buffer.end());
 	}
 	file.close();
 
@@ -289,7 +290,7 @@ void __fastcall OutBIGFile(std::wstring inPath, std::wstring outPath)
 		// out file
 		std::ofstream newFile(outPath, std::ios::binary | std::ios::out | std::ios::ate);
 
-		for (size_t i = 0; i < headerBytes.size(); i++)
+		/*for (size_t i = 0; i < headerBytes.size(); i++)
 		{
 			newFile << headerBytes[i];
 		}
@@ -302,7 +303,10 @@ void __fastcall OutBIGFile(std::wstring inPath, std::wstring outPath)
 		for (size_t i = 0; i < dataBytes.size(); i++)
 		{
 			newFile << dataBytes[i];
-		}
+		}*/
+		newFile.write((char*)headerBytes.data(), headerBytes.size());
+		newFile.write((char*)pathBytes.data(), pathBytes.size());
+		newFile.write((char*)dataBytes.data(), dataBytes.size());
 
 		newFile.close();
 

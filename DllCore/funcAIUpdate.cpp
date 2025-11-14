@@ -1,6 +1,7 @@
 #include "pch.h"
 #include <format>
 
+#include "./Base/SSE.hpp"
 #include "utiliy.h"
 #include "utiliy_game.h"
 #include "commonStruct.hpp"
@@ -83,7 +84,7 @@ namespace RA3::AI {
 	void __fastcall JetAIUpdateCirclesForAttackNewPosition(AIUpdateModule* pAI, vector3Dpos* pPos)
 	{
 		//is rectangular movement
-		float radian = atan2(pPos[1].y, pPos[1].x);
+		float radian = std::atan2(pPos[1].y, pPos[1].x);
 		//float radian = pAI->pGameObject->objectAngle;
 		//radian += 0.314f * getRadomFloatValue(0.0f, 1.0f);
 		
@@ -102,8 +103,16 @@ namespace RA3::AI {
 		// pPos[0] is attacked position
 		// pPos[1] is will move to position
 		// pPos[2] is self position
-		pPos[1].x = (ringRadius * cos(radian)) + pPos[0].x;
-		pPos[1].y = (ringRadius * sin(radian)) + pPos[0].y;
+		/*pPos[1].x = (ringRadius * cos(radian)) + pPos[0].x;
+		pPos[1].y = (ringRadius * sin(radian)) + pPos[0].y;*/
+
+		__m128 pcos = _mm_set_ss((ringRadius * std::cos(radian)) + pPos[0].x);
+		__m128 psin = _mm_set_ss((ringRadius * std::sin(radian)) + pPos[0].y);
+		__m128 v_pos = _mm_movelh_ps(pcos, psin);
+		v_pos = _mm_max_ps(v_pos, _mm_set_ps1(100.0f));
+		v_pos = _mm_min_ps(v_pos, _mm_set_ps1(9800.0f));
+		pPos[1].x = v_pos.m128_f32[0];
+		pPos[1].y = v_pos.m128_f32[2];
 	}
 
 

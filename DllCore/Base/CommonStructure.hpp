@@ -16,7 +16,10 @@ struct baseCommonModule_t {
 typedef void(__fastcall* void_fastcallNoParameter)(void*);
 typedef int(__fastcall* int_fastcallNoParameter)(void*);
 
-typedef void(__fastcall* void_thiscallHasParameter1)(void* ecx, int, int a1);
-typedef void(__fastcall* void_thiscallHasParameter2)(void* ecx, int, int a1, int a2);
+typedef void(__fastcall* void_thiscallHasParameter1)(void* ecx, void* callFunc, int a1);
+typedef void(__fastcall* void_thiscallHasParameter2)(void* ecx, void* callFunc, int a1, int a2);
 
-typedef void(__fastcall* void_thiscallHas1Float)(void* ecx, int, float scale);
+typedef void(__fastcall* void_thiscallHas1Float)(void* ecx, void* callFunc, float scale);
+
+// note: this ecx is in ra3_1.12.game+3E308B
+typedef void*(__fastcall* CallFunc_InitializeModule)(void* pECX, void* callFunc, void* pA1, void* pModuleData);
