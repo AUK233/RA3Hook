@@ -12,7 +12,6 @@
 #include "LuaEngine.h"
 #include "funcPlayer.h"
 #include "funcWeapon.h"
-#include "funcMLaser.h"
 #include "funcOther.h"
 #include "funcAIUpdate.h"
 #include "funcAPT.h"
@@ -339,7 +338,7 @@ void mainInjectionExecution()
 		}
 
 		if (inputSetting.setDebug) {
-			MessageBox(NULL, L"Injection OK!\n   v2.504", L"Check", MB_OK);
+			MessageBox(NULL, L"Injection OK!\n   v2.505", L"Check", MB_OK);
 		}
 	}
 }

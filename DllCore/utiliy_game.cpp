@@ -57,5 +57,5 @@ void __fastcall InitializeUtiliyGameFunctionsOrigin(uintptr_t hmodEXE)
 	_F_Call4EDEC0 = 0x52F7D0;
 
 	_F_GiveAttributeModifierInGroupToObject7181F0 = 0x756640;
-	_F_Call416830 = hmodEXE + 0x1B37F0;
+	_F_UnitGarrison572100 = 0x5B37F0;
 }

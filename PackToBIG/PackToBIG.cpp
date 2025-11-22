@@ -153,6 +153,7 @@ void __fastcall SetCheckedFileType(UINT32 in)
 	{
 	case 3:
 		v_excludeFile.push_back(L"xml");
+		v_excludeFile.push_back(L"psd");
 		return;
 	case 2:
 		v_includeFile.push_back(L"cdata");
