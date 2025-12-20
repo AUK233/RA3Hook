@@ -2,8 +2,6 @@
 
 namespace RA3::Weapon {
 
-// Let "ShowsAmmoPips" work
-void __fastcall ShowsAmmoPipsASM();
 //
 void __fastcall WeaponReloadActiveASM();
 //

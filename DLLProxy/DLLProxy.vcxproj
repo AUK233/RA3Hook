@@ -102,6 +102,7 @@
     <ClInclude Include="..\DllCore\Core\C_AttributeModifier.h" />
     <ClInclude Include="..\DllCore\Core\C_GameObject.h" />
     <ClInclude Include="..\DllCore\Core\C_Subsystem.h" />
+    <ClInclude Include="..\DllCore\Core\C_System.h" />
     <ClInclude Include="..\DllCore\Core\C_Weapon.h" />
     <ClInclude Include="..\DllCore\funcAIUpdate.h" />
     <ClInclude Include="..\DllCore\funcAIUpdate_Address.hpp" />
@@ -125,22 +126,24 @@
     <ClCompile Include="..\DllCore\Base\GlobalStructure.cpp" />
     <ClCompile Include="..\DllCore\commonMain.cpp" />
     <ClCompile Include="..\DllCore\Core\C_AttributeModifier.cpp" />
+    <ClCompile Include="..\DllCore\Core\C_GameObject.cpp" />
     <ClCompile Include="..\DllCore\Core\C_Subsystem.cpp" />
+    <ClCompile Include="..\DllCore\Core\C_System.cpp" />
     <ClCompile Include="..\DllCore\Core\C_Weapon.cpp" />
     <ClCompile Include="..\DllCore\funcAIUpdate.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AssemblyAndSourceCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NoListing</AssemblerOutput>
     </ClCompile>
     <ClCompile Include="..\DllCore\funcAPT.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AssemblyAndSourceCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NoListing</AssemblerOutput>
     </ClCompile>
     <ClCompile Include="..\DllCore\funcOther.cpp" />
     <ClCompile Include="..\DllCore\funcPlayer.cpp" />
     <ClCompile Include="..\DllCore\funcWeapon.cpp" />
     <ClCompile Include="..\DllCore\LuaEngine.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AssemblyAndSourceCode</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NoListing</AssemblerOutput>
     </ClCompile>
     <ClCompile Include="..\DllCore\Modules\M_BezierProjectile.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NoListing</AssemblerOutput>

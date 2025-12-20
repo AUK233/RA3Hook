@@ -1,4 +1,5 @@
 #pragma once
+#include <bitset>
 
 struct baseBinDataHeader_t {
 	int ModuleHash, IDHash;
@@ -11,6 +12,12 @@ struct baseCommonModule_t {
 	void* PAD0C; // always GetRefCount(void)?
 	void* vft_module;
 	int i_count14, i_count18, i_status, i_0x20;
+};
+
+struct Matrix3D_t{
+	float m0[3], x;
+	float m1[3], y;
+	float m2[3], z;
 };
 
 typedef void(__fastcall* void_fastcallNoParameter)(void*);

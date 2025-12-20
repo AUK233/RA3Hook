@@ -1,0 +1,42 @@
+ra3_1.12.game+6BA911 - 84 C0                 - test al,al
+检查框选，为0则不能框选
+
+ra3_1.12.game+3AE02E - D9 19                 - fstp dword ptr [ecx]
+复制坐标，可以考虑修改
+
+ra3_1.12.game+3E3DE6 - 89 56 38              - mov [esi+38],edx
+复制坐标
+
+ra3_1.12.game+3C1DD2 - 88 9D E4010000        - mov [ebp+000001E4],bl
+初始化GameObject
+
+ra3_1.12.game+3C26BC - C6 86 E4010000 00     - mov byte ptr [esi+000001E4],00 未保存
+ra3_1.12.game+3ADF26 - 80 BE E4010000 00     - cmp byte ptr [esi+000001E4],00
+ra3_1.12.game+3ADFF8 - C6 86 E4010000 01     - mov byte ptr [esi+000001E4],01 已保存
+检查和写入是否已保存当前变换的flag
+
+ra3_1.12.game+39E881 - D9 01                 - fld dword ptr [ecx]
+载入先前的pos，用于检查和当前pos是否相同
+
+
+
+
+=============================================
+
+ra3_1.12.game+30F00A - 8A 48 61              - mov cl,[eax+61]
+Physics初始化时读 AllowBouncing
+
+ra3_1.12.game+3BA3B1 - 38 5A 62              - cmp [edx+62],bl
+命中地面时检查Physics的KillWhenRestingOnGround
+ra3_1.12.game+3CE3B1 返回到这里
+
+ra3_1.12.game+3D68F9 - F3 0F10 77 40         - movss xmm6,[edi+40]
+Physics复制单位高度
+
+ra3_1.12.game+3578A2 - 89 46 4C              - mov [esi+4C],eax
+写入Physics命中地面的高度？
+ra3_1.12.game+35DD71 - E8 CA9AFFFF           - call ra3_1.12.game+357840
+由这里call
+
+
+

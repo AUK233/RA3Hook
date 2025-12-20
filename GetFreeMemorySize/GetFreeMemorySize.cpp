@@ -4,6 +4,7 @@
 #include <tlhelp32.h>
 #include "GetFreeMemorySize.h"
 #include <string>
+#include <nmmintrin.h>
 
 // Helper function to count set bits in the processor mask.
 DWORD CountSetBits(ULONG_PTR bitMask)
@@ -149,11 +150,28 @@ void GetCPUInformation()
     }
 }
 
+void CheckRSQRT()
+{
+    float in;
+    std::wcout << L"Input a float number: ";
+    std::wcin >> in;
+
+    float sqrt = _mm_sqrt_ss(_mm_set_ss(in)).m128_f32[0];
+    sqrt = 1.0f / sqrt;
+
+	float rsqrt = _mm_rsqrt_ss(_mm_set_ss(in)).m128_f32[0];
+
+    std::wcout << L"1/sqrt(" + std::to_wstring(in) + L") = " + std::to_wstring(sqrt) + L"\n";
+	std::wcout << L"rsqrt(" + std::to_wstring(in) + L") = " + std::to_wstring(rsqrt) + L"\n";
+}
+
 int wmain(int argc, wchar_t* argv[])
 {
-    GetFreeMemorySize();
+    //GetFreeMemorySize();
 
     //GetCPUInformation();
+
+    CheckRSQRT();
 
     system("pause");
 }

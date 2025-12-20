@@ -1,10 +1,13 @@
 #include "../pch.h"
 #include <format>
+#include <corecrt_math_defines.h>
 
 #include "../commonData.hpp"
 #include "../utiliy.h"
 #include "../utiliy_game.h"
 #include "../Base/GlobalStructure.h"
+#include "../Core/C_System.h"
+#include "../Core/C_GameObject.h"
 #include "M_LaserState.h"
 
 namespace RA3::Module {
@@ -83,14 +86,17 @@ namespace RA3::Module {
 	}
 
 	void __fastcall M_SweepingLaserState_InitializeCPP(pM_SweepingLaserState pIn) {
-		pIn->i16_LaserType = M_SweepingLaserState_GetLaserType((pData_SweepingLaserState)pIn->pModuleData);
+		ZeroMemory(pIn->SweepEndPos, (sizeof(M_SweepingLaserState_t) - offsetof(M_SweepingLaserState_t, SweepEndPos)));
 
-		// Verify original size is 0xC0
-		static_assert(sizeof(M_SweepingLaserState_t) == 0xC0);
-		ZeroMemory(pIn->SweepEndPos, (0xC0 - offsetof(M_SweepingLaserState_t, SweepEndPos)));
+		int i_IsFollowTerrain = 0;
+		pIn->i16_LaserType = M_SweepingLaserState_GetLaserType((pData_SweepingLaserState)pIn->pModuleData, &i_IsFollowTerrain);
+
+		if (i_IsFollowTerrain) {
+			pIn->bIsFollowTerrain = true;
+		}
 	}
 
-	UINT16 __fastcall M_SweepingLaserState_GetLaserType(pData_SweepingLaserState pData) {
+	UINT16 __fastcall M_SweepingLaserState_GetLaserType(pData_SweepingLaserState pData, int* IsFollowTerrain) {
 		int laserID = pData->LaserId;
 		if (laserID > 499) {
 			if (laserID > 999) {
@@ -101,9 +107,14 @@ namespace RA3::Module {
 					return SweepLaserT_toTarget0dot1;
 				case 1:
 					return SweepLaserT_baseRotation;
-				case 100:
+				case 100: // 3000
 					return SweepLaserT_formSourceToTarget;
-				case 101:
+				case 101:{
+					// 3020
+					*IsFollowTerrain = 1;
+					return SweepLaserT_formSourceToDistance;
+				}
+				case 102: // 3040
 					return SweepLaserT_formSourceToDistance;
 				default:
 					return SweepLaserT_Enhanced;
@@ -112,6 +123,10 @@ namespace RA3::Module {
 				return SweepLaserT_Enhanced;
 			}
 		} else {
+			if (laserID > 299) {
+				*IsFollowTerrain = 1;
+			}
+
 			return SweepLaserT_Original;
 		}
 		// end
@@ -135,10 +150,10 @@ namespace RA3::Module {
 			M_SweepingLaserState_SetPos_baseRotation((uintptr_t)pIn);
 			break;
 		case SweepLaserT_formSourceToTarget:
-			M_SweepingLaserState_SetPos_formSourceToTarget((uintptr_t)pIn);
+			M_SweepingLaserState_SetPos_formSourceToTarget(pIn);
 			break;
 		case SweepLaserT_formSourceToDistance:
-			M_SweepingLaserState_SetPos_formSourceToDistance((uintptr_t)pIn);
+			M_SweepingLaserState_SetPos_formSourceToDistance(pIn);
 			break;
 		default:
 			M_SweepingLaserState_SetPos_Default(pIn);
@@ -188,7 +203,7 @@ namespace RA3::Module {
 			pOutPos[2] = deltaPos.m128_f32[2];
 		}
 		else {
-			float sweepAngle = laserProgress * 6.28f;
+			float sweepAngle = laserProgress * 2 * M_PI;
 			float cosAngle = std::cos(sweepAngle);
 			float sinAngle = std::sin(sweepAngle);
 
@@ -205,7 +220,7 @@ namespace RA3::Module {
 			__m128 deltaPos = _mm_loadu_ps(pIn->SweepEndPos);
 			// to -y, x, x, y
 			deltaPos = _mm_shuffle_ps(deltaPos, deltaPos, MY_SHUFFLE(1, 0, 0, 1));
-			deltaPos = _mm_xor_ps(deltaPos, _mm_set_ps(-0.0f, 0.0f, 0.0f, 0.0f));
+			deltaPos = _mm_xor_ps(deltaPos, _mm_setr_ps(-0.0f, 0.0f, 0.0f, 0.0f));
 			// -siny, cosx, sinx, cosy
 			deltaPos = _mm_mul_ps(deltaPos, vSinCos);
 			// cosx - siny (0+1), cosy + sinx (2+3)
@@ -217,12 +232,16 @@ namespace RA3::Module {
 			pOutPos[1] = deltaPos.m128_f32[1];
 			pOutPos[2] = pIn->SweepStartPos[2];
 		}
+
+		if (pIn->bIsFollowTerrain) {
+			float outHeight[2]; // 0 is land, 1 is water
+			bool inWater = RA3::Core::C_System_CheckPositionInWater(0, 0, pOutPos[0], pOutPos[1], &outHeight[1], &outHeight[0]);
+			pOutPos[2] = outHeight[inWater];
+		}
 		// end
 	}
 
 	void __fastcall M_SweepingLaserState_SetPos_Default(pM_SweepingLaserState pIn) {
-		static_assert(offsetof(M_SweepingLaserState_t, SelfPos) == 0x30);
-		static_assert(offsetof(M_SweepingLaserState_t, TargetPos) == 0x3C);
 		__m128 selfPos = _mm_loadu_ps(pIn->SelfPos);
 		__m128 targetPos = _mm_loadu_ps(pIn->TargetPos);
 
@@ -250,7 +269,6 @@ namespace RA3::Module {
 		}
 
 		pData_SweepingLaserState pData = (pData_SweepingLaserState)pIn->pModuleData;
-		static_assert(offsetof(Data_SweepingLaserState_t, Radius) == 0x2C);
 		float Radius = pData->Radius;
 		__m128 radiusVec = _mm_set_ps1(Radius);
 		deltaXYZ = _mm_mul_ps(deltaXYZ, radiusVec);
@@ -262,7 +280,7 @@ namespace RA3::Module {
 		else {
 			// horizontal sweep, both directions
 			pIn->bIsSwapDirection = !pIn->bIsSwapDirection;
-			__m128 negativeX = _mm_set_ps(-0.0f, 0.0f, 0.0f, 0.0f);
+			alignas(16) const __m128 negativeX = { -0.0f, 0.0f, 0.0f, 0.0f };
 			deltaXYZ = _mm_xor_ps(deltaXYZ, negativeX);
 			deltaXYZ = _mm_shuffle_ps(deltaXYZ, deltaXYZ, MY_SHUFFLE(1, 0, my_unused_xmm, my_unused_xmm));
 			/*float DeltaX = -deltaXYZ.m128_f32[0];
@@ -278,9 +296,12 @@ namespace RA3::Module {
 		_mm_storeu_ps(pIn->SweepEndPos, sweepEndPos);
 
 		__m128 sweepStartPos = _mm_add_ps(targetPos, ofsPos);
-		pIn->SweepStartPos[0] = sweepStartPos.m128_f32[0];
+		/*pIn->SweepStartPos[0] = sweepStartPos.m128_f32[0];
 		pIn->SweepStartPos[1] = sweepStartPos.m128_f32[1];
-		pIn->SweepStartPos[2] = sweepStartPos.m128_f32[2];
+		pIn->SweepStartPos[2] = sweepStartPos.m128_f32[2];*/
+		auto Lifetime = pIn->Lifetime;
+		_mm_storeu_ps(pIn->SweepStartPos, sweepStartPos);
+		pIn->Lifetime = Lifetime;
 	}
 
 	void __fastcall M_SweepingLaserState_SetPos_Enhanced(pM_SweepingLaserState pIn) {
@@ -289,7 +310,6 @@ namespace RA3::Module {
 		__m128 deltaPos = _mm_sub_ps(targetPos, selfPos);
 
 		// Read EndOffset's z as radian.
-		static_assert(offsetof(Data_SweepingLaserState_t, pEndOffset) == 0x24);
 		pData_SweepingLaserState pData = (pData_SweepingLaserState)pIn->pModuleData;
 		if (pData->pEndOffset) {
 			if (*(int*)&pData->pEndOffset[2]) {
@@ -337,7 +357,7 @@ namespace RA3::Module {
 		else {
 			// horizontal sweep, both directions
 			pIn->bIsSwapDirection = !pIn->bIsSwapDirection;
-			__m128 negativeX = _mm_set_ps(-0.0f, 0.0f, 0.0f, 0.0f);
+			alignas(16) const __m128 negativeX = { -0.0f, 0.0f, 0.0f, 0.0f };
 			deltaXYZ = _mm_xor_ps(deltaXYZ, negativeX);
 			deltaXYZ = _mm_shuffle_ps(deltaXYZ, deltaXYZ, MY_SHUFFLE(1, 0, my_unused_xmm, my_unused_xmm));
 		}
@@ -349,9 +369,12 @@ namespace RA3::Module {
 		_mm_storeu_ps(pIn->SweepEndPos, sweepEndPos);
 
 		__m128 sweepStartPos = _mm_add_ps(targetPos, ofsPos);
-		pIn->SweepStartPos[0] = sweepStartPos.m128_f32[0];
+		/*pIn->SweepStartPos[0] = sweepStartPos.m128_f32[0];
 		pIn->SweepStartPos[1] = sweepStartPos.m128_f32[1];
-		pIn->SweepStartPos[2] = sweepStartPos.m128_f32[2];
+		pIn->SweepStartPos[2] = sweepStartPos.m128_f32[2];*/
+		auto Lifetime = pIn->Lifetime;
+		_mm_storeu_ps(pIn->SweepStartPos, sweepStartPos);
+		pIn->Lifetime = Lifetime;
 	}
 
 	void __fastcall M_SweepingLaserState_SetPos_toTarget0dot1(uintptr_t ptr) {
@@ -435,7 +458,7 @@ namespace RA3::Module {
 		float Radius = *(float*)(*(uintptr_t*)(ptr + 4) + 0x2C);
 		float Orientation;
 		if (Radius < -0.1f) {
-			Orientation = getRadomFloatValue(0.0f, 6.28f);
+			Orientation = getRadomFloatValue(0.0f, 2 * M_PI);
 			Radius *= -1.0f;
 		}
 		else {
@@ -449,82 +472,81 @@ namespace RA3::Module {
 			Orientation += *(float*)(posOffsetPtr + 8);
 		}
 
-		float ofsx = cos(Orientation) * Radius;
-		float ofsy = sin(Orientation) * Radius;
+		float ofsx = std::cos(Orientation) * Radius;
+		float ofsy = std::sin(Orientation) * Radius;
 		*(float*)(ptr + 0x98) = ofsx;
 		*(float*)(ptr + 0x9C) = ofsy;
 	}
 
-	void __fastcall M_SweepingLaserState_SetPos_formSourceToTarget(uintptr_t ptr) {
-		//ep1 + 3A7F86
-		*(char*)(ptr + 0xBC) = 0;
-		// Self Position
-		float sfx = *(float*)(ptr + 0x30);
-		float sfy = *(float*)(ptr + 0x34);
-		float sfz = *(float*)(ptr + 0x38);
-		// Target Position
-		//float opx = *(float*)(ptr + 0x3C);
-		//float opy = *(float*)(ptr + 0x40);
-		//float opz = *(float*)(ptr + 0x44);
-		//
-		float Orientation = *(float*)(*(uintptr_t*)(ptr + 8) + 0x44);
-		float Radius = *(float*)(*(uintptr_t*)(ptr + 4) + 0x2C);
-		float ofsx = cos(Orientation) * Radius;
-		float ofsy = sin(Orientation) * Radius;
-		float ofsz = 0.0f;
-		// Read EndOffset's z as radian.
-		uintptr_t posOffsetPtr = *(uintptr_t*)(*(uintptr_t*)(ptr + 4) + 0x24);
-		float sweepAngle = *(float*)(posOffsetPtr + 8);
-		float cosAngle = cos(sweepAngle);
-		float sinAngle = sin(sweepAngle);
-		// sweep end position
-		*(float*)(ptr + 0x98) = sfx + (cosAngle * ofsx) - (sinAngle * ofsy);
-		*(float*)(ptr + 0x9C) = sfy + (cosAngle * ofsy) + (sinAngle * ofsx);
-		*(float*)(ptr + 0xA0) = sfz + ofsz;
-		// sweep start position
-		*(float*)(ptr + 0xA4) = sfx;
-		*(float*)(ptr + 0xA8) = sfy;
-		*(float*)(ptr + 0xAC) = sfz;
+	void __fastcall M_SweepingLaserState_SetPos_formSourceToTarget(pM_SweepingLaserState pIn)
+	{
+		pIn->bIsSwapDirection = 0;
+		auto pGameObject = (pC_GameObject)pIn->pGameObject;
+		float Orientation = pGameObject->Orientation;
+
+		pData_SweepingLaserState pData = (pData_SweepingLaserState)pIn->pModuleData;
+		if (pData->pEndOffset) {
+			Orientation += pData->pEndOffset[2];
+		}
+
+		float Radius = pData->Radius;
+		__m128d vd_ofs;
+		vd_ofs.m128d_f64[0] = std::cos((double)Orientation);
+		vd_ofs.m128d_f64[1] = std::sin((double)Orientation);
+
+		__m128 v_ofs = _mm_cvtpd_ps(vd_ofs);
+		v_ofs = _mm_mul_ps(v_ofs, _mm_set_ps1(Radius));
+
+		auto Lifetime = pIn->Lifetime;
+		__m128 selfPos = _mm_loadu_ps(pIn->SelfPos);
+		__m128 sweepEndPos = _mm_add_ps(selfPos, v_ofs);
+		_mm_storeu_ps(pIn->SweepEndPos, sweepEndPos);
+		_mm_storeu_ps(pIn->SweepStartPos, selfPos);
+		//pIn->SweepEndPos[2] = selfPos.m128_f32[2];
+		pIn->Lifetime = Lifetime;
 	}
 
-	void __fastcall M_SweepingLaserState_SetPos_formSourceToDistance(uintptr_t ptr) {
-		*(char*)(ptr + 0xBC) = 0;
-		// Self Position
-		float sfx = *(float*)(ptr + 0x30);
-		float sfy = *(float*)(ptr + 0x34);
-		float sfz = *(float*)(ptr + 0x38);
-		// Target Position
-		float opx = *(float*)(ptr + 0x3C);
-		float opy = *(float*)(ptr + 0x40);
-		float opz = *(float*)(ptr + 0x44);
+	void __fastcall M_SweepingLaserState_SetPos_formSourceToDistance(pM_SweepingLaserState pIn)
+	{
+		pIn->bIsSwapDirection = 0;
+		__m128 selfPos = _mm_loadu_ps(pIn->SelfPos);
+		__m128 targetPos = _mm_loadu_ps(pIn->TargetPos);
+		__m128 deltaPos = _mm_sub_ps(targetPos, selfPos);
+		__m128 v_delta = deltaPos;
+		//float HeightDifference = deltaPos.m128_f32[2];
+		float DistanceFactor = _mm_dp_ps(deltaPos, deltaPos, 0b00110001).m128_f32[0];
+		DistanceFactor = _mm_rsqrt_ss(_mm_set_ss(DistanceFactor)).m128_f32[0];
+
 		// Read EndOffset's z as minimum distance.
 		float minDistance = 0.0f;
-		uintptr_t posOffsetPtr = *(uintptr_t*)(*(uintptr_t*)(ptr + 4) + 0x24);
-		if (posOffsetPtr) {
-			minDistance = *(float*)(posOffsetPtr + 8);
+		pData_SweepingLaserState pData = (pData_SweepingLaserState)pIn->pModuleData;
+		if (pData->pEndOffset) {
+			minDistance = pData->pEndOffset[2];
 		}
+
 		// Read target distance
-		float Length = *(float*)(*(uintptr_t*)(ptr + 4) + 0x2C);
-		// The difference between the target and its own position.
-		float spx = opx - sfx;
-		float spy = opy - sfy;
-		float ofsL = (sqrtf((spx * spx) + (spy * spy))) - Length;
-		if (ofsL > 0.0f) {
-			minDistance += ofsL;
-			Length += ofsL;
+		float Length = pData->Radius;
+		float LengthFactor = Length * DistanceFactor;
+
+		if (LengthFactor <= 1.0f) {
+			minDistance += Length;
+			minDistance -= (Length * LengthFactor);
+			LengthFactor = 1.0f;
 		}
-		//
-		float Orientation = atan2f(spy, spx);
-		float cosAngle = cos(Orientation);
-		float sinAngle = sin(Orientation);
-		// sweep end position
-		*(float*)(ptr + 0x98) = sfx + (cosAngle * Length);
-		*(float*)(ptr + 0x9C) = sfy + (sinAngle * Length);
-		*(float*)(ptr + 0xA0) = opz;
-		// sweep start position
-		*(float*)(ptr + 0xA4) = sfx + (cosAngle * minDistance);
-		*(float*)(ptr + 0xA8) = sfy + (sinAngle * minDistance);
-		*(float*)(ptr + 0xAC) = sfz;
+		minDistance *= DistanceFactor;
+
+		__m128 sweepEndPos = _mm_mul_ps(v_delta, _mm_set_ps1(LengthFactor));
+		sweepEndPos = _mm_add_ps(selfPos, sweepEndPos);
+		_mm_storeu_ps(pIn->SweepEndPos, sweepEndPos);
+		if (std::abs(v_delta.m128_f32[2]) <= 20.0f) {
+			pIn->SweepEndPos[2] = pIn->TargetPos[2];
+		}
+
+		__m128 sweepStartPos = _mm_mul_ps(v_delta, _mm_set_ps1(minDistance));
+		sweepStartPos = _mm_add_ps(selfPos, sweepStartPos);
+		pIn->SweepStartPos[0] = sweepStartPos.m128_f32[0];
+		pIn->SweepStartPos[1] = sweepStartPos.m128_f32[1];
+		pIn->SweepStartPos[2] = selfPos.m128_f32[2]; // Yeah, use unchanged xmm instead of reading it from memory.
 	}
 
 	__declspec(naked) void __fastcall ActivateLaserNuggetASM(uintptr_t ptr)

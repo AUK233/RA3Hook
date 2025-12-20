@@ -3,3 +3,5 @@
 void GetFreeMemorySize();
 
 void GetCPUInformation();
+
+void CheckRSQRT();

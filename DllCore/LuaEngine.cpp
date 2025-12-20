@@ -345,6 +345,14 @@ namespace RA3::LuaEngine {
 			}
 			break;
 		}
+		case 4: {
+			// is PowerfulMode
+			BYTE checkBit = rule74[0];
+			if (checkBit & 0b10) {
+				value = 1;
+			}
+			break;
+		}
 		default:
 			break;
 		}

@@ -13,30 +13,6 @@ extern uintptr_t _F_CallRandomRadius;
 
 namespace RA3::Weapon {
 
-// Let "ShowsAmmoPips" work
-__declspec(naked) void __fastcall ShowsAmmoPipsASM()
-{
-	// edx is not display
-	__asm {
-			push eax
-			// AutoReloadsClip is RETURN_TO_BASE
-			cmp dword ptr[eax + 0xB8], 2
-			je SetFlag
-			// ShowsAmmoPips is true
-			cmp byte ptr[eax + 0x134], 1
-			je SetFlag
-			mov eax, 1
-			test eax, eax
-			pop eax
-			ret
-		SetFlag :
-			xor eax, eax
-			test eax, eax
-			pop eax
-			ret
-	}
-}
-
 __declspec(naked) void __fastcall WeaponReloadActiveASM()
 {
 	__asm {
@@ -48,8 +24,8 @@ __declspec(naked) void __fastcall WeaponReloadActiveASM()
 		cmp dword ptr [eax+0xB8], 0
 		jne OldBlock // if it != auto
 	// current ammo == 0
-		cmp edx, 0
-		je OldBlock
+		test edx, edx
+		jz OldBlock
 	// total ammo < current ammo
 		mov eax, [esp] // get eax from "push eax"
 		cmp eax, edx
@@ -141,8 +117,9 @@ void __fastcall WeaponScatterRadiusCPP(float* pRadian, float* pPos)
 {
 	float radian = pRadian[1];
 	float sqrtF2 = sqrt(pRadian[2]);
-	pPos[0] += cos(radian) * pRadian[0] * sqrtF2;
-	pPos[1] += sin(radian) * pRadian[0] * sqrtF2;
+	float delta = pRadian[0] * sqrtF2;
+	pPos[0] += cos(radian) * delta;
+	pPos[1] += sin(radian) * delta;
 }
 
 
@@ -255,7 +232,6 @@ __declspec(naked) bool __fastcall CheckNoEMPInUnitShieldASM(void* pShieldBody)
 	}
 }
 
-uintptr_t _F_ShowAmmo = 0x00400000 + 0x128746;
 uintptr_t _F_WeaponReloadActive = 0x00400000 + 0x3BE05F;
 uintptr_t _F_WeaponReloadTimeCount = 0x00400000 + 0x2DC270;
 // Fix weapon scatter radius
@@ -266,8 +242,6 @@ uintptr_t _F_CheckNoEMPInUnitShield = 0x7CFAB3;
 
 void __fastcall InitializeHookWeaponFunctionUpdateOrigin(uintptr_t hmodEXE)
 {
-	_F_ShowAmmo = hmodEXE + 0x169D96;
-
 	_F_WeaponReloadActive = hmodEXE + 0x3FC3AF;
 	_F_WeaponReloadTimeCount = hmodEXE + 0x31A7E0;
 
@@ -281,9 +255,6 @@ void __fastcall InitializeHookWeaponFunctionUpdateOrigin(uintptr_t hmodEXE)
 
 void __fastcall HookWeaponFunctionUpdate()
 {
-	// Let "ShowsAmmoPips" work
-	hookGameCall((void*)_F_ShowAmmo, (uintptr_t)ShowsAmmoPipsASM);
-	WriteHookToProcess((void*)(_F_ShowAmmo + 5), (void*)&nop2, 2U);
 	// Set up reloading ammunition
 	hookGameCall((void*)_F_WeaponReloadActive, (uintptr_t)WeaponReloadActiveASM);
 	WriteHookToProcess((void*)(_F_WeaponReloadActive + 5), (void*)&nop1, 1U);
@@ -294,9 +265,9 @@ void __fastcall HookWeaponFunctionUpdate()
 	// Fix weapon scatter radius
 	//hookGameBlock((void*)_F_WeaponScatterRadius, (uintptr_t)WeaponScatterRadiusASM);
 	//WriteHookToProcess((void*)(_F_WeaponScatterRadius + 5), &nop3, 3U);
-	hookGameCall((void*)_F_WeaponScatterRadius1, (uintptr_t)WeaponScatterRadiusFixASM1);
+	/*hookGameCall((void*)_F_WeaponScatterRadius1, (uintptr_t)WeaponScatterRadiusFixASM1);
 	hookGameCall((void*)_F_WeaponScatterRadius2, (uintptr_t)WeaponScatterRadiusFixASM2);
-	WriteHookToProcess((void*)(_F_WeaponScatterRadius2 + 5), (void*)&nop1, 1U);
+	WriteHookToProcess((void*)(_F_WeaponScatterRadius2 + 5), (void*)&nop1, 1U);*/
 
 	// Convert emp time to unit shield damage
 	hookGameCall((void*)_F_CheckNoEMPInUnitShield, (uintptr_t)CheckNoEMPInUnitShieldASM);

@@ -99,6 +99,7 @@
     <ClInclude Include="Core\C_AttributeModifier.h" />
     <ClInclude Include="Core\C_GameObject.h" />
     <ClInclude Include="Core\C_Subsystem.h" />
+    <ClInclude Include="Core\C_System.h" />
     <ClInclude Include="Core\C_Weapon.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="funcAIUpdate.h" />
@@ -109,6 +110,7 @@
     <ClInclude Include="funcWeapon.h" />
     <ClInclude Include="LuaEngine.h" />
     <ClInclude Include="Modules\1CallModules.hpp" />
+    <ClInclude Include="Modules\M_AIUpdate.h" />
     <ClInclude Include="Modules\M_BezierProjectile.h" />
     <ClInclude Include="Modules\M_LaserState.h" />
     <ClInclude Include="Modules\M_PassiveAreaEffectBehavior.h" />
@@ -121,21 +123,27 @@
     <ClCompile Include="Base\GlobalStructure.cpp" />
     <ClCompile Include="commonMain.cpp" />
     <ClCompile Include="Core\C_AttributeModifier.cpp" />
+    <ClCompile Include="Core\C_GameObject.cpp">
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NoListing</AssemblerOutput>
+    </ClCompile>
     <ClCompile Include="Core\C_Subsystem.cpp" />
-    <ClCompile Include="Core\C_Weapon.cpp" />
+    <ClCompile Include="Core\C_System.cpp" />
+    <ClCompile Include="Core\C_Weapon.cpp">
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NoListing</AssemblerOutput>
+    </ClCompile>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="funcAIUpdate.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NoListing</AssemblerOutput>
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NoListing</AssemblerOutput>
     </ClCompile>
     <ClCompile Include="funcAPT.cpp">
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NoListing</AssemblerOutput>
     </ClCompile>
     <ClCompile Include="funcOther.cpp" />
     <ClCompile Include="funcPlayer.cpp" />
     <ClCompile Include="funcWeapon.cpp" />
     <ClCompile Include="LuaEngine.cpp">
-      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NoListing</AssemblerOutput>
     </ClCompile>
     <ClCompile Include="Modules\M_BezierProjectile.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NoListing</AssemblerOutput>

@@ -11,9 +11,12 @@ If element is null, attribute is under root.
 |---|---|---|---|
 ||Radius|float|negative value is vertical sweeps|
 ||LaserId|int|when it >= 1000, has the following effects|
+|-|-|-|when it is "300 to 499", Laser will follow the terrain.|
 |-|-|-|when it is "1000 to 1019", Laser will move length of "Radius" to 0.1x "Radius" of target.|
 |-|-|-|when it is "1020 to 1039", Laser makes a circular motion around target with "Radius".|
 |-|-|-|when it is "3000 to 3019", Laser will move length of "Radius" from firing source.|
+|-|-|-|when it is "3020 to 3039", Same as above, but use EndOffset'Z as min start. It will also follow terrain.|
+|-|-|-|when it is "3040 to 3059", Same as above, but not following terrain.|
 |EndOffset|z|radian|when LaserId >= 500, this value is the rotation angle of the sweep.|
 |-|-|-|note that it can't adjust the height in all cases now.|
 

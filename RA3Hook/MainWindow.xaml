@@ -33,7 +33,7 @@
         <CheckBox x:Name="CheckU60FPS" Content="60 FPS" Checked="OnChecked60FPSChanged" Unchecked="OnChecked60FPSChanged" Margin="310,230,0,0" Width="100" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="False"/>
         <CheckBox x:Name="CheckBoxLocal" Content="Force Local" Checked="OnCheckedLocalSaveChanged" Unchecked="OnCheckedLocalSaveChanged" Margin="310,253,0,0" Width="100" Height="18" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="False"/>
 
-        <Label x:Name="Version" Content="v2.505" Margin="676,327,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="64" Height="31"/>
+        <Label x:Name="Version" Content="v2.506" Margin="676,327,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="64" Height="31"/>
 
     </Grid>
 </Window>

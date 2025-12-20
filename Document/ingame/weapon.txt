@@ -1,0 +1,45 @@
+ra3_1.12.game+35AA01 - 80 B8 2C010000 00     - cmp byte ptr [eax+0000012C],00 写入弹头坐标
+ra3_1.12.game+34347C - 80 BA 2C010000 00     - cmp byte ptr [edx+0000012C],00
+检查DamageDealtAtSelfPosition
+
+ra3_1.12.game+35A73C - F3 0F11 44 24 2C      - movss [esp+2C],xmm0
+写攻击坐标到栈，eax里的坐标FireFX会使用到
+
+ra3_1.12.game+35A69F - 89 11                 - mov [ecx],edx
+写入真实的攻击坐标
+
+ra3_1.12.game+133A09 - 8B 11                 - mov edx,[ecx]
+写入FXList的NuggetList的每个特效的目标坐标
+NuggetList的+b0,+c0,+d0是某个坐标
+
+ra3_1.12.game+313787 - F3 0F10 40 04         - movss xmm0,[eax+04]
+读AttackRange
+
+ra3_1.12.game+313804 - E8 575AFEFF           - call ra3_1.12.game+2F9260
+这里是call获取AttributeModifier的RANGE
+
+ra3_1.12.game+29FF3D - 84 C0                 - test al,al
+检查ATTACK_NEEDS_LINE_OF_SIGHT是否存在
+
+ra3_1.12.game+2FB7DD - B8 01000000           - mov eax,00000001
+返回武器强制攻击的状态
+
+ra3_1.12.game+3AD305 - C6 46 60 01           - mov byte ptr [esi+60],01
+设置武器开火状态
+
+ra3_1.12.game+2FEDF2 - 80 79 63 00           - cmp byte ptr [ecx+63],00
+跟目标有关，需要验证是什么效果
+
+
+=======================================
+ra3_1.12.game+2E0F75 - 83 79 0C 01           - cmp dword ptr [ecx+0C],01
+检查BezierProjectile的Type是不是TORPEDO
+
+00C09E70
++1C 005C64C0->+24 005C6500
+
+=======================================
+007E0A20 初始化LinearDamageUpdate
+
+ra3_1.12.game+3B9A10 - 80 7D 24 00           - cmp byte ptr [ebp+24],00
+检查FollowTerrain
