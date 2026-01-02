@@ -1,6 +1,12 @@
 ra3_1.12.game+6BA911 - 84 C0                 - test al,al
 检查框选，为0则不能框选
 
+ra3_1.12.game+6CDD88 - 8B 86 C0000000        - mov eax,[esi+000000C0]
+检查选中后是否显示武器射程
+
+ra3_1.12.game+34635B - 8B 82 C0000000        - mov eax,[edx+000000C0]
+检查是否只允许一个建筑单位开火
+
 ra3_1.12.game+3AE02E - D9 19                 - fstp dword ptr [ecx]
 复制坐标，可以考虑修改
 

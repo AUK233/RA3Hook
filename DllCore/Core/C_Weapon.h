@@ -45,7 +45,7 @@ enum class WeaponFlagsType : int
 	FORCE_EMPTY_ENTIRE_CLIP,
 	IGNORE_WALL_RELATIONSHIP,
 	IGNORE_ENCLOSURE_CHECK,
-	ALL,
+	all_count,
 };
 
 enum class WeaponPrefireType : int
@@ -55,6 +55,7 @@ enum class WeaponPrefireType : int
 	PER_BURST = 2,
 	PER_TARGET = 3,
 	PER_POSITION = 4,
+	all_count,
 };
 
 enum class WeaponReAcquireDetailType : int
@@ -65,6 +66,7 @@ enum class WeaponReAcquireDetailType : int
 	PER_ATTACK = 3,
 	PRE_FIRE = 4,
 	POST_FIRE = 5,
+	all_count,
 };
 
 enum class WeaponReloadType : int
@@ -72,6 +74,7 @@ enum class WeaponReloadType : int
 	AUTO = 0,
 	NONE = 1,
 	RETURN_TO_BASE = 2,
+	all_count,
 };
 
 typedef struct Data_WeaponTemplate_t {
@@ -93,7 +96,7 @@ typedef struct Data_WeaponTemplate_t {
 	float AutoReloadWhenIdleSeconds;
 	int ShotsPerBarrel;
 	char pad88[0x24];
-	std::bitset<(size_t)WeaponFlagsType::ALL> Flags; // WeaponFlagsType
+	std::bitset<(size_t)WeaponFlagsType::all_count> Flags; // WeaponFlagsType
 	WeaponPrefireType PreAttackType;
 	WeaponReAcquireDetailType ReAcquireDetailType;
 	WeaponReloadType AutoReloadsClip;
@@ -175,5 +178,8 @@ namespace RA3::Core {
 
 	float __fastcall C_WeaponTemplate_GetCurrentWeaponAttackRange(pC_WeaponTemplate pIn, int useless, void* pGameObject, float negativeHeight);
 	float* __fastcall C_WeaponTemplate_GetWeaponNuggetScatter(pC_WeaponTemplate pIn, int useless, float* outPos, pC_GameObject pSelf, pC_GameObject pTarget, pC_Weapon pWeapon, float* inPos);
+	// simple get to pos
+	float* __fastcall C_WeaponTemplate_GetWeaponNuggetScatter_GetPos(pC_WeaponTemplate pIn, int useless, float* outPos, pC_GameObject pSelf, pC_GameObject pTarget, pC_Weapon pWeapon, float* inPos);
+	float* __fastcall C_WeaponTemplate_GetWeaponScatterFromContactPoints(pC_WeaponTemplate pIn, int useless, float* outPos, pC_GameObject pSelf, pC_GameObject pTarget, pC_Weapon pWeapon, float* inPos);
 	float __fastcall C_WeaponTemplate_GetTargetScatterRadiusVsType(pC_WeaponTemplate pIn, int useless, pC_GameObject pGO);
 }

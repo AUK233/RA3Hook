@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include <string>
 #include <codecvt>
 #include <filesystem>
@@ -6,6 +6,7 @@
 
 #include "utiliy.h"
 #include "commonStruct.hpp"
+#include "base/FileSystem.h"
 #include "LuaEngine.h"
 
 extern inputSettingINFO inputSetting;
@@ -133,7 +134,7 @@ namespace RA3::LuaEngine {
 	}
 
 	uintptr_t _Ret_004DEE52 = 0x4DEE52;
-	__declspec(naked) GameObject* __fastcall GetGameObjectPointerFromObjectID(uint32_t id)
+	__declspec(naked) pC_GameObject __fastcall GetGameObjectPointerFromObjectID(uint32_t id)
 	{
 		__asm {
 			sub esp, 0xC
@@ -150,7 +151,7 @@ namespace RA3::LuaEngine {
 		}
 	}
 
-	GameObject* __fastcall GetGameObjectPointer(void* pLua, int index)
+	pC_GameObject __fastcall GetGameObjectPointer(void* pLua, int index)
 	{
 		// 005781B4
 		int argc = Lua_GetParameterCount(pLua);
@@ -163,8 +164,7 @@ namespace RA3::LuaEngine {
 			return nullptr;
 		}
 
-		GameObject* pGO = GetGameObjectPointerFromObjectID(id);
-		return pGO;
+		return GetGameObjectPointerFromObjectID(id);
 	}
 
 	void __fastcall InitializeLuaEngineSteam(uintptr_t hmodEXE) {
@@ -280,6 +280,24 @@ namespace RA3::LuaEngine {
 		}
 	}
 
+
+	int __cdecl LoadLuaFile(void* pLua)
+	{
+		int isLoad = Lua_ToNumber(pLua, 1);
+		auto path = Lua_tostring(pLua, 2);
+		if (isLoad) {
+			auto buffer = RA3::FS::ReadToBuffer(path);
+			if (buffer.empty()) {
+				MessageBoxA(NULL, path, "test", MB_OK);
+				return 0;
+			}
+		} else {
+			MessageBoxA(NULL, path, "text", MB_OK);
+		}
+
+		return 1;
+	}
+
 	char luaStr_SetCFACampaignFlag[] = "SetCFACampaignFlag";
 	int __cdecl SetCFACampaignFlag(void* pLua) {
 		/*
@@ -361,9 +379,9 @@ namespace RA3::LuaEngine {
 
 	int __cdecl GetThisPlayer(void* pLua)
 	{
-		GameObject* pGO = GetGameObjectPointer(pLua, 1);
+		auto pGO = GetGameObjectPointer(pLua, 1);
 		if (pGO) {
-			Player* player = pGO->relevantPlayer;
+			auto player = (Player*)pGO->pRelevantPlayer;
 			//MessageBoxA(NULL, player->inScriptName, "nore", MB_OK);
 			Lua_pushstring(pLua, player->inScriptName);
 		}
@@ -374,6 +392,42 @@ namespace RA3::LuaEngine {
 		return 1;
 	}
 
+	int __cdecl GetGameObjectData(void* pLua)
+	{
+		auto pGO = GetGameObjectPointer(pLua, 1);
+		int mode = Lua_ToNumber(pLua, 2);
+		switch (mode) {
+		case 2: {
+			// get this player
+			if (pGO) {
+				auto player = (Player*)pGO->pRelevantPlayer;
+				//MessageBoxA(NULL, player->inScriptName, "nore", MB_OK);
+				Lua_pushstring(pLua, player->inScriptName);
+			} else {
+				Lua_pushstring(pLua, "Player_0");
+			}
+			break;
+		}
+		case 1: {
+			// write new value
+			if (pGO) {
+				int newValue = Lua_ToNumber(pLua, 3);
+				pGO->LuaAdditionalData = newValue;
+			}
+			break;
+		}
+		default: {
+			int value = 0;
+			if (pGO) {
+				value = pGO->LuaAdditionalData;
+			}
+			Lua_pushnumber(pLua, value);
+			break;
+		}
+		}
+
+		return 1;
+	}
 
 	char luaStr_CurrentObjectSuicided[] = "CurDrawableCurrentObjectSuicided";
 	__declspec(naked) int __cdecl CurDrawableCurrentObjectSuicided(void* pLua)
@@ -403,6 +457,9 @@ namespace RA3::LuaEngine {
 
 	void __fastcall HookLuaScriptEngineCPP(void* pLua)
 	{
+		pushLuaExecuteFunction(pLua, (uintptr_t)LoadLuaFile, 0);
+		pushLuaGetFunction(pLua, "LoadLuaFile");
+
 		pushLuaExecuteFunction(pLua, (uintptr_t)SetCFACampaignFlag, 0);
 		pushLuaGetFunction(pLua, "SetCFACampaignFlag");
 		pushLuaExecuteFunction(pLua, (uintptr_t)CheckCFACampaignFlag, 0);
@@ -412,6 +469,8 @@ namespace RA3::LuaEngine {
 
 		pushLuaExecuteFunction(pLua, (uintptr_t)GetThisPlayer, 0);
 		pushLuaGetFunction(pLua, "GetThisPlayer");
+		pushLuaExecuteFunction(pLua, (uintptr_t)GetGameObjectData, 0);
+		pushLuaGetFunction(pLua, "GetGameObjectData");
 	}
 
 	__declspec(naked) void __fastcall HookLuaScriptEngineASM() {

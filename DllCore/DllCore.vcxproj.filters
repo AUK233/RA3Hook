@@ -120,6 +120,18 @@
     <ClInclude Include="Modules\M_AIUpdate.h">
       <Filter>Source Files\Modules</Filter>
     </ClInclude>
+    <ClInclude Include="Base\GlobalParameter.hpp">
+      <Filter>Source Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\C_ThingTemplate.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\C_Skirmish.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\FileSystem.h">
+      <Filter>Source Files\Base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utiliy.cpp">
@@ -184,6 +196,15 @@
     </ClCompile>
     <ClCompile Include="Core\C_GameObject.cpp">
       <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\C_ThingTemplate.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\C_Skirmish.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\FileSystem.cpp">
+      <Filter>Source Files\Base</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

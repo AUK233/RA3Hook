@@ -1,0 +1,16 @@
+ra3_1.12.game+4686D9 - 68 09CAC500           - push ra3_1.12.game+85CA08
+遭遇战加载PlyrCreeps
+ra3_1.12.game+4686E8 - 85 C0                 - test eax,eax
+如果存在，则eax为0
+
+ra3_1.12.game+7B4210 - 68 C80BC100           - push ra3_1.12.game+810BC8
+将PlyrCreeps作为所有玩家的敌人写入字符串指针
+
+ra3_1.12.game+45EB48 - 8B 09                 - mov ecx,[ecx]
+
+
+ra3_1.12.game+2228AC - A1 E432CE00           - mov eax,[ra3_1.12.game+8E32E4]
+让PlyrCreeps作为所有玩家的敌人
+
+ra3_1.12.game+5FF750 - 83 EC 0C              - sub esp,0C
+从big里读文件？

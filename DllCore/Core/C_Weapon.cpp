@@ -21,8 +21,8 @@ namespace RA3::Core {
 	uintptr_t _Ret_SetWeaponAttackPosition = 0x75A7E0 + 6;
 
 	uintptr_t _F_WeaponFireNuggets = 0x75AA78;
-	uintptr_t _F_callGetWeaponNuggetScatter1 = 0x719E9B;
-	uintptr_t _F_callGetWeaponNuggetScatter2 = 0x747859;
+	uintptr_t _F_GetWeaponScatterInForcedAttack = 0x719E9B;
+	uintptr_t _F_GetWeaponScatterFromContactPoints = 0x747859;
 
 	uintptr_t _call_GetCurrentWeaponAttackRange = 0x713770;
 	uintptr_t _call_GetWeaponNuggetScatter = 0x713BD0;
@@ -47,8 +47,8 @@ namespace RA3::Core {
 		WriteHookToProcess((void*)(_F_WeaponFireNuggets + 5), (void*)&nop3, 3U);
 
 		// Update original to our new function
-		hookGameCall((void*)_F_callGetWeaponNuggetScatter1, (uintptr_t)C_WeaponTemplate_GetWeaponNuggetScatter);
-		hookGameCall((void*)_F_callGetWeaponNuggetScatter2, (uintptr_t)C_WeaponTemplate_GetWeaponNuggetScatter);
+		hookGameCall((void*)_F_GetWeaponScatterInForcedAttack, (uintptr_t)C_WeaponTemplate_GetWeaponNuggetScatter);
+		hookGameCall((void*)_F_GetWeaponScatterFromContactPoints, (uintptr_t)C_WeaponTemplate_GetWeaponScatterFromContactPoints);
 	}
 
 	void __fastcall C_Weapon_Initialize(uintptr_t hmodEXE, int isNewSteam)
@@ -62,8 +62,8 @@ namespace RA3::Core {
 			_Ret_SetWeaponAttackPosition = 0x798E20 + 6;
 
 			_F_WeaponFireNuggets = 0x7990B8;
-			_F_callGetWeaponNuggetScatter1 = 0x7582EB;
-			_F_callGetWeaponNuggetScatter2 = 0x785DE9;
+			_F_GetWeaponScatterInForcedAttack = 0x7582EB;
+			_F_GetWeaponScatterFromContactPoints = 0x785DE9;
 
 			_call_GetCurrentWeaponAttackRange = 0x751BC0;
 			_call_GetWeaponNuggetScatter = 0x752020;
@@ -394,7 +394,10 @@ namespace RA3::Core {
 
 		//volatile int stackDebug = -2;
 
-		memcpy(outPos, inPos, 12);
+		float pOutPos[4];
+		pOutPos[3] = 0;
+
+		memcpy(pOutPos, inPos, 12);
 
 		float targetScatter = 0;
 		if (pTarget) {
@@ -404,7 +407,7 @@ namespace RA3::Core {
 				targetScatter = TargetScatter;
 			}
 		} else {
-			C_System_CheckPositionIsHitTerrain(0, 0, 0, outPos);
+			C_System_CheckPositionIsHitTerrain(0, 0, 0, pOutPos);
 		}
 
 		auto pWeaponData = pIn->pWeaponData;
@@ -414,11 +417,14 @@ namespace RA3::Core {
 			// 00713C7E
 			// 00713D94 this will crash
 			__m128 v_selfPos = _mm_loadu_ps(pSelf->Position);
-			__m128 v_targetPos = _mm_loadu_ps(outPos);
+			__m128 v_targetPos = _mm_loadu_ps(pOutPos);
 			__m128 v_deltaPos = _mm_sub_ps(v_targetPos, v_selfPos);
 			__m128 v_delta = v_deltaPos;
 
 			float Distance = _mm_dp_ps(v_deltaPos, v_deltaPos, 0b00110001).m128_f32[0];
+			if (Distance < 0.0001f) {
+				goto overwriteHeight;
+			}
 			Distance = _mm_sqrt_ss(_mm_set_ss(Distance)).m128_f32[0];
 
 			float scatterLength = pWeaponData->ScatterLength;
@@ -450,8 +456,8 @@ namespace RA3::Core {
 
 				// get pos
 				__m128 v_attackPos = _mm_add_ps(v_targetPos, v_scatter);
-				outPos[0] = v_attackPos.m128_f32[0];
-				outPos[1] = v_attackPos.m128_f32[1];
+				pOutPos[0] = v_attackPos.m128_f32[0];
+				pOutPos[1] = v_attackPos.m128_f32[1];
 			}
 			else {
 				auto randf = getRadomFloatValue(0, 1);
@@ -469,25 +475,36 @@ namespace RA3::Core {
 				f_scatter /= Distance;
 				__m128 v_attackPos = _mm_mul_ps(v_delta, _mm_set_ps1(f_scatter));
 				v_attackPos = _mm_add_ps(v_targetPos, v_attackPos);
-				outPos[0] = v_attackPos.m128_f32[0];
-				outPos[1] = v_attackPos.m128_f32[1];
+				pOutPos[0] = v_attackPos.m128_f32[0];
+				pOutPos[1] = v_attackPos.m128_f32[1];
 			}
 			// end
 		}
 		else if (weaponFlag[(int)WeaponFlagsType::LENGTH_SCATTER]){
+
+			auto i_curAmmo = pWeapon->CurrentAmmoCount;
+			// 0x7FFFFFFF is too large, so max of 10k of ammo will be counted.
+			if (i_curAmmo > 9999) {
+				goto overwriteHeight;
+			}
+			float currentAmmo = i_curAmmo;
+
 			// 00713E9E
 			__m128 v_selfPos = _mm_loadu_ps(pSelf->Position);
-			__m128 v_targetPos = _mm_loadu_ps(outPos);
+			__m128 v_targetPos = _mm_loadu_ps(pOutPos);
 			__m128 v_deltaPos = _mm_sub_ps(v_targetPos, v_selfPos);
 			__m128 v_delta = v_deltaPos;
 			
 			float Distance = _mm_dp_ps(v_deltaPos, v_deltaPos, 0b00110001).m128_f32[0];
+			if (Distance < 0.0001f) {
+				goto overwriteHeight;
+			}
+
 			Distance = _mm_sqrt_ss(_mm_set_ss(Distance)).m128_f32[0];
 
-			// calculate current distance
-			float currentAmmo = pWeapon->CurrentAmmoCount;
 
 			if (*(int*)&pWeaponData->ScatterLength) {
+				// calculate current distance
 				float scatterLength = pWeaponData->ScatterLength * currentAmmo;
 				float totalAmmo = pWeaponData->ClipSize;
 				float totalDiv = totalAmmo * Distance;
@@ -511,8 +528,8 @@ namespace RA3::Core {
 					v_attackPos = _mm_add_ps(v_attackPos, v_horizontal);
 				}
 
-				outPos[0] = v_attackPos.m128_f32[0];
-				outPos[1] = v_attackPos.m128_f32[1];
+				pOutPos[0] = v_attackPos.m128_f32[0];
+				pOutPos[1] = v_attackPos.m128_f32[1];
 			}
 			else {
 				//to horizontal scatter
@@ -531,8 +548,8 @@ namespace RA3::Core {
 				v_attackPos = _mm_xor_ps(v_attackPos, negativeX);
 
 				v_attackPos = _mm_add_ps(v_targetPos, v_attackPos);
-				outPos[0] = v_attackPos.m128_f32[0];
-				outPos[1] = v_attackPos.m128_f32[1];
+				pOutPos[0] = v_attackPos.m128_f32[0];
+				pOutPos[1] = v_attackPos.m128_f32[1];
 			}
 			
 			// end
@@ -545,14 +562,15 @@ namespace RA3::Core {
 			float ofsx = std::cos(f_radian) * f_scatter;
 			float ofsy = std::sin(f_radian) * f_scatter;
 
-			outPos[0] += ofsx;
-			outPos[1] += ofsy;
+			pOutPos[0] += ofsx;
+			pOutPos[1] += ofsy;
 			// end
 		}
 
 		// 007140F0 check target ai
 		// because only bool is returned, it is not used.
-		/*if (pTarget) {
+		/*
+		if (pTarget) {
 			auto pThing = (char*)pTarget->pThingTemplate;
 			if (pThing[0xC7] & 1) {
 				goto overwriteHeight;
@@ -567,11 +585,11 @@ namespace RA3::Core {
 	overwriteHeight:
 		if (!pWeaponData->NoVictimNeeded) {
 			if(pTarget){
-				outPos[2] = pTarget->Position[2];
+				pOutPos[2] = pTarget->Position[2];
 			} else {
 				float outHeight[2]; // 0 is land, 1 is water
-				bool inWater = C_System_CheckPositionInWater(0, 0, outPos[0], outPos[1], &outHeight[1], &outHeight[0]);
-				outPos[2] = outHeight[inWater];
+				bool inWater = C_System_CheckPositionInWater(0, 0, pOutPos[0], pOutPos[1], &outHeight[1], &outHeight[0]);
+				pOutPos[2] = outHeight[inWater];
 			}
 			// end
 		}
@@ -579,14 +597,48 @@ namespace RA3::Core {
 		// support ScatterRadiusVsType
 		if (*(int*)&targetScatter) {
 			auto f_radian = getRadomFloatValue(0, 2 * M_PI);
-			auto f_scatter = getRadomFloatValue(-targetScatter, targetScatter);
-			float ofsx = std::cos(f_radian) * f_scatter;
-			float ofsy = std::sin(f_radian) * f_scatter;
-			outPos[0] += ofsx;
-			outPos[1] += ofsy;
+			float ofsx = std::cos(f_radian) * targetScatter;
+			float ofsy = std::sin(f_radian) * targetScatter;
+			pOutPos[0] += ofsx;
+			pOutPos[1] += ofsy;
 		}
 
+		__m128 v_pos = _mm_loadu_ps(pOutPos);
+		v_pos = _mm_min_ps(v_pos, _mm_set_ps1(9900.0f));
+		outPos[0] = v_pos.m128_f32[0];
+		outPos[1] = v_pos.m128_f32[1];
+		outPos[2] = v_pos.m128_f32[2];
+
 		return outPos;
+	}
+
+	float* __fastcall C_WeaponTemplate_GetWeaponNuggetScatter_GetPos(pC_WeaponTemplate pIn, int useless, float* outPos, pC_GameObject pSelf, pC_GameObject pTarget, pC_Weapon pWeapon, float* inPos)
+	{
+		memcpy(outPos, inPos, 12);
+		if (pTarget) {
+			auto TargetScatter = C_WeaponTemplate_GetTargetScatterRadiusVsType(pIn, 0, pTarget);
+
+			if (TargetScatter > 0) {
+				auto f_radian = getRadomFloatValue(0, 2 * M_PI);
+				float ofsx = std::cos(f_radian) * TargetScatter;
+				float ofsy = std::sin(f_radian) * TargetScatter;
+				outPos[0] += ofsx;
+				outPos[1] += ofsy;
+			}
+
+			outPos[2] = pTarget->Position[2];
+		}
+		return outPos;
+	}
+
+	float* __fastcall C_WeaponTemplate_GetWeaponScatterFromContactPoints(pC_WeaponTemplate pIn, int useless, float* outPos, pC_GameObject pSelf, pC_GameObject pTarget, pC_Weapon pWeapon, float* inPos)
+	{
+		auto pData = pIn->pWeaponData;
+		if (pData->ScatterIndependently) {
+			return C_WeaponTemplate_GetWeaponNuggetScatter_GetPos(pIn, 0, outPos, pSelf, pTarget, pWeapon, inPos);
+		} else {
+			return C_WeaponTemplate_GetWeaponNuggetScatter(pIn, 0, outPos, pSelf, pTarget, pWeapon, inPos);
+		}
 	}
 
 	float __fastcall C_WeaponTemplate_GetTargetScatterRadiusVsType(pC_WeaponTemplate pIn, int useless, pC_GameObject pGO)

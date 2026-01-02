@@ -5,8 +5,8 @@ typedef float(__fastcall* CallFunc_W3DTerrainLogicVFT1C)(void* pIn, void* callFu
 
 typedef struct G_W3DTerrainLogic_VFT_t {
 	char pad[0x18];
-	CallFunc_W3DTerrainLogicVFT18 func18;
-	CallFunc_W3DTerrainLogicVFT1C func1C;
+	CallFunc_W3DTerrainLogicVFT18 func18; // Get Ground Height for Current Location, via xy
+	CallFunc_W3DTerrainLogicVFT1C func1C; // Get Ground Height for Current Location, via pos ptr
 } *pG_W3DTerrainLogic_VFT;
 #if 1
 	static_assert(offsetof(G_W3DTerrainLogic_VFT_t, func18) == 0x18);

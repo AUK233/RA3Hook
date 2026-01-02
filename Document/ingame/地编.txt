@@ -1,0 +1,17 @@
+WorldBuilder_Mod_1.12.exe+97D29 - 83 BD F8000000 13     - cmp dword ptr [ebp+000000F8],13
+检查当前玩家列表有多少个玩家，超过就不允许添加新的
+
+WorldBuilder_Mod_1.12.exe+8A2F9 - 83 BE F8000000 14     - cmp dword ptr [esi+000000F8],14
+玩家超过多少以后增加按钮不可用
+
+WorldBuilder_Mod_1.12.exe+98486 - 83 BD F8000000 12     - cmp dword ptr [ebp+000000F8],12
+WorldBuilder_Mod_1.12.exe+984F0 - 83 BD F8000000 12     - cmp dword ptr [ebp+000000F8],12
+WorldBuilder_Mod_1.12.exe+98665 - 83 B9 F8000000 12     - cmp dword ptr [ecx+000000F8],12
+WorldBuilder_Mod_1.12.exe+98525 - 83 BA F8000000 12     - cmp dword ptr [edx+000000F8],12
+增加遭遇战玩家触发
+
+WorldBuilder_Mod_1.12.exe+2630DD - 83 FF 14              - cmp edi,14
+检测玩家列表最大数
+
+
+00AEFE28 虚表

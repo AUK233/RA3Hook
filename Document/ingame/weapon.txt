@@ -20,6 +20,8 @@ ra3_1.12.game+313804 - E8 575AFEFF           - call ra3_1.12.game+2F9260
 
 ra3_1.12.game+29FF3D - 84 C0                 - test al,al
 检查ATTACK_NEEDS_LINE_OF_SIGHT是否存在
+ra3_1.12.game+29FF61 - 84 C0                 - test al,al
+检查是否能看见两点之间
 
 ra3_1.12.game+2FB7DD - B8 01000000           - mov eax,00000001
 返回武器强制攻击的状态
@@ -30,6 +32,51 @@ ra3_1.12.game+3AD305 - C6 46 60 01           - mov byte ptr [esi+60],01
 ra3_1.12.game+2FEDF2 - 80 79 63 00           - cmp byte ptr [ecx+63],00
 跟目标有关，需要验证是什么效果
 
+=======================================
+
+ra3_1.12.game+43BA83 - E8 7826EAFF           - call ra3_1.12.game+2DE100
+这里是call获取AttributeModifier的RECHARGE_TIME
+
+ra3_1.12.game+2EBD26 - 89 46 1C              - mov [esi+1C],eax
+写入技能的冷却时间，+20是实际冷却完成的时间
+
+ra3_1.12.game+30A8B0 - 8B 46 20              - mov eax,[esi+20]
+返回公共计时器的时间
+ra3_1.12.game+6823CB - 3B C6                 - cmp eax,esi
+返回地址？
+
+
+ra3_1.12.game+2EBB5A - C1 E9 0C              - shr ecx,0C
+检测对象的某个flag
+
+技能指针的+4的+8的+8是静态数据
+
+00AC9235 - 8B 41 1C  - mov eax,[ecx+1C]
+00AC92DF - 8B 40 1C  - mov eax,[eax+1C]
+检查技能的HAS_PUBLIC_TIMER和IS_PLAYER_POWER
+
+ra3_1.12.game+3207C5 - 8B 48 1C              - mov ecx,[eax+1C]
+出售时获取IS_PLAYER_POWER
+
+ra3_1.12.game+30A5CC - 8B 51 1C              - mov edx,[ecx+1C]
+检查SHARED_SYNC
+
+=======================================
+
+ra3_1.12.game+6D0047 - E8 A491FFFF           - call ra3_1.12.game+6C91F0
+每个玩家都要call一次，用来注册公共计时器，但是这是从所有技能中筛选的
+
+ra3_1.12.game+6CACB2 - E8 5938FFFF           - call ra3_1.12.game+6BE510
+这里更新每个公共计时器
+
+ra3_1.12.game+6B938C - C7 46 30 00000000     - mov [esi+30],00000000
+移除此技能的公共计时器
+
+ra3_1.12.game+6B9312 - 89 0B                 - mov [ebx],ecx
+激活此技能的公共计时器
+
+ra3_1.12.game+6BE473 - E8 08AEFFFF           - call ra3_1.12.game+6B9280
+初始化激活公共计时器
 
 =======================================
 ra3_1.12.game+2E0F75 - 83 79 0C 01           - cmp dword ptr [ecx+0C],01

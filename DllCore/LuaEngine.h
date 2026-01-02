@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "core/C_GameObject.h"
 
 namespace RA3::LuaEngine {
 
@@ -20,9 +21,9 @@ int __fastcall Lua_GetParameterCount(void* pLua);
 uint32_t __fastcall Lua_GetTableNewMemberOrNull(void* pLua, int index);
 
 // should be 005781E2, but now use 004DEE52 to return the value.
-GameObject* __fastcall GetGameObjectPointerFromObjectID(uint32_t id);
+pC_GameObject __fastcall GetGameObjectPointerFromObjectID(uint32_t id);
 //
-GameObject* __fastcall GetGameObjectPointer(void* pLua, int index);
+pC_GameObject __fastcall GetGameObjectPointer(void* pLua, int index);
 
 //
 void __fastcall InitializeLuaEngineSteam(uintptr_t hmodEXE);
@@ -31,10 +32,12 @@ void __fastcall HookLuaEngine();
 void __fastcall GetCFACampaignFlagINIPath(LPCWSTR in);
 void __fastcall HookGetProfileDataINI();
 // lua scripts
+int __cdecl LoadLuaFile(void* pLua);
 int __cdecl SetCFACampaignFlag(void* pLua);
 int __cdecl CheckCFACampaignFlag(void* pLua);
 int __cdecl CheckSkirmishRule(void* pLua);
 int __cdecl GetThisPlayer(void* pLua);
+int __cdecl GetGameObjectData(void* pLua);
 // object scripts
 int __cdecl CurDrawableCurrentObjectSuicided(void* pLua);
 //

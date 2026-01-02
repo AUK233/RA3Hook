@@ -88,6 +88,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Base\CommonStructure.hpp" />
+    <ClInclude Include="Base\FileSystem.h" />
+    <ClInclude Include="Base\GlobalParameter.hpp" />
     <ClInclude Include="Base\GlobalStructure.h" />
     <ClInclude Include="Base\SSE.hpp" />
     <ClInclude Include="commonAddr.hpp" />
@@ -98,8 +100,10 @@
     <ClInclude Include="Core\1CallCore.hpp" />
     <ClInclude Include="Core\C_AttributeModifier.h" />
     <ClInclude Include="Core\C_GameObject.h" />
+    <ClInclude Include="Core\C_Skirmish.h" />
     <ClInclude Include="Core\C_Subsystem.h" />
     <ClInclude Include="Core\C_System.h" />
+    <ClInclude Include="Core\C_ThingTemplate.h" />
     <ClInclude Include="Core\C_Weapon.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="funcAIUpdate.h" />
@@ -120,14 +124,17 @@
     <ClInclude Include="utiliy_game.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Base\FileSystem.cpp" />
     <ClCompile Include="Base\GlobalStructure.cpp" />
     <ClCompile Include="commonMain.cpp" />
     <ClCompile Include="Core\C_AttributeModifier.cpp" />
     <ClCompile Include="Core\C_GameObject.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NoListing</AssemblerOutput>
     </ClCompile>
+    <ClCompile Include="Core\C_Skirmish.cpp" />
     <ClCompile Include="Core\C_Subsystem.cpp" />
     <ClCompile Include="Core\C_System.cpp" />
+    <ClCompile Include="Core\C_ThingTemplate.cpp" />
     <ClCompile Include="Core\C_Weapon.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NoListing</AssemblerOutput>
     </ClCompile>

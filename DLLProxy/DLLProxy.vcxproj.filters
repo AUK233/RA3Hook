@@ -119,6 +119,18 @@
     <ClInclude Include="..\DllCore\Core\C_System.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
+    <ClInclude Include="..\DllCore\Base\GlobalParameter.hpp">
+      <Filter>Source Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DllCore\Core\C_ThingTemplate.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DllCore\Core\C_Skirmish.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DllCore\Base\FileSystem.h">
+      <Filter>Source Files\Base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -183,6 +195,15 @@
     </ClCompile>
     <ClCompile Include="..\DllCore\Core\C_GameObject.cpp">
       <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DllCore\Core\C_ThingTemplate.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DllCore\Core\C_Skirmish.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DllCore\Base\FileSystem.cpp">
+      <Filter>Source Files\Base</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

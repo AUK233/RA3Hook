@@ -17,6 +17,7 @@
 #include "funcAPT.h"
 //
 #include "base/GlobalStructure.h"
+#include "base/FileSystem.h"
 #include "Core/1CallCore.hpp"
 #include "Modules/1CallModules.hpp"
 
@@ -289,6 +290,7 @@ bool __fastcall GetFunctionAddress()
 		RA3::Weapon::InitializeHookWeaponFunctionUpdateOrigin(hmodEXE);
 		//
 		G_GlobalStructure_Initialize(hmodEXE, 1);
+		RA3::FS::G_FileSystem_Initialize(hmodEXE, 1);
 		RA3::Core::InitializeHookFunctionSeries_Core(hmodEXE, 1);
 		RA3::Module::InitializeHookFunctionSeries_Module(hmodEXE, 1);
 	}
@@ -338,7 +340,7 @@ void mainInjectionExecution()
 		}
 
 		if (inputSetting.setDebug) {
-			MessageBox(NULL, L"Injection OK!\n   v2.506", L"Check", MB_OK);
+			MessageBox(NULL, L"Injection OK!\n   v2.507", L"Check", MB_OK);
 		}
 	}
 }
@@ -346,6 +348,7 @@ void mainInjectionExecution()
 void mainInjectionSetting(LPCWSTR iniPath)
 {
 	SettingINI = iniPath;
+	return;
 	//MessageBox(NULL, iniPath, L"Check", MB_OK);
 
 	if (GetPrivateProfileIntW(L"PlayerTemplates", L"Customization", 0, iniPath)) {

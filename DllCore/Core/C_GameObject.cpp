@@ -8,23 +8,68 @@
 
 namespace RA3::Core {
 
+	uintptr_t _F_InitializeGameObject1 = 0x4D842F + 1;
+	uintptr_t _F_InitializeGameObject2 = 0x7C251E;
+
 	uintptr_t _F_SetGameObjectPosition7E3D1B = 0x7E3D1B;
 	uintptr_t _F_UpdateGameObjectTransform = 0x7E3480;
+	uintptr_t _F_SetGameObjectFireAllowedStatus = 0x746358;
 
 	void __fastcall C_GameObject_Hook()
 	{
+		int newGameObjectSize = 0x4FC + 4;
+		WriteHookToProcess((void*)_F_InitializeGameObject1, &newGameObjectSize, 4U);
+
+		hookGameBlock((void*)_F_InitializeGameObject2, (uintptr_t)C_GameObject_InitializeASM);
+		WriteHookToProcess((void*)(_F_InitializeGameObject2 + 5), (void*)&nop5, 5U);
+
+		// ======================
+
 		hookGameBlock((void*)_F_SetGameObjectPosition7E3D1B, (uintptr_t)C_GameObject_SetGameObjectPosition7E3D1B_ASM);
 
 		hookGameBlock((void*)_F_UpdateGameObjectTransform, (uintptr_t)C_GameObject_UpdateGameObjectTransformCPP);
 		WriteHookToProcess((void*)(_F_UpdateGameObjectTransform + 5), (void*)&nop2, 2U);
+
+		// ============================================================================
+		BYTE FireAllowedStatus[] = {
+			0x8B, 0x4B, 0x04, // mov ecx, [ebx+4]
+			0x5F,             // pop edi
+			0x5B,             // pop ebx
+			0x83, 0xC4, 0x0C  // add esp, 0xC
+		};
+		WriteHookToProcess((void*)_F_SetGameObjectFireAllowedStatus, (void*)FireAllowedStatus, 8);
+		hookGameBlock((void*)(_F_SetGameObjectFireAllowedStatus + 8), (uintptr_t)C_GameObject_SetFireAllowedStatusCPP);
+		WriteHookToProcess((void*)(_F_SetGameObjectFireAllowedStatus + 8 + 5), (void*)&nop1, 1U);
 	}
 
 	void __fastcall C_GameObject_Initialize(uintptr_t hmodEXE, int isNewSteam)
 	{
 		if (isNewSteam){
+			_F_InitializeGameObject1 = 0x51A21F + 1;
+			_F_InitializeGameObject2 = 0x80086E;
+
 			_F_SetGameObjectPosition7E3D1B = 0x821FFB;
 			_F_UpdateGameObjectTransform = 0x821760;
+			_F_SetGameObjectFireAllowedStatus = 0x7848E8;
 		}
+	}
+
+	__declspec(naked) void __fastcall C_GameObject_InitializeASM()
+	{
+		__asm {
+			xor eax, eax
+			mov [ebp + 0x4FC], eax
+		}
+
+	original:
+		__asm {
+			mov eax, ebp
+			pop ebp
+			pop ebx
+			add esp, 0x24
+			ret 8
+		}
+		// end
 	}
 
 	__declspec(naked) void __fastcall C_GameObject_SetGameObjectPosition7E3D1B_ASM()
@@ -112,6 +157,19 @@ namespace RA3::Core {
 			fpatan
 			ret
 		}
+	}
+
+	int __fastcall C_GameObject_SetFireAllowedStatusCPP(pC_ThingTemplate pIn)
+	{
+		if (pIn->KindOf[(int)KindOfType::STRUCTURE]) {
+			if (pIn->KindOf[(int)KindOfType::FS_BASE_DEFENSE]) {
+				return 1;
+			} else {
+				return 0;
+			}
+		}
+
+		return 1;
 	}
 
 // end namespace RA3::Core

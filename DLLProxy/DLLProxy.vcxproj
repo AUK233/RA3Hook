@@ -91,6 +91,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\DllCore\Base\CommonStructure.hpp" />
+    <ClInclude Include="..\DllCore\Base\FileSystem.h" />
+    <ClInclude Include="..\DllCore\Base\GlobalParameter.hpp" />
     <ClInclude Include="..\DllCore\Base\GlobalStructure.h" />
     <ClInclude Include="..\DllCore\Base\SSE.hpp" />
     <ClInclude Include="..\DllCore\commonAddr.hpp" />
@@ -101,8 +103,10 @@
     <ClInclude Include="..\DllCore\Core\1CallCore.hpp" />
     <ClInclude Include="..\DllCore\Core\C_AttributeModifier.h" />
     <ClInclude Include="..\DllCore\Core\C_GameObject.h" />
+    <ClInclude Include="..\DllCore\Core\C_Skirmish.h" />
     <ClInclude Include="..\DllCore\Core\C_Subsystem.h" />
     <ClInclude Include="..\DllCore\Core\C_System.h" />
+    <ClInclude Include="..\DllCore\Core\C_ThingTemplate.h" />
     <ClInclude Include="..\DllCore\Core\C_Weapon.h" />
     <ClInclude Include="..\DllCore\funcAIUpdate.h" />
     <ClInclude Include="..\DllCore\funcAIUpdate_Address.hpp" />
@@ -123,12 +127,15 @@
     <ClInclude Include="proxy.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\DllCore\Base\FileSystem.cpp" />
     <ClCompile Include="..\DllCore\Base\GlobalStructure.cpp" />
     <ClCompile Include="..\DllCore\commonMain.cpp" />
     <ClCompile Include="..\DllCore\Core\C_AttributeModifier.cpp" />
     <ClCompile Include="..\DllCore\Core\C_GameObject.cpp" />
+    <ClCompile Include="..\DllCore\Core\C_Skirmish.cpp" />
     <ClCompile Include="..\DllCore\Core\C_Subsystem.cpp" />
     <ClCompile Include="..\DllCore\Core\C_System.cpp" />
+    <ClCompile Include="..\DllCore\Core\C_ThingTemplate.cpp" />
     <ClCompile Include="..\DllCore\Core\C_Weapon.cpp" />
     <ClCompile Include="..\DllCore\funcAIUpdate.cpp">
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AssemblyAndSourceCode</AssemblerOutput>
